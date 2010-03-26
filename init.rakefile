@@ -1,0 +1,46 @@
+BUNDLER_VERSION="= 0.8.5"
+
+# For ruby-oci8 (at least on OS X Intel)
+unless ENV["RC_ARCHS"]
+  if `uname -p` =~ /i386/
+    ENV["RC_ARCHS"] = "i386"
+  end
+end
+
+namespace :bundle do
+  def gem_env
+    "GEM_HOME=vendor/bundler_gem GEM_PATH=''"
+  end
+
+  def gem_bin
+    ENV["GEM_BIN"] || "gem"
+  end
+
+  def gem_cmd
+    [gem_env, gem_bin].compact.join(' ')
+  end
+
+  desc "Build the bundler gem repo using the existing cache only"
+  task :expand => :ensure_bundler_available do
+    system("#{gem_cmd} bundle --cached")
+    fail bordered_message("bundler failed") unless $? == 0
+  end
+
+  task :ensure_bundler_available do
+    `#{gem_cmd} list -i bundler08 -v '#{BUNDLER_VERSION}'`
+    unless $? == 0
+      puts bordered_message("Installing bundler08 #{BUNDLER_VERSION}")
+      system("#{gem_cmd} install bundler08 -v '#{BUNDLER_VERSION}'")
+      unless $? == 0
+        fail bordered_message("Install failed.\nPlease fix the problem and try again or manually install bundler #{BUNDLER_VERSION}.")
+      end
+    end
+  end
+
+  def bordered_message(msg)
+    len = msg.split("\n").collect { |l| l.size }.max
+    ['=' * len, msg, '=' * len].join("\n")
+  end
+end
+
+task :default => :'bundle:expand'

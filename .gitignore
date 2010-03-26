@@ -1,0 +1,14 @@
+*.log
+coverage
+spec/reports
+pkg
+
+# bundler08
+gem_bin
+jgem_bin
+vendor/gems/*.rb
+vendor/gems/*/*/*
+!vendor/gems/*/*/cache
+vendor/bundler_gem
+
+vendor/jruby
