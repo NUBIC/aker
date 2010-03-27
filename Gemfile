@@ -5,6 +5,8 @@ else
   bin_path 'gem_bin'
 end
 
+gem 'activesupport', '~> 2.3'
+
 only :development do
   gem 'rspec', '~> 1.3'
   gem 'rcov', '~> 0.9'
