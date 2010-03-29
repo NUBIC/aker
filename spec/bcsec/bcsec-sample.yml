@@ -2,3 +2,4 @@ netid:
   user: cn=foo
 cc_pers:
   user: cc_pers_foo
+  password: secret

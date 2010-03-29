@@ -1,5 +1,6 @@
 require 'bcsec'
 require 'bcsec/authorities'
+require 'bcsec/central_parameters'
 
 # can't do just core_ext/string in AS 2.3
 require 'active_support/core_ext'
@@ -30,7 +31,7 @@ module Bcsec
     def api_modes=(new_modes)
       @api_modes = (new_modes || []).collect { |m| nil_or_sym(m) }
     end
-    
+
     def portal
       raise "No portal configured" unless @portal
       @portal
@@ -39,7 +40,7 @@ module Bcsec
     def portal=(portal)
       @portal = nil_or_sym(portal)
     end
-    
+
     def authorities
       raise "No authorities configured" if @authorities.nil? || @authorities.empty?
       @authorities
@@ -48,7 +49,16 @@ module Bcsec
     def authorities=(new_authorities)
       @authorities = new_authorities.collect { |a| build_authority(a) }
     end
-    
+
+    def parameters_for(group)
+      @parameter_groups ||= { }
+      @parameter_groups[group] ||= { }
+    end
+
+    def add_parameters_for(group, params)
+      parameters_for(group).merge!(params)
+    end
+
     private
 
     def nil_or_sym(x)
@@ -101,8 +111,26 @@ module Bcsec
     end
     alias authority authorities
 
+    def central(filename)
+      params = ::Bcsec::CentralParameters.new(filename)
+
+      netid_parameters params[:netid]
+      pers_parameters(params[:cc_pers].dup.tap { |pers|
+        pers[:activerecord][:username] = pers[:user]
+        pers[:activerecord][:password] = pers[:password]
+      })
+    end
+
+    def method_missing(m, *args)
+      if m.to_s =~ /(\S+)_parameters?$/
+        @config.add_parameters_for($1.to_sym, args.first)
+      else
+        super
+      end
+    end
+
     private
-    
+
     def evaluate(&block)
       instance_eval(&block)
       @config.authorities = @specified_authorities if @specified_authorities
