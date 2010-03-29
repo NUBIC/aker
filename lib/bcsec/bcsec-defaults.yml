@@ -1,0 +1,11 @@
+cc_pers:
+  user: cc_pers
+  jdbc:
+    driver: oracle.jdbc.OracleDriver
+  activerecord:
+    adapter: oracle_enhanced
+netid:
+  ldap-servers:
+    - registry.northwestern.edu
+policy: { }
+cas: { }
