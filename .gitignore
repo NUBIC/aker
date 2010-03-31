@@ -2,6 +2,8 @@
 coverage
 spec/reports
 pkg
+doc
+.yardoc
 
 # bundler08
 gem_bin

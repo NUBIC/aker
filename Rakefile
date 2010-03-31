@@ -5,7 +5,8 @@ require 'vendor/gems/environment'
 require 'rake'
 require 'rake/gempackagetask'
 require 'spec/rake/spectask'
-require 'rubygems'
+require 'yard'
+
 require 'net/ssh'
 require 'net/scp'
 gem 'ci_reporter'
@@ -72,6 +73,12 @@ Spec::Rake::SpecTask.new('spec:rcov') do |t|
   # rcov can't tell that /Library/Ruby is a system path
   t.rcov_opts = ['--exclude', "spec/*,/Library/Ruby/*"]
   t.verbose = true
+end
+
+desc "Build API documentation with yard"
+YARD::Rake::YardocTask.new do |t|
+  t.options = %w(--no-private --markup markdown)
+  t.files = %w(lib/**/*.rb -) + Dir.glob("{CHANGELOG,README}")
 end
 
 task :default => :spec
