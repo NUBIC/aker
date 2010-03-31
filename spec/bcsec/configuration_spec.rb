@@ -1,7 +1,5 @@
 require File.expand_path('../../spec_helper', __FILE__)
 
-require 'bcsec/configuration'
-
 describe Bcsec::Configuration do
   before do
     @config = blank_config

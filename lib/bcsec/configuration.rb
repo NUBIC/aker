@@ -1,5 +1,4 @@
 require 'bcsec'
-require 'bcsec/authorities'
 
 # can't do just core_ext/string in AS 2.3
 require 'active_support/core_ext'
