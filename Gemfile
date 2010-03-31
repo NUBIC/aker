@@ -6,6 +6,7 @@ else
 end
 
 gem 'activesupport', '~> 2.3'
+gem 'ruby-net-ldap', '>= 0.0.4'
 
 only :development do
   gem 'rspec', '~> 1.3'
