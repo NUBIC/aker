@@ -5,6 +5,7 @@ module Bcsec
   autoload :CentralParameters, 'bcsec/central_parameters'
   autoload :Configuration,     'bcsec/configuration'
   autoload :Deprecation,       'bcsec/deprecation'
+  autoload :User,              'bcsec/user'
 
   class << self
     attr_accessor :configuration
