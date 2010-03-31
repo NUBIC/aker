@@ -1,6 +1,5 @@
 require 'bcsec'
 require 'bcsec/authorities'
-require 'bcsec/central_parameters'
 
 # can't do just core_ext/string in AS 2.3
 require 'active_support/core_ext'
@@ -87,12 +86,7 @@ module Bcsec
     end
   end
 
-  class Configurator
-    def initialize(target, &block)
-      @config = target
-      evaluate(&block)
-    end
-
+  module ConfiguratorLanguage
     def portal(portal)
       @config.portal = portal
     end
@@ -127,6 +121,86 @@ module Bcsec
       else
         super
       end
+    end
+  end
+
+  module DeprecatedConfiguratorLanguage
+    def app_name(*ignored)
+      Deprecation.notify("app_name is unnecessary.  Remove it from your configuration.", "2.2")
+    end
+
+    def authenticator(*args)
+      Deprecation.notify("authenticator is deprecated.  Use authority instead.", "2.2")
+      authorities *args
+    end
+
+    def authenticators(*args)
+      Deprecation.notify("authenticators is deprecated.  Use authorities instead.", "2.2")
+      authorities *args
+    end
+
+    def authorities(*args)
+      super(*replace_deprecated_authenticators(args))
+    end
+
+    # alias + module super doesn't work on MRI 1.8.x (does work on
+    # 1.9.1 and JRuby 1.4.0 though)
+    def authority(*args)
+      authorities(*args)
+    end
+
+    {
+      :server => :server,
+      :username => :user,
+      :password => :password
+    }.each do |attr, param|
+      replacement = "netid_parameters :#{param} => \#{value.inspect}"
+      class_eval <<-RUBY
+        def ldap_#{attr}(value)
+          Deprecation.notify("ldap_#{attr} is deprecated.  Use #{replacement} instead.", "2.2")
+          netid_parameters :#{param} => value
+        end
+      RUBY
+    end
+
+    def establish_cc_pers_connection(*args)
+      Deprecation.notify("establish_cc_pers_connection is deprecated.  " <<
+                         "Use pers_parameters :separate_connection => true instead.", "2.2")
+      pers_parameters :separate_connection => true
+    end
+
+    def rlogin_target(*args)
+      Deprecation.notify("rlogin is no longer supported.", "2.0")
+    end
+    alias rlogin_handler rlogin_target
+
+    private
+
+    def replace_deprecated_authenticators(args)
+      args.collect { |name|
+        new_name = case name
+                   when :authenticate_only; :all_access;
+                   when :mock; :static;
+                   end
+        if new_name
+          Deprecation.notify("The #{name.inspect} authenticator is now the " <<
+                             "#{new_name.inspect} authority.  Please update your configuration.",
+                             "2.2")
+          new_name
+        else
+          name
+        end
+      }
+    end
+  end
+
+  class Configurator
+    include ConfiguratorLanguage
+    include DeprecatedConfiguratorLanguage
+
+    def initialize(target, &block)
+      @config = target
+      evaluate(&block)
     end
 
     private

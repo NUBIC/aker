@@ -154,22 +154,125 @@ describe Bcsec::Configuration do
     end
 
     describe "deprecated attribute handling" do
-      it "warns when setting app_name"
-      it "warns when setting authenticator"
-      it "warns when setting authenticators"
-      it "passes through the authenticators to authorities"
-      it "warns when using the :authenticate_only authenticator"
-      it "converts the :authenticate_only authenticator to the :all_access authority"
-      it "warns when using the :mock authenticator"
-      it "converts the :mock authenticator to the :static authority"
-      it "warns when setting ldap_server"
-      it "warns when setting ldap_username"
-      it "warns when setting ldap_password"
-      it "warns when calling establish_cc_pers_connection"
-      it "converts establish_cc_pers_connection to a parameter_for(:pers)"
+      def deprecation_message(n=0)
+        Bcsec::Deprecation.mode.messages[n][:message]
+      end
 
-      it "fails when given rlogin_target"
-      it "fails when given rlogin_handler"
+      it "warns when setting app_name" do
+        config_from { app_name "Sammy" }
+        deprecation_message.should =~
+          /app_name is unnecessary\.  Remove it from your configuration\..*2.2/
+      end
+
+      it "warns when setting authenticator" do
+        config_from { authenticator :static }
+        deprecation_message.should =~
+          /authenticator is deprecated\.  Use authority instead\..*2.2/
+      end
+
+      it "passes through the authenticator to authorities" do
+        config_from { authenticator :static }.authorities.first.class.
+          should == Bcsec::Authorities::Static
+      end
+
+      it "warns when setting authenticators" do
+        config_from { authenticators :static }
+        deprecation_message.should =~
+          /authenticators is deprecated\.  Use authorities instead\..*2.2/
+      end
+
+      it "passes through the authenticators to authorities" do
+        config_from { authenticators :static }.authorities.first.class.
+          should == Bcsec::Authorities::Static
+      end
+
+      it "warns when using the :authenticate_only authenticator" do
+        config_from { authenticator :authenticate_only }
+        deprecation_message(1).should =~
+          /The :authenticate_only authenticator is now the :all_access authority.  Please update your configuration..*2.2/
+      end
+
+      it "converts the :authenticate_only authenticator to the :all_access authority" do
+        config_from { authenticator :authenticate_only }.authorities.first.class.
+          should == Bcsec::Authorities::AllAccess
+      end
+
+      it "warns when using the :mock authenticator" do
+        config_from { authenticator :mock }
+        deprecation_message(1).should =~
+          /The :mock authenticator is now the :static authority.  Please update your configuration..*2.2/
+      end
+
+      it "converts the :mock authenticator to the :static authority" do
+        config_from { authenticator :mock }.authorities.first.class.
+          should == Bcsec::Authorities::Static
+      end
+
+      it "converts a left-over :mock authority to the :static authority" do
+        config_from { authority :mock }.authorities.first.class.
+          should == Bcsec::Authorities::Static
+      end
+
+      it "converts left-over renamed authorities to the new names" do
+        config_from { authorities :mock }.authorities.first.class.
+          should == Bcsec::Authorities::Static
+      end
+
+      it "warns when setting ldap_server" do
+        config_from { ldap_server "ldap.nu.edu" }
+        deprecation_message.should =~
+          /ldap_server is deprecated\.  Use netid_parameters :server => "ldap.nu.edu" instead\..*2.2/
+      end
+
+      it "passes through ldap_server to netid_parameters" do
+        config_from { ldap_server "ldap.nu.edu" }.
+          parameters_for(:netid)[:server].should == "ldap.nu.edu"
+      end
+
+      it "warns when setting ldap_username" do
+        config_from { ldap_username "cn=joe" }
+        deprecation_message.should =~
+          /ldap_username is deprecated\.  Use netid_parameters :user => "cn=joe" instead\..*2.2/
+      end
+
+      it "passes through ldap_username to netid_parameters" do
+        config_from { ldap_username "cn=joe" }.
+          parameters_for(:netid)[:user].should == "cn=joe"
+      end
+
+      it "warns when setting ldap_password" do
+        config_from { ldap_password "joesmom" }
+        deprecation_message.should =~
+          /ldap_password is deprecated\.  Use netid_parameters :password => "joesmom" instead\..*2.2/
+      end
+
+      it "passes through ldap_server to netid_parameters" do
+        config_from { ldap_password "joesmom" }.
+          parameters_for(:netid)[:password].should == "joesmom"
+      end
+
+      it "warns when calling establish_cc_pers_connection" do
+        config_from { establish_cc_pers_connection }
+        deprecation_message.should =~
+          /establish_cc_pers_connection is deprecated\.  Use pers_parameters :separate_connection => true instead\..*2.2/
+      end
+
+      it "converts establish_cc_pers_connection to a parameters_for(:pers)" do
+        config_from { establish_cc_pers_connection }.
+          parameters_for(:pers)[:separate_connection].should be_true
+      end
+
+      it "fails when given rlogin_target" do
+        config_from { rlogin_target :foo }
+        deprecation_message.should =~
+          /rlogin is no longer supported\..*2.0/
+      end
+
+      it "fails when given rlogin_handler" do
+        config_from { rlogin_handler :foo }
+        deprecation_message.should =~
+          /rlogin is no longer supported\..*2.0/
+      end
     end
   end
 
