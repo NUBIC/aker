@@ -50,6 +50,16 @@ describe Bcsec::Configuration do
       @config.api_modes = %w(a b c)
       @config.api_modes.should == [:a, :b, :c]
     end
+
+    it "rejects one nil mode" do
+      @config.api_modes = nil
+      @config.api_modes.should be_empty
+    end
+
+    it "removes the nil modes from a list" do
+      @config.api_modes = [:a, nil, :c, nil, nil]
+      @config.api_modes.should == [:a, :c]
+    end
   end
 
   describe "DSL" do

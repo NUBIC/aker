@@ -28,7 +28,7 @@ module Bcsec
 
     def api_modes=(*new_modes)
       new_modes = new_modes.first if new_modes.size == 1 && Array === new_modes.first
-      @api_modes = new_modes.collect { |m| nil_or_sym(m) }
+      @api_modes = new_modes.compact.collect(&:to_sym)
     end
     alias api_mode= api_modes=
 
