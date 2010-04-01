@@ -6,9 +6,6 @@ module Bcsec
   # Provides access to the bcsecurity central parameters file.
   # @see http://bcwiki.bioinformatics.northwestern.edu/bcwiki/index.php/Central_bcsec_configuration
   class CentralParameters
-    # @private
-    DEFAULTS = YAML::load( File.open(File.dirname(__FILE__) + "/bcsec-defaults.yml") )
-
     ##
     # Creates a new instance with the given overrides.
     #
@@ -20,9 +17,8 @@ module Bcsec
         values = YAML::load( File.open(values) )
       end
 
-      defaults_copy = nested_symbolize_keys!(deep_clone(DEFAULTS))
       values = nested_symbolize_keys!(deep_clone(values))
-      @map = nested_merge!(defaults_copy, values)
+      @map = nested_merge!(defaults, values)
     end
 
     ##
@@ -36,6 +32,15 @@ module Bcsec
     # @param [Symbol] key the configuration section to access
     def [](key)
       @map[key]
+    end
+
+    ##
+    # @return [Hash] the defaults (as required by the spec in bcwiki).
+    #   It's a new copy every time.
+    def defaults
+      File.open(File.dirname(__FILE__) + "/bcsec-defaults.yml") do |f|
+        nested_symbolize_keys!(YAML::load(f))
+      end
     end
 
     #######
