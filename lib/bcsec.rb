@@ -8,8 +8,18 @@ module Bcsec
   autoload :User,              'bcsec/user'
 
   class << self
+    ##
+    # @return [Configuration,nil] the single configuration for the
+    #   system using bcsec.  Created/updated using {.configure
+    #   configure}.
     attr_accessor :configuration
 
+    ##
+    # Create/update the global bcsec configuration.  Accepts a block
+    # containing expressions in the {Configuration} DSL.
+    #
+    # @see Bcsec.configuration
+    # @return [Configuration]
     def configure(&block)
       @configuration ||= Bcsec::Configuration.new
       @configuration.enhance(&block)

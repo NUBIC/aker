@@ -4,61 +4,136 @@ require 'bcsec'
 require 'active_support/core_ext'
 
 module Bcsec
+  ##
+  # The representation of a configuration for the bcsec system,
+  # including authorities, application attributes, and authentication
+  # modes.
   class Configuration
+    ##
+    # Creates a new configuration.  If a block is given, it will be
+    # evaluated using the {ConfiguratorLanguage DSL} and appended to
+    # the new instance.
     def initialize(&config)
       self.enhance(&config) if config
     end
 
+    ##
+    # Updates the configuration via the {ConfiguratorLanguage DSL}.
+    #
+    # @return [Configuration] itself
     def enhance(&additional_config)
       Configurator.new(self, &additional_config)
       self
     end
 
+    ##
+    # @return [Symbol] the name of the configured interactive authentication
+    #   mode.  Default is `:form`.
     def ui_mode
       @ui_mode ||= :form
     end
 
+    ##
+    # Sets the interactive authentication mode.
+    # @param [#to_sym, nil] ui_mode the name of the new mode; if nil,
+    #   reset to the default
+    # @return [void]
     def ui_mode=(ui_mode)
       @ui_mode = nil_or_sym(ui_mode)
     end
 
+    ##
+    # @return [Array<Symbol>] the names of the configured non-interactive
+    #   authentication modes.  Default is an empty list.
     def api_modes
       @api_modes ||= []
     end
 
+    ##
+    # Replaces the non-interactive authentication modes.
+    # @param [List<#to_sym>] new_modes the names of the desired modes
+    # @return [void]
     def api_modes=(*new_modes)
       new_modes = new_modes.first if new_modes.size == 1 && Array === new_modes.first
       @api_modes = new_modes.compact.collect(&:to_sym)
     end
     alias api_mode= api_modes=
 
+    ##
+    # @return [Symbol] the portal to which this application belongs
+    # @raise if no portal is set
     def portal
       raise "No portal configured" unless @portal
       @portal
     end
 
+    ##
+    # Set the portal to which this application belongs
+    # @param [#to_sym] the new portal's name
+    # @return [void]
     def portal=(portal)
       @portal = nil_or_sym(portal)
     end
 
+    ##
+    # Returns the actual authority objects created based on the last
+    # call to {#authorities=}.  Note that `Authority` is concept and a
+    # set of methods (all of them optional), not a base class; see
+    # {CompositeAuthority} for more details.
+    #
+    # @return [List<Authority>] the actual authority objects specified
+    #   by this configuration
     def authorities
       raise "No authorities configured" if @authorities.nil? || @authorities.empty?
       @authorities
     end
 
+    ##
+    # Set the authorities for this configuration.
+    #
+    # @param [Array<Symbol, String, Class, Object>] new_authorities
+    #   each authority specification may take one of four forms.
+    #
+    #     * A `Symbol` or a `String` will be camelized and then
+    #       interpreted as a class name in {Bcsec::Authorities}.
+    #       Then it will be treated as a `Class`.  E.g.,
+    #       `:all_access` will be converted into
+    #       `Bcsec::Authorities::AllAccess`.
+    #     * A `Class` will be instantiated, passing the
+    #       configuration (this object) as the sole constructor
+    #       parameter.
+    #     * Any other object will be used unchanged.
+    # @return [void]
     def authorities=(new_authorities)
       @authorities = new_authorities.collect { |a| build_authority(a) }
     end
 
+    ##
+    # Returns the parameters for a particular group.  Never returns `nil`.
+    #
+    # @param [Symbol] group the group of parameters to return
+    # @return [Hash] the parameters of the specified group.
     def parameters_for(group)
       @parameter_groups ||= { }
       @parameter_groups[group] ||= { }
     end
 
+    ##
+    # Merges the given parameters into the specified group's.
+    #
+    # @param [Symbol] group the target group
+    # @param [Hash] params the parameters to merge in
+    # @return [void]
     def add_parameters_for(group, params)
       parameters_for(group).merge!(params)
     end
 
+    ##
+    # Loads parameters from the given bcsec central parameters
+    # file.
+    #
+    # @param [String] filename the filename
+    # @return [void]
     def central(filename)
       params = ::Bcsec::CentralParameters.new(filename)
 
@@ -97,12 +172,35 @@ module Bcsec
     end
   end
 
+  ##
+  # This module provides a DSL adapter for {Configuration}. Example:
+  #
+  #     Bcsec.configure {
+  #       portal :ENU
+  #       authorities :netid, :pers
+  #       api_mode :basic
+  #       central "/etc/nubic/bcsec-prod.yml"
+  #       netid_parameters :user => "me"
+  #     }
+  #
+  # Notes:
+  #
+  #   * All setters in {Configuration} are accessible from the DSL,
+  #     except that you don't use '='.
+  #   * Other methods which accept arguments are also available.
+  #   * As shown above, there is sugar for setting other parameters.
+  #     "*name*_parameters *hash*" adds to the
+  #     {Configuration#parameters_for parameters} for group *name*.
   module ConfiguratorLanguage
+    ##
+    # @private
     def authorities(*authorities)
       @specified_authorities = authorities
     end
     alias authority authorities
 
+    ##
+    # @private
     def method_missing(m, *args)
       if m.to_s =~ /(\S+)_parameters?$/
         @config.add_parameters_for($1.to_sym, args.first)
@@ -115,11 +213,15 @@ module Bcsec
       end
     end
 
+    ##
+    # @private
     def deferred_setup
       @config.authorities = @specified_authorities if @specified_authorities
     end
   end
 
+  ##
+  # @private
   module DeprecatedConfiguratorLanguage
     def app_name(*ignored)
       Deprecation.notify("app_name is unnecessary.  Remove it from your configuration.", "2.2")
@@ -190,6 +292,8 @@ module Bcsec
     end
   end
 
+  ##
+  # @private
   class Configurator
     include ConfiguratorLanguage
     include DeprecatedConfiguratorLanguage

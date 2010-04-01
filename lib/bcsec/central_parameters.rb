@@ -2,9 +2,19 @@ require 'bcsec'
 require 'yaml'
 
 module Bcsec
+  ##
+  # Provides access to the bcsecurity central parameters file.
+  # @see http://bcwiki.bioinformatics.northwestern.edu/bcwiki/index.php/Central_bcsec_configuration
   class CentralParameters
+    # @private
     DEFAULTS = YAML::load( File.open(File.dirname(__FILE__) + "/bcsec-defaults.yml") )
 
+    ##
+    # Creates a new instance with the given overrides.
+    #
+    # @param [String, Hash] values if a hash, it is used as a set of
+    #   overrides directly.  Otherwise it is interpreted as the filename
+    #   for the system central parameters YAML file.
     def initialize(values = {})
       unless values.is_a? Hash
         values = YAML::load( File.open(values) )
@@ -15,6 +25,15 @@ module Bcsec
       @map = nested_merge!(defaults_copy, values)
     end
 
+    ##
+    # Returns the value or (more likely) hash of values corresponding
+    # to the given top-level configuration section.
+    #
+    # Note that, no matter the structure of the values hash provided
+    # on construction, all keys in any hashes returned by this method
+    # will be symbols.
+    #
+    # @param [Symbol] key the configuration section to access
     def [](key)
       @map[key]
     end
