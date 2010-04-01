@@ -26,9 +26,11 @@ module Bcsec
       @api_modes ||= []
     end
 
-    def api_modes=(new_modes)
-      @api_modes = (new_modes || []).collect { |m| nil_or_sym(m) }
+    def api_modes=(*new_modes)
+      new_modes = new_modes.first if new_modes.size == 1 && Array === new_modes.first
+      @api_modes = new_modes.collect { |m| nil_or_sym(m) }
     end
+    alias api_mode= api_modes=
 
     def portal
       raise "No portal configured" unless @portal
@@ -57,6 +59,16 @@ module Bcsec
       parameters_for(group).merge!(params)
     end
 
+    def central(filename)
+      params = ::Bcsec::CentralParameters.new(filename)
+
+      add_parameters_for(:netid, params[:netid])
+      add_parameters_for(:pers, params[:cc_pers].dup.tap { |pers|
+        pers[:activerecord][:username] = pers[:user]
+        pers[:activerecord][:password] = pers[:password]
+      })
+    end
+
     private
 
     def nil_or_sym(x)
@@ -71,7 +83,7 @@ module Bcsec
         instantiate_authority(authority_class_for_name(spec))
       when Class
         instantiate_authority(spec)
-      else # assume its an instance
+      else # assume it's an instance
         spec
       end
     end
@@ -86,40 +98,25 @@ module Bcsec
   end
 
   module ConfiguratorLanguage
-    def portal(portal)
-      @config.portal = portal
-    end
-
-    def ui_mode(mode)
-      @config.ui_mode = mode
-    end
-
-    def api_modes(*modes)
-      @config.api_modes = modes
-    end
-    alias api_mode api_modes
-
     def authorities(*authorities)
       @specified_authorities = authorities
     end
     alias authority authorities
 
-    def central(filename)
-      params = ::Bcsec::CentralParameters.new(filename)
-
-      netid_parameters params[:netid]
-      pers_parameters(params[:cc_pers].dup.tap { |pers|
-        pers[:activerecord][:username] = pers[:user]
-        pers[:activerecord][:password] = pers[:password]
-      })
-    end
-
     def method_missing(m, *args)
       if m.to_s =~ /(\S+)_parameters?$/
         @config.add_parameters_for($1.to_sym, args.first)
+      elsif @config.respond_to?(:"#{m}=")
+        @config.send(:"#{m}=", *args)
+      elsif @config.respond_to?(m)
+        @config.send(m, *args)
       else
         super
       end
+    end
+
+    def deferred_setup
+      @config.authorities = @specified_authorities if @specified_authorities
     end
   end
 
@@ -206,7 +203,7 @@ module Bcsec
 
     def evaluate(&block)
       instance_eval(&block)
-      @config.authorities = @specified_authorities if @specified_authorities
+      deferred_setup
     end
   end
 end
