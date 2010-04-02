@@ -39,6 +39,8 @@ module Bcsec::Deprecation
   end
 end
 
+require File.expand_path('../database_helper', __FILE__)
+
 Spec::Runner.configure do |config|
   config.before(:each) do
     @original_deprecation_mode, Bcsec::Deprecation.mode =
@@ -49,4 +51,6 @@ Spec::Runner.configure do |config|
     Bcsec::Deprecation.mode.fail_if_any_very_obsolete
     Bcsec::Deprecation.mode = @original_deprecation_mode
   end
+
+  Bcsec::Spec::DatabaseData.use_in(config)
 end

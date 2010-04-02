@@ -5,7 +5,13 @@ else
   bin_path 'gem_bin'
 end
 
-gem 'activesupport', '~> 2.3'
+gem 'activesupport', '~> 2.3.5'
+
+# pers
+gem 'activerecord', '~> 2.3.5'
+gem 'schema_qualified_tables', '~> 1.0'
+
+# netid
 gem 'ruby-net-ldap', '>= 0.0.4'
 
 only :development do
@@ -14,6 +20,11 @@ only :development do
   gem 'yard', '~> 0.5'
   # for yard; doesn't work in jruby
   gem 'bluecloth' unless RUBY_PLATFORM == 'java'
+
+  gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
+  gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
+  gem 'bcdatabase', '~> 1.0'
+  gem 'database_cleaner', '~> 0.5'
 
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'
