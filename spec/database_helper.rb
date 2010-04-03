@@ -99,7 +99,15 @@ module Bcsec
       def build_insert(table, row)
         columns = row.keys
         "INSERT INTO #{table} (#{columns.join(", ")}) " <<
-          "VALUES ('#{columns.collect { |c| row[c] }.join("', '") }')"
+          "VALUES (#{columns.collect { |c| quote_value row[c] }.join(", ") })"
+      end
+
+      def quote_value(value_entry)
+        if Hash === value_entry && value_entry["sql"]
+          value_entry["sql"]
+        else
+          "'#{value_entry}'"
+        end
       end
     end
 

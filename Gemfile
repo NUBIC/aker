@@ -10,6 +10,7 @@ gem 'activesupport', '~> 2.3.5'
 # pers
 gem 'activerecord', '~> 2.3.5'
 gem 'schema_qualified_tables', '~> 1.0'
+gem 'composite_primary_keys', '~> 2.3.5', :require_as => 'date' # no nil
 
 # netid
 gem 'ruby-net-ldap', '>= 0.0.4'
@@ -24,7 +25,7 @@ only :development do
   gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
   gem 'bcdatabase', '~> 1.0'
-  gem 'database_cleaner', '~> 0.5'
+  gem 'database_cleaner', '~> 0.5', :require_as => 'date' # no nil
 
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'
