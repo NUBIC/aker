@@ -162,10 +162,6 @@ describe Bcsec::Configuration do
     end
 
     describe "deprecated attribute handling" do
-      def deprecation_message(n=0)
-        Bcsec::Deprecation.mode.messages[n][:message]
-      end
-
       it "warns when setting app_name" do
         config_from { app_name "Sammy" }
         deprecation_message.should =~
