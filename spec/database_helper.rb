@@ -25,6 +25,10 @@ module Bcsec
           ActiveRecord::Base.schemas = { :cc_pers => params.last }
         end
 
+        def connect_if_necessary
+          connect! unless ActiveRecord::Base.connected?
+        end
+
         private
 
         def params
@@ -51,12 +55,13 @@ module Bcsec
       end
 
       def initialize
-        DatabaseConfiguration.connect!
+        DatabaseConfiguration.connect_if_necessary
         DatabaseCleaner.strategy = :transaction
         DatabaseCleaner.clean_with(:truncation)
       end
 
       def before_each
+        DatabaseConfiguration.connect_if_necessary
         DatabaseCleaner.start
         insert_test_data
       end
