@@ -6,6 +6,7 @@ else
 end
 
 gem 'activesupport', '~> 2.3.5'
+gem 'rubytree', '~> 0.6.0'
 
 # pers
 gem 'activerecord', '~> 2.3.5'
@@ -26,6 +27,7 @@ only :development do
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
   gem 'bcdatabase', '~> 1.0'
   gem 'database_cleaner', '~> 0.5', :require_as => 'date' # no nil
+  gem 'sqlite3-ruby' unless RUBY_PLATFORM == 'java'
 
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'

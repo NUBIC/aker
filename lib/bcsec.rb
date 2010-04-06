@@ -1,3 +1,5 @@
+require 'tree'
+
 module Bcsec
   VERSION = File.read(File.expand_path('../../VERSION', __FILE__)).strip
 
@@ -5,6 +7,9 @@ module Bcsec
   autoload :CentralParameters, 'bcsec/central_parameters'
   autoload :Configuration,     'bcsec/configuration'
   autoload :Deprecation,       'bcsec/deprecation'
+  autoload :Group,             'bcsec/group'
+  autoload :GroupMemberships,  'bcsec/group_membership'
+  autoload :GroupMembership,   'bcsec/group_membership'
   autoload :User,              'bcsec/user'
 
   class << self
