@@ -29,7 +29,12 @@ only :development do
   # This is to keep JRuby from complaining when bcdatabase loads highline
   gem 'ffi-ncurses' if RUBY_PLATFORM == 'java'
   gem 'database_cleaner', '~> 0.5', :require_as => 'date' # no nil
-  gem 'sqlite3-ruby' unless RUBY_PLATFORM == 'java'
+  if RUBY_PLATFORM == 'java'
+    gem 'jdbc-sqlite3'
+    gem 'activerecord-jdbcsqlite3-adapter'
+  else
+    gem 'sqlite3-ruby'
+  end
 
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'
