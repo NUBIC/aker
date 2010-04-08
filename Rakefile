@@ -116,7 +116,7 @@ task :deploy => [:repackage] do
       puts sent == total ? "  complete" : "  #{sent}/#{total}"
     end
     channel.wait
-    
+
     one_ssh_cmd(ssh, "gem generate_index --directory #{dir}")
     # chmod all new files to group-writable so that other people can deploy
     find_cmd = ["find #{dir} -user #{user}", ("-fprint /dev/stderr -print" if trace?)].compact.join(' ')
@@ -142,7 +142,7 @@ end
 
 namespace :deploy do
   desc "Tag the final version of a release"
-  task :tag do 
+  task :tag do
     raise "Don't deploy prerelease gems.  Set to a release version first." if Bcsec::VERSION =~ /pre/
     trunk_url = svn? ? `svn info`.match(/URL:\s+(.*?)\n/)[1] : `git svn info --url`.sub(/\/?\s*$/, '/gem')
     fail "Could not determine trunk URL" unless trunk_url
