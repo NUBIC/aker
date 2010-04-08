@@ -7,8 +7,8 @@ module Bcsec
     module DatabaseConfiguration
       PARAMS = {
         'test' => [:local_oracle, :cc_pers_test],
-        'hudson' => [:bcdev, :cc_pers_hudson_bcsec],
-        'hudson_java' => [:bcdev, :cc_pers_hudson_bcsec_java]
+        'ci_1.8.7' => [:bcdev, :cc_pers_hudson_bcsec],
+        'ci_jruby' => [:bcdev, :cc_pers_hudson_bcsec_java]
       }
 
       class << self

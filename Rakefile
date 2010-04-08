@@ -21,11 +21,11 @@ class GemfileGemspecDeps
     instance_eval(File.read('Gemfile'))
   end
 
-  def gem(name, version=nil, *ignored)
+  def gem(name, version=[], *ignored)
     if @only && @only.include?(:development)
-      @spec.add_development_dependency(name, version)
+      @spec.add_development_dependency(name, *version)
     else
-      @spec.add_runtime_dependency(name, version)
+      @spec.add_runtime_dependency(name, *version)
     end
   end
 
