@@ -26,6 +26,8 @@ only :development do
   gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
   gem 'bcdatabase', '~> 1.0'
+  # This is to keep JRuby from complaining when bcdatabase loads highline
+  gem 'ffi-ncurses' if RUBY_PLATFORM == 'java'
   gem 'database_cleaner', '~> 0.5', :require_as => 'date' # no nil
   gem 'sqlite3-ruby' unless RUBY_PLATFORM == 'java'
 
