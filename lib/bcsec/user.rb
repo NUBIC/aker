@@ -14,15 +14,29 @@ module Bcsec
     # @return [Symbol, nil]
     attr_accessor :default_portal
 
+    ##
+    # Creates a new instance.
+    #
+    # @param [String] username the username for this new user
+    # @param [Array<Symbol>] portals the portals to which this user
+    #   has access.
     def initialize(username, portals=[])
       @username = username
       @portals = [*portals]
     end
 
+    ##
+    # @param [#to_sym] portal
+    # @return [Boolean] true if the user has access, otherwise false
     def may_access?(portal)
       portals.include?(portal.to_sym)
     end
 
+    ##
+    # A display-friendly name for this user.  Uses `first_name` and
+    # `last_name` if available, otherwise it just uses the username.
+    #
+    # @return [String]
     def full_name
       display_name_parts = [first_name, last_name].compact
       if display_name_parts.empty?
