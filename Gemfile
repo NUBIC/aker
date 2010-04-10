@@ -1,4 +1,6 @@
 disable_system_gems
+source 'http://download.bioinformatics.northwestern.edu/gems/'
+
 if RUBY_PLATFORM == 'java'
   bin_path 'jgem_bin'
 else
@@ -38,6 +40,7 @@ only :development do
   else
     gem 'sqlite3-ruby'
   end
+  gem 'bcoracle', '~>1.0'
 
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'

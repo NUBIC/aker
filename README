@@ -1,0 +1,31 @@
+Bcsec
+=====
+
+Bcsec is a library for managing authentication and authorization in
+ruby applications (particularly Rack applications).  It is designed
+to support the needs and work with the infrastructure of the
+Northwestern University Biomedical Informatics Center.
+
+Development environment
+-----------------------
+
+### Oracle
+
+Part of the library provides ruby mappings for many of the tables in
+NUBIC's central security schema, cc_pers.  The specs for this part of
+the library require a test schema; bcsec includes rake tasks to help
+you set it up.  These rake tasks have to be run on a machine with the
+full Oracle client on it (the instant client is not sufficient; you
+need `imp`).  Here are the steps to testing nirvana:
+
+0. Install Oracle XE or Oracle Database (XE's easier).
+1. Use `rake bcdb:create:users` to create the cc_pers_test database
+   user.  The password will be "cc_pers_test".
+2. Set up a bcdatabase configuration called cc_pers_test for the
+   local_oracle group.
+3. Use `rake test:db:import` to fill in the cc_pers_test schema.
+
+You can run the tests on any machine that has access to your testing
+oracle instance and on which you can install ruby-oci8 or jruby.
+When you run the tests, you need to ensure that the `NLS_LANG`
+environment variable is set to `"AMERICAN_AMERICA.WE8MSWIN1252"`.

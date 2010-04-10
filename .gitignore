@@ -4,9 +4,11 @@ spec/reports
 pkg
 doc
 .yardoc
+mydel.sql
 
 # editor swap files
 *.sw?
+*~
 
 # bundler08
 gem_bin
