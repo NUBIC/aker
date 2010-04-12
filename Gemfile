@@ -16,6 +16,9 @@ gem 'composite_primary_keys', '~> 2.3.5', :require_as => 'date' # no nil
 # netid
 gem 'ruby-net-ldap', '>= 0.0.4'
 
+# modes
+gem 'warden', '~> 0.10.3'
+
 only :development do
   gem 'rspec', '~> 1.3'
   gem 'rcov', '~> 0.9'
