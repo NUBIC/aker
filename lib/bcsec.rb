@@ -11,6 +11,7 @@ module Bcsec
   autoload :GroupMemberships,  'bcsec/group_membership'
   autoload :GroupMembership,   'bcsec/group_membership'
   autoload :User,              'bcsec/user'
+  autoload :Modes,             'bcsec/modes'
 
   class << self
     ##
