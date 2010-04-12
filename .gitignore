@@ -5,6 +5,9 @@ pkg
 doc
 .yardoc
 
+# editor swap files
+*.sw?
+
 # bundler08
 gem_bin
 jgem_bin
