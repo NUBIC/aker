@@ -15,12 +15,12 @@ module Bcsec::Modes
     end
 
     describe "#valid?" do
-      it "returns false if there does not exist a WWW-Authenticate header of the form 'ApiKey CHALLENGE'" do
+      it "returns false if there does not exist an Authorization header of the form 'ApiKey CHALLENGE'" do
         @mode.should_not be_valid
       end
 
-      it "returns true if there exists a WWW-Authenticate header of the form 'ApiKey CHALLENGE'" do
-        @env["HTTP_WWW_AUTHENTICATE"] = "ApiKey foo"
+      it "returns true if there exists an Authorization header of the form 'ApiKey CHALLENGE'" do
+        @env["HTTP_AUTHORIZATION"] = "ApiKey foo"
 
         @mode.should be_valid
       end
@@ -28,7 +28,30 @@ module Bcsec::Modes
 
     describe "#scheme" do
       it "returns ApiKey" do
-        @mode.challenge.should == "ApiKey"
+        @mode.scheme.should == "ApiKey"
+      end
+    end
+
+    describe "#authenticate!" do
+      before do
+        @authority = mock
+        @mode.stub!(:authority => @authority)
+        @env["HTTP_AUTHORIZATION"] = "ApiKey foo"
+      end
+
+      it "signals success if the supplied API key is good" do
+        user = stub
+        @authority.should_receive(:valid_credentials?).with(:api_key, "foo").and_return(user)
+        @mode.should_receive(:success!).with(user)
+
+        @mode.authenticate!
+      end
+
+      it "returns nil if the supplied API key is bad" do
+        @authority.should_receive(:valid_credentials?).with(:api_key, "foo").and_return(nil)
+        @mode.should_not_receive(:success!)
+
+        @mode.authenticate!
       end
     end
   end
