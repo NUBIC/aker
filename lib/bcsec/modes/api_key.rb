@@ -1,3 +1,5 @@
+require 'bcsec'
+
 module Bcsec
   module Modes
     ##
@@ -11,6 +13,8 @@ module Bcsec
     #
     # Responses must consist of one or more characters from the printable
     # ASCII set sans whitespace, i.e. ASCII [0x21, 0x7E].
+    #
+    # @author David Yip
     class ApiKey < Base
       ##
       # A key that refers to this mode; used for configuration convenience.

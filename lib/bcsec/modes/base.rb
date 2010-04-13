@@ -1,3 +1,4 @@
+require 'bcsec'
 require 'warden'
 
 module Bcsec
