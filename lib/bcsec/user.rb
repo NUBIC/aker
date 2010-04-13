@@ -34,10 +34,11 @@ module Bcsec
     end
 
     ##
-    # @param [#to_sym] portal
-    # @return [Boolean] true if the user has access, otherwise false
-    def may_access?(portal)
-      portals.include?(portal.to_sym)
+    # @param [#to_sym,nil] portal the portal in question.  If nil,
+    #   uses {#default_portal}.
+    # @return [Boolean] true if the user has access, otherwise false.
+    def may_access?(portal=nil)
+      portals.include?((portal || required_default_portal).to_sym)
     end
 
     ##

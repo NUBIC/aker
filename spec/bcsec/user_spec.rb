@@ -57,8 +57,14 @@ module Bcsec
         @u.may_access?(:seaport).should be_false
       end
 
-      it "uses the default portal if available"
-      it "fails without a portal if there's no default"
+      it "uses the default portal if available" do
+        @u.default_portal = :airport
+        @u.may_access?.should be_true
+      end
+
+      it "fails without a portal if there's no default" do
+        lambda { @u.may_access? }.should raise_error(/No default portal/)
+      end
     end
 
     describe "#group_memberships" do
