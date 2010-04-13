@@ -10,8 +10,11 @@ module Bcsec
         end
 
         spec_config.after(:each) do
-          Bcsec::Deprecation.mode.fail_if_any_very_obsolete
-          Bcsec::Deprecation.mode = @original_deprecation_mode
+          begin
+            Bcsec::Deprecation.mode.fail_if_any_very_obsolete
+          ensure
+            Bcsec::Deprecation.mode = @original_deprecation_mode
+          end
         end
       end
 

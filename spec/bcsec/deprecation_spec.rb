@@ -67,7 +67,7 @@ module Bcsec
         Deprecation.mode.reset # prevent the very-obsolete spec failure
       end
 
-      it "does not raise an error for a slightly obsolete versions" do
+      it "does not raise an error for a slightly obsolete version" do
         one_minor_back = Bcsec::VERSION.split('.').collect(&:to_i).tap { |v|
           v[0,2] = ("%.1f" % (Rational(v[0] * 10 + v[1], 10) - Rational(1, 10))).split('.')
         }.join(".")
@@ -84,7 +84,7 @@ module Bcsec
 
     describe "default mode" do
       before do
-        @test_mode, Deprecation.mode = Deprecation.mode, Deprecation.default_mode
+        @test_mode, Deprecation.mode = Deprecation.mode, nil
         @err = StringIO.new
         @old_err, $stderr = $stderr, @err
       end
