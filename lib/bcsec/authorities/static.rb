@@ -8,8 +8,6 @@ module Bcsec::Authorities
   # integrated testing) and bootstrapping (e.g., for rapidly testing
   # out bcsec in an application before setting up the infrastructure
   # needed for {Bcsec::Authorities::Pers Pers} or {Netid}).
-  #
-  # @see #load!
   class Static
     ##
     # Creates a new instance.  Does not use any configuration properties.
@@ -129,22 +127,24 @@ module Bcsec::Authorities
     # Sample doc:
     #
     #     users:
-    #       wakibbe:             # username
-    #         password: ekibder  # password for :user auth (optional)
-    #         portals:           # portal & group auth info (optional)
-    #           - SQLSubmit      # A groupless portal
-    #           - ENU:           # A portal with simple groups
+    #       wakibbe:               # username
+    #         password: ekibder    # password for :user auth (optional)
+    #         portals:             # portal & group auth info (optional)
+    #           - SQLSubmit        # A groupless portal
+    #           - ENU:             # A portal with simple groups
     #             - User
-    #           - NOTIS:         # A portal with affiliated groups
+    #           - NOTIS:           # A portal with affiliated groups
     #             - Manager: [23]
-    #     groups:                # groups for hierarchical portals
-    #       NOTIS:               # (these aren't real NOTIS groups)
+    #             - User           # you can mix affiliated and simple
+    #
+    #     groups:                  # groups for hierarchical portals
+    #       NOTIS:                 # (these aren't real NOTIS groups)
     #         - Admin:
     #           - Manager:
     #             - User
     #           - Auditor
     #
-    # @param io a readable handle (something that can be passed to
+    # @param [#read] io a readable handle (something that can be passed to
     #   `YAML.load`)
     #
     # @return [Static] self
