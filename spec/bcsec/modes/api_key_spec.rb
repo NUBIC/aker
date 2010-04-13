@@ -47,7 +47,7 @@ module Bcsec::Modes
         @mode.authenticate!
       end
 
-      it "returns nil if the supplied API key is bad" do
+      it "does not signal success if the supplied API key is bad" do
         @authority.should_receive(:valid_credentials?).with(:api_key, "foo").and_return(nil)
         @mode.should_not_receive(:success!)
 
