@@ -59,14 +59,6 @@ module Bcsec
 
       it "uses the default portal if available"
       it "fails without a portal if there's no default"
-
-      it "delegates to the authority for an unknown portal" do
-        pending "redesign"
-      end
-
-      it "caches portal access information from the authority" do
-        pending "redesign"
-      end
     end
 
     describe "#group_memberships" do
@@ -188,22 +180,6 @@ module Bcsec
           @a.merge!(@b)
           @a.group_memberships(:ENU).size.should == 1
         end
-      end
-    end
-
-    describe "#in_group?" do
-      it "works with no groups" do
-        pending "redesign"
-        User.new("fred").in_group?("any").should be_false
-      end
-
-      it "works for flat group sets"
-
-      it "returns true if the user is member of at least one of an array of groups"
-
-      describe "with hierarchies" do
-        it "works for a group the user is an immediate member of"
-        it "works for a group the user inherits membership of"
       end
     end
   end
