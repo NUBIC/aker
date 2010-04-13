@@ -97,19 +97,19 @@ module Bcsec
     # Modifies this user record in place, adding attributes from the
     # other user.  Merge rules:
     #
-    #      * For portals: the resulting portal list is a union of the
-    #        portal list for this and the _other_ user.
-    #      * For group memberships: group memberships are added from
-    #        the _other_ user for all portals which this user doesn't
-    #        already have group memberships.  (That is, the group
-    #        membership lists for a particular portal are not merged.)
-    #        (This rule is to prevent ambiguity if different
-    #        authorities have different group hierarchies.  In
-    #        practice only one authority is providing authorization
-    #        information for a portal, so this shouldn't matter.)
-    #      * For all other attributes: an attribute is copied from
-    #        _other_ if that attribute is not already set in this
-    #        user.
+    # * For portals: the resulting portal list is a union of the
+    #   portal list for this and the _other_ user.
+    # * For group memberships: group memberships are added from
+    #   the _other_ user for all portals which this user doesn't
+    #   already have group memberships.  (That is, the group
+    #   membership lists for a particular portal are not merged.)
+    #   This rule is to prevent ambiguity if different
+    #   authorities have different group hierarchies.  In
+    #   practice only one authority is providing authorization
+    #   information for a portal, so this shouldn't matter.
+    # * For all other attributes: an attribute is copied from
+    #   _other_ if that attribute is not already set in this
+    #   user.
     #
     # Note that these semantics are different from the semantics of
     # `Hash#merge!` in the ruby standard library.
