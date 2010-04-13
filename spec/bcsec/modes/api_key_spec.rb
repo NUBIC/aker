@@ -15,11 +15,11 @@ module Bcsec::Modes
     end
 
     describe "#valid?" do
-      it "returns false if there does not exist an Authorization header of the form 'ApiKey CHALLENGE'" do
+      it "returns false if there does not exist an Authorization header of the form 'ApiKey KEY'" do
         @mode.should_not be_valid
       end
 
-      it "returns true if there exists an Authorization header of the form 'ApiKey CHALLENGE'" do
+      it "returns true if there exists an Authorization header of the form 'ApiKey KEY'" do
         @env["HTTP_AUTHORIZATION"] = "ApiKey foo"
 
         @mode.should be_valid
