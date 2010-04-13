@@ -26,7 +26,7 @@ module Bcsec::Modes
       end
     end
 
-    describe "#challenge" do
+    describe "#scheme" do
       it "returns ApiKey" do
         @mode.challenge.should == "ApiKey"
       end

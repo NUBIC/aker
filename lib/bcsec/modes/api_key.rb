@@ -28,7 +28,7 @@ module Bcsec
       # client failing noninteractive authentication.
       #
       # @return [String]
-      def challenge
+      def scheme
         'ApiKey'
       end
     end
