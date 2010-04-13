@@ -300,19 +300,97 @@ module Bcsec::Authorities
     end
 
     describe "treatment of deprecated methods from MockAuthenticator" do
-      it "warns about valid_credentials! without a kind"
-      it "converts valid_credentials! without a kind to :user"
-      it "warns about may_access!"
-      it "converts may_access! into a portal append"
-      it "warns about in_group!"
-      it "converts in_group! calls to something something"
-      it "fails on load_credentials!"
-      it "fails on #all_groups"
-      it "fails on #add_groups"
-      it "fails on #add_group"
-      it "fails on #portals"
-      it "fails on #users="
-      it "fails on #users"
+      describe "#valid_credentials! without a kind" do
+        before do
+          @s.valid_credentials!("suzy", "q")
+        end
+
+        it "gets a warning" do
+          deprecation_message.should =~ /Please specify a kind in valid_credentials!/
+          deprecation_message.should =~ /2\.2/
+        end
+
+        it "assumes that the kind is :user" do
+          @s.valid_credentials?(:user, "suzy", "q").should be_true
+        end
+      end
+
+      describe "#may_access!" do
+        before do
+          @s.may_access!("suzy", :ENU)
+        end
+
+        it "gets a warning" do
+          deprecation_message.should =~
+            /may_access! is deprecated.  Directly add portals via #user or use #load!./
+          deprecation_message.should =~ /2\.2/
+        end
+
+        it "is converted into a portal append" do
+          @s.user("suzy").may_access?(:ENU).should be_true
+        end
+      end
+
+      it "fails on in_group!" do
+        @s.in_group!("suzy", "foo", "bar")
+        deprecation_message.should =~
+          /in_group! is deprecated.  Directly add groups for a particular portal via #user or use #load!./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on load_credentials!" do
+        @s.load_credentials!("dc")
+        deprecation_message.should =~
+          /load_credentials! is deprecated.  Convert your YAML to the format supported by #load! and use it instead./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on #all_groups" do
+        @s.all_groups
+        deprecation_message.should =~ /all_groups is no longer part of the auth API./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on #add_groups" do
+        @s.add_groups
+        deprecation_message.should =~
+          /Since all_groups is no longer part of the auth API, you don't need to mock its contents with add_groups./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on #add_group" do
+        @s.add_group
+        deprecation_message.should =~
+          /Since all_groups is no longer part of the auth API, you don't need to mock its contents with add_groups./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on #portals" do
+        @s.portals
+        deprecation_message.should =~ /The portal list is not directly exposed./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on #users=" do
+        @s.users = []
+        deprecation_message.should =~
+          /The user list is not directly settable.  Use #user or #load!./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on #users" do
+        @s.users
+        deprecation_message.should =~
+          /The user list is not directly readable.  Use #user to read one user at a time./
+        deprecation_message.should =~ /2\.0/
+      end
+
+      it "fails on #group_memberships" do
+        @s.group_memberships
+        deprecation_message.should =~
+          /group_memberships are not directly mutable.  Use #user for one or #load! for many./
+        deprecation_message.should =~ /2\.0/
+      end
     end
   end
 end
