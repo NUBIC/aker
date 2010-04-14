@@ -45,6 +45,7 @@ only :development do
 
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'
+  gem 'nokogiri'
   gem 'rake', '>= 0.8.7'
   gem 'ci_reporter', '~> 1.6'
   gem 'jruby-openssl' if RUBY_PLATFORM == 'java'

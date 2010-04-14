@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Please log in</title>
+    <link rel="stylesheet" type="text/css" href="<%= script_name %>/login.css" />
+  </head>
+  <body>
+    <form method="POST" action="<%= script_name %>">
+      <h1>Please log in</h1>
+      <div class="contents">
+        <div class="row">
+          <div class="label">
+            <label for="username">Username</label>
+          </div>
+          <div class="value">
+            <input type="text" name="username" class="text" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="label">
+            <label for="password">Password</label>
+          </div>
+          <div class="value">
+            <input type="password" name="password" class="text" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="value">
+            <input type="submit" value="Log in" class="button" />
+          </div>
+        </div>
+      </div>
+  </body>
+</html>
