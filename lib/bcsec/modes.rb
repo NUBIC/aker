@@ -6,5 +6,6 @@ module Bcsec
     autoload :Base, 'bcsec/modes/base'
     autoload :Cas, 'bcsec/modes/cas'
     autoload :CasProxy, 'bcsec/modes/cas_proxy'
+    autoload :HttpBasic, 'bcsec/modes/http_basic'
   end
 end
