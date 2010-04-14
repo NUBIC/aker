@@ -5,7 +5,8 @@ module Bcsec
     ##
     # A noninteractive mode that provides API key authentication.
     #
-    # This mode expects to find a WWW-Authenticate header that looks like
+    # This mode expects the client to supply an Authorization header that looks
+    # like
     #
     #     ApiKey response
     #

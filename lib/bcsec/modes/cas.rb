@@ -3,12 +3,11 @@ require 'bcsec'
 module Bcsec
   module Modes
     ##
-    #
     # An interactive mode that provides CAS authentication conformant to CAS 2.
-    # This authenticator implements the client end of CAS via RubyCAS-Client.
+    # This authenticator uses RubyCAS-Client.
     #
-    # This mode does _not_ handle CAS proxying because CAS proxying is
-    # noninteractive.  See {CasProxy} for that.
+    # This mode does _not_ handle noninteractive CAS proxying.  See {CasProxy}
+    # for that.
     #
     # @see http://github.com/gunark/rubycas-client
     #      RubyCAS-Client at Github
@@ -72,8 +71,8 @@ module Bcsec
       ##
       # Extracts the service ticket from the request parameters.
       #
-      # The service ticket is assumed to be the value of the ST parameter in the
-      # query string.
+      # The service ticket is assumed to be a parameter named ST in either GET
+      # or POST data.
       def service_ticket
         request.params['ST']
       end

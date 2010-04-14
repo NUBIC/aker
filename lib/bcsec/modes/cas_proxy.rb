@@ -3,10 +3,11 @@ require 'bcsec'
 module Bcsec
   module Modes
     ##
-    # A noninteractive mode that provides CAS proxy authentication conformant to CAS 2.
-    # This authenticator uses RubyCAS-Client.
+    # A noninteractive mode that provides CAS proxy authentication conformant to
+    # CAS 2.  This authenticator uses RubyCAS-Client.
     #
-    # This mode does _not_ handle interactive CAS authentication; see {Cas} for that.
+    # This mode does _not_ handle interactive CAS authentication; see {Cas} for
+    # that.
     #
     # @see http://github.com/gunark/rubycas-client
     #      RubyCAS-Client at Github
