@@ -72,7 +72,7 @@ module Bcsec::Modes
         response = @mode.on_ui_failure(@env)
         location = URI.parse(response.location)
 
-        location.query.should == "service=http://example.org:80/foo/bar"
+        location.query.should == "service=http://example.org/foo/bar"
       end
     end
   end

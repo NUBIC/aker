@@ -81,10 +81,7 @@ module Bcsec
       # The service URL supplied to the CAS login page.  This is currently the
       # URL of the requested resource.
       def service_url(env)
-        URI::Generic.build(:scheme => env['rack.url_scheme'],
-                           :host => env['HTTP_HOST'] || env['SERVER_NAME'],
-                           :port => env['SERVER_PORT'],
-                           :path => env['PATH_INFO']).to_s
+        request.url
       end
     end
   end
