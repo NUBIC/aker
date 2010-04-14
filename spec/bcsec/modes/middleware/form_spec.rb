@@ -24,27 +24,27 @@ module Bcsec::Modes::Middleware
       get "/foo"
 
       last_response.should be_ok
-      last_response.body.should == 'Hello'
+      last_response.body.should == "Hello"
     end
 
     it "renders login forms for GETs on the login path" do
-      @assets.stub!(:login_html => ['login form'])
+      @assets.should_receive(:login_html).with(hash_including("SCRIPT_NAME")).and_return("login form")
 
       get "/"
 
       last_response.should be_ok
-      last_response.content_type.should == 'text/html'
-      last_response.body.should == 'login form'
+      last_response.content_type.should == "text/html"
+      last_response.body.should == "login form"
     end
 
     it "outputs CSS for GETs on (the login path) + .css" do
-      @assets.stub!(:login_css => ['login css'])
+      @assets.should_receive(:login_css).and_return("login css")
 
       get "/login.css"
 
       last_response.should be_ok
-      last_response.content_type.should == 'text/css'
-      last_response.body.should == 'login css'
+      last_response.content_type.should == "text/css"
+      last_response.body.should == "login css"
     end
   end
 end
