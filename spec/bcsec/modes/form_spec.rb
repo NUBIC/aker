@@ -75,14 +75,5 @@ module Bcsec::Modes
         URI.parse(response.location).path.should == "/login"
       end
     end
-
-    describe "#prepend_middleware" do
-      it "prepends middleware for rendering a login form" do
-        builder = mock
-        builder.should_receive(:use).with(Bcsec::Modes::Form::Middleware, Form.login_path)
-
-        Bcsec::Modes::Form.prepend_middleware(builder)
-      end
-    end
   end
 end

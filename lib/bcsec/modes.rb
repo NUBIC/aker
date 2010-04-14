@@ -8,5 +8,6 @@ module Bcsec
     autoload :CasProxy, 'bcsec/modes/cas_proxy'
     autoload :Form, 'bcsec/modes/form'
     autoload :HttpBasic, 'bcsec/modes/http_basic'
+    autoload :Middleware, 'bcsec/modes/middleware'
   end
 end

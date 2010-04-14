@@ -10,8 +10,8 @@ module Bcsec
     # It expects the username in a `username` parameter and the unobfuscated
     # password in a `password` parameter.
     #
-    # This mode also renders said HTML form (which is expected to be provided
-    # by another piece of Rack middleware) if authentication fails.
+    # This mode also renders said HTML form if authentication fails.  This is
+    # provided by {Middleware::Form}.
     #
     # @author David Yip
     class Form < Bcsec::Modes::Base
@@ -40,7 +40,7 @@ module Bcsec
       # Prepends the {Middleware::Form login form renderer} to its position in
       # the Rack middleware stack.
       def self.prepend_middleware(builder)
-        builder.use Middleware, login_path
+        builder.map(login_path) { use Middleware::Form, Middleware::FormAssetProvider.new }
       end
 
       ##
@@ -86,9 +86,6 @@ module Bcsec
       # Extracts username and password from request parameters.
       def credentials
         [request['username'], request['password']].compact
-      end
-
-      class Middleware
       end
     end
   end
