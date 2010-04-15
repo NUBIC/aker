@@ -5,6 +5,7 @@ require 'vendor/gems/environment'
 require 'rake'
 require 'rake/gempackagetask'
 require 'spec/rake/spectask'
+require 'cucumber/rake/task'
 require 'yard'
 require 'bcdatabase/oracle/tasks'
 
@@ -74,6 +75,23 @@ Spec::Rake::SpecTask.new('spec:rcov') do |t|
   # rcov can't tell that /Library/Ruby is a system path
   t.rcov_opts = ['--exclude', "spec/*,/Library/Ruby/*"]
   t.verbose = true
+end
+
+namespace :cucumber do
+  desc "Run features that should pass"
+  Cucumber::Rake::Task.new(:ok) do |t|
+    t.fork = true
+    t.profile = "default"
+  end
+
+  desc "Run features that are being worked on"
+  Cucumber::Rake::Task.new(:wip) do |t|
+    t.fork = true
+    t.profile = "wip"
+  end
+
+  desc "Run all features"
+  task :all => [:ok, :wip]
 end
 
 desc "Build API documentation with yard"
