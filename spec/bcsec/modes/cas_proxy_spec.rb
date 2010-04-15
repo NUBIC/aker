@@ -18,6 +18,24 @@ module Bcsec::Modes
       end
     end
 
+    describe "#kind" do
+      it "is :cas_proxy" do
+        @mode.kind.should == :cas_proxy
+      end
+    end
+
+    describe "#credentials" do
+      it "returns the proxy ticket" do
+        @env["QUERY_STRING"] = "PT=PT-1foo"
+
+        @mode.credentials.should == ["PT-1foo"]
+      end
+
+      it "returns an empty array if no proxy ticket is present" do
+        @mode.credentials.should == []
+      end
+    end
+
     describe "#valid?" do
       it "returns false if the PT parameter is not in the query string" do
         @mode.should_not be_valid

@@ -19,6 +19,12 @@ module Bcsec::Modes
       end
     end
 
+    describe "#kind" do
+      it "is :user" do
+        @mode.kind.should == :user
+      end
+    end
+
     describe "#credentials" do
       it "returns username and password given an Authorization header" do
         @env["HTTP_AUTHORIZATION"] = "Basic " + Base64.encode64("foo:bar")

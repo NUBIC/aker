@@ -42,6 +42,22 @@ module Bcsec
       def parameters_for(mode)
         env['bcsec.configuration'].parameters_for(mode)
       end
+
+      ##
+      # Authenticates a user.
+      #
+      # {authenticate!} expects `kind` and `credentials` to be defined.  See
+      # superclasses for examples.
+      #
+      # If authentication is successful, then success! (from
+      # Warden::Strategies::Base) is called with a {User} object.  If
+      # authentication fails, then nothing is done.
+      #
+      # @return [nil]
+      def authenticate!
+        user = authority.valid_credentials?(kind, *credentials)
+        success!(user) if user
+      end
     end
   end
 end

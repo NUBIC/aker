@@ -21,6 +21,25 @@ module Bcsec::Modes
       end
     end
 
+    describe "#kind" do
+      it "is :user" do
+        @mode.kind.should == :user
+      end
+    end
+
+    describe "#credentials" do
+      it "contains username and password" do
+        @request["username"] = "foo"
+        @request["password"] = "bar"
+
+        @mode.credentials.should == ["foo", "bar"]
+      end
+
+      it "is an empty array if neither username nor password were given" do
+        @mode.credentials.should == []
+      end
+    end
+
     describe "#valid?" do
       it "returns true if a username and password are present" do
         @request["username"] = "foo"

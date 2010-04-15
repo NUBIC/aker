@@ -34,16 +34,11 @@ module Bcsec
       end
 
       ##
-      # Authenticates a (username, password) pair.
+      # The type of credentials supplied by this mode.
       #
-      # If authentication is successful, then success! (from
-      # Warden::Strategies::Base) is called with a Bcsec::User object.  If
-      # authentication fails, then nothing is done.
-      #
-      # @return [nil]
-      def authenticate!
-        user = authority.valid_credentials?(:user, *credentials)
-        success!(user) if user
+      # @return [Symbol]
+      def kind
+        :user
       end
 
       # Decodes and extracts a (username, password) pair from an Authorization
@@ -69,6 +64,12 @@ module Bcsec
         else
           []
         end
+      end
+
+      ##
+      # Returns true if a valid Basic challenge is present, false otherwise.
+      def valid?
+        credentials.length == 2
       end
 
       ##
@@ -103,14 +104,6 @@ module Bcsec
       def scheme
         %Q{Basic realm="#{realm}"}
       end
-
-      ##
-      # Returns true if a valid Basic challenge is present, false otherwise.
-      def valid?
-        credentials.length == 2
-      end
-
-      private
     end
   end
 end

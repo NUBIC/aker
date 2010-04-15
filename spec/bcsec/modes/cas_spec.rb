@@ -31,6 +31,24 @@ module Bcsec::Modes
       end
     end
 
+    describe "#kind" do
+      it "is :cas" do
+        @mode.kind.should == :cas
+      end
+    end
+
+    describe "#credentials" do
+      it "returns the service ticket" do
+        @env["QUERY_STRING"] = "ST=ST-1foo"
+
+        @mode.credentials.should == ["ST-1foo"]
+      end
+
+      it "returns an empty array if no service ticket was supplied" do
+        @mode.credentials.should == []
+      end
+    end
+
     describe "#authenticate!" do
       before do
         @authority = mock

@@ -25,16 +25,28 @@ module Bcsec
       end
 
       ##
-      # Authenticates a proxy ticket.
+      # The type of credentials supplied by this mode.
       #
-      # If authentication is successful, then success! (from
-      # Warden::Strategies::Base) is called with a Bcsec::User object.  If
-      # authentication fails, then nothing is done.
+      # @return [Symbol]
+      def kind
+        self.class.key
+      end
+
+      ##
+      # The supplied proxy ticket.
       #
-      # @return [nil]
-      def authenticate!
-        user = authority.valid_credentials?(self.class.key, proxy_ticket)
-        success!(user) if user
+      # The proxy ticket is assumed to be a parameter named PT in either GET
+      # or POST data.
+      #
+      # @return [Array<String>] the proxy ticket or an empty array
+      def credentials
+        [request['PT']].compact
+      end
+
+      ##
+      # Returns true if a proxy ticket is present, false otherwise.
+      def valid?
+        !credentials.empty?
       end
 
       ##
@@ -44,21 +56,6 @@ module Bcsec
       # @return [String]
       def scheme
         "CasProxy"
-      end
-
-      ##
-      # Returns true if a proxy ticket is present, false otherwise.
-      def valid?
-        !proxy_ticket.nil?
-      end
-
-      ##
-      # The supplied proxy ticket.
-      #
-      # The proxy ticket is assumed to be a parameter named PT in either GET
-      # or POST data.
-      def proxy_ticket
-        request['PT']
       end
     end
   end

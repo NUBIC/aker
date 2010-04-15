@@ -44,16 +44,26 @@ module Bcsec
       end
 
       ##
-      # Authenticates a (username, password) pair.
+      # The type of credentials supplied by this mode.
       #
-      # If authentication is successful, then success! (from
-      # Warden::Strategies::Base) is called with a Bcsec::User object.  If
-      # authentication fails, then nothing is done.
+      # @return [Symbol]
+      def kind
+        :user
+      end
+
+      ##
+      # Extracts username and password from request parameters.
       #
-      # @return [nil]
-      def authenticate!
-        user = authority.valid_credentials?(:user, *credentials)
-        success!(user) if user
+      # @return [Array<String>] username and password, username (if password
+      #                         missing), or an empty array
+      def credentials
+        [request['username'], request['password']].compact
+      end
+
+      ##
+      # Returns true if username and password are present, false otherwise.
+      def valid?
+        credentials.length == 2
       end
 
       ##
@@ -72,20 +82,6 @@ module Bcsec
       # @return [Rack::Response]
       def on_ui_failure(env)
         Rack::Response.new { |resp| resp.redirect(login_url) }
-      end
-
-      ##
-      # Returns true if username and password are present, false otherwise.
-      def valid?
-        credentials.length == 2
-      end
-
-      private
-
-      ##
-      # Extracts username and password from request parameters.
-      def credentials
-        [request['username'], request['password']].compact
       end
     end
   end

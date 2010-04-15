@@ -25,22 +25,36 @@ module Bcsec
       end
 
       ##
-      # Authenticates a service ticket.
-      #
-      # If authentication is successful, then success! (from
-      # Warden::Strategies::Base) is called with a {User} object.  If
-      # authentication fails, then nothing is done.
-      #
-      # @return [nil]
-      def authenticate!
-        user = authority.valid_credentials?(self.class.key, service_ticket)
-        success!(user) if user
-      end
-
-      ##
       # The login URL on the CAS server.
       def cas_login_url
         parameters_for(:cas)[:login_url]
+      end
+
+      ##
+      # The type of credentials supplied by this mode.
+      #
+      # @return [Symbol]
+      def kind
+        self.class.key
+      end
+
+      ##
+      # Extracts the service ticket from the request parameters.
+      #
+      # The service ticket is assumed to be a parameter named ST in either GET
+      # or POST data.
+      #
+      # @return [Array<String>] service ticket or an empty array if no service
+      #                         ticket found
+      def credentials
+        [request['ST']].compact
+      end
+
+      ##
+      # Returns true if a service ticket is present in the query string, false
+      # otherwise.
+      def valid?
+        !credentials.empty?
       end
 
       ##
@@ -61,23 +75,7 @@ module Bcsec
         end
       end
 
-      ##
-      # Returns true if a service ticket is present in the query string, false
-      # otherwise.
-      def valid?
-        !service_ticket.nil?
-      end
-
       private
-
-      ##
-      # Extracts the service ticket from the request parameters.
-      #
-      # The service ticket is assumed to be a parameter named ST in either GET
-      # or POST data.
-      def service_ticket
-        request.params['ST']
-      end
 
       ##
       # The service URL supplied to the CAS login page.  This is currently the

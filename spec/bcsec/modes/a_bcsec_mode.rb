@@ -11,11 +11,13 @@ shared_examples_for "a bcsec mode" do
     (@mode.class < Warden::Strategies::Base).should be_true
   end
 
-  it "reads configuration data from env['bcsec.configuration']" do
-    config = mock
-    config.should_receive(:parameters_for).with(:foo).and_return({})
-    @env['bcsec.configuration'] = config
+  describe "#parameters_for" do
+    it "reads configuration data from env['bcsec.configuration']" do
+      config = mock
+      config.should_receive(:parameters_for).with(:foo).and_return({})
+      @env['bcsec.configuration'] = config
 
-    @mode.parameters_for(:foo).should == {}
+      @mode.parameters_for(:foo).should == {}
+    end
   end
 end
