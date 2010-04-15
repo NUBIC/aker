@@ -20,8 +20,8 @@ module Bcsec::Modes
 
     describe "#valid?" do
       it "returns true if a username and password are present" do
-        @request['username'] = 'foo'
-        @request['password'] = 'bar'
+        @request["username"] = "foo"
+        @request["password"] = "bar"
 
         @mode.should be_valid
       end
