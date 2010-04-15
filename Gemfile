@@ -22,6 +22,7 @@ gem 'ruby-net-ldap', '>= 0.0.4'
 gem 'warden', '~> 0.10.3'
 
 only :development do
+  gem 'cucumber', '~> 0.6'
   gem 'rack-test', '~> 0.5'
   gem 'rspec', '~> 1.3'
   gem 'rcov', '~> 0.9'
