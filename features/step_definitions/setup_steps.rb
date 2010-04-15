@@ -1,4 +1,4 @@
-Given /^I have an authority that accepts the credentials$/ do |table|
+Given /^I have an authority that accepts these usernames and passwords:$/ do |table|
   # table is a Cucumber::Ast::Table
   pending # express the regexp above with the code you wish you had
 end

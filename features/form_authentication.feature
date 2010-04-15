@@ -7,12 +7,12 @@ Feature: Form authentication
   This feature tests form-based authentication.
 
   Background:
-    Given I have an authority that accepts the credentials
+    Given I have an authority that accepts these usernames and passwords:
       | username | password |
       | abc123   | foobar   |
     And I have a bcsec-protected application using
-      | ui modes | api modes |
-      | form     |           |
+      | ui mode | api mode |
+      | form    |          |
 
   Scenario: A correct username and password should pass authentication
     When I enter username "abc123" and password "foobar" into the login form
