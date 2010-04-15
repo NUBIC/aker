@@ -26,10 +26,6 @@ module Bcsec
       BasicPattern = %r{^Basic ((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)$}
 
       ##
-      # The authentication realm to be used in challenges.
-      attr_accessor :realm
-
-      ##
       # A key that refers to this mode; used for configuration convenience.
       #
       # @return [Symbol]
@@ -60,6 +56,18 @@ module Bcsec
       # @return [Rack::Response]
       def on_ui_failure(env)
         Rack::Response.new([], 401, {'WWW-Authenticate' => scheme})
+      end
+
+      ##
+      # The authentication realm to be used in challenges.
+      #
+      # This is set via the `:realm` parameter in the `:http_basic`
+      # configuration group.  If no realm is set, defaults to `Bcsec`.
+      #
+      # @see Bcsec::Configuration
+      # @return [String]
+      def realm
+        parameters_for(:http_basic)[:realm] || 'Bcsec'
       end
 
       ##

@@ -1,4 +1,5 @@
 require File.expand_path("../../../spec_helper", __FILE__)
+require File.expand_path("a_bcsec_mode", File.dirname(__FILE__))
 require 'rack'
 
 module Bcsec::Modes
@@ -8,6 +9,8 @@ module Bcsec::Modes
       @scope = mock
       @mode = CasProxy.new(@env, @scope)
     end
+
+    it_should_behave_like "a bcsec mode"
 
     describe "#key" do
       it "is :cas_proxy" do

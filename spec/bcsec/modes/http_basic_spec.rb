@@ -1,6 +1,7 @@
 require File.expand_path("../../../spec_helper", __FILE__)
-require 'rack'
+require File.expand_path("a_bcsec_mode", File.dirname(__FILE__))
 require 'base64'
+require 'rack'
 
 module Bcsec::Modes
   describe HttpBasic do
@@ -9,6 +10,8 @@ module Bcsec::Modes
       @scope = mock
       @mode = HttpBasic.new(@env, @scope)
     end
+
+    it_should_behave_like "a bcsec mode"
 
     describe "#key" do
       it "is :http_basic" do
@@ -41,9 +44,23 @@ module Bcsec::Modes
       end
     end
 
+    describe "#realm" do
+      it "uses the :realm parameter of the :http_basic configuration group" do
+        @mode.should_receive(:parameters_for).with(:http_basic).and_return(:realm => 'Realm')
+
+        @mode.realm.should == "Realm"
+      end
+
+      it "defaults to 'Bcsec'" do
+        @mode.should_receive(:parameters_for).with(:http_basic).and_return({})
+
+        @mode.realm.should == "Bcsec"
+      end
+    end
+
     describe "#scheme" do
       it "returns Basic with a realm" do
-        @mode.realm = "Realm"
+        @mode.stub!(:parameters_for => { :realm => 'Realm' })
 
         @mode.scheme.should == %q{Basic realm="Realm"}
       end
@@ -73,17 +90,18 @@ module Bcsec::Modes
     end
 
     describe "#on_ui_failure" do
-      it "returns 401 Unauthorized" do
-        response = @mode.on_ui_failure(@env)
+      before do
+        @mode.stub!(:parameters_for => { :realm => 'Realm' })
 
-        response.status.should == 401
+        @response = @mode.on_ui_failure(@env)
+      end
+
+      it "returns 401 Unauthorized" do
+        @response.status.should == 401
       end
 
       it "returns a WWW-Authenticate header containing the Basic authentication scheme" do
-        @mode.realm = "Realm"
-
-        response = @mode.on_ui_failure(@env)
-        response.headers['WWW-Authenticate'].should == %q{Basic realm="Realm"}
+        @response.headers['WWW-Authenticate'].should == %q{Basic realm="Realm"}
       end
     end
   end

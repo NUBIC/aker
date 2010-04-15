@@ -1,4 +1,5 @@
 require File.expand_path("../../../spec_helper", __FILE__)
+require File.expand_path("a_bcsec_mode", File.dirname(__FILE__))
 require 'rack'
 require 'uri'
 
@@ -9,6 +10,8 @@ module Bcsec::Modes
       @scope = mock
       @mode = Cas.new(@env, @scope)
     end
+
+    it_should_behave_like "a bcsec mode"
 
     describe "#key" do
       it "is :cas" do
@@ -53,7 +56,7 @@ module Bcsec::Modes
 
     describe "#on_ui_failure" do
       before do
-        @mode.cas_login_url = "https://cas.example.edu/login"
+        @mode.stub!(:parameters_for => { :login_url => 'https://cas.example.edu/login' })
       end
 
       it "redirects to the CAS server's login page" do

@@ -1,5 +1,6 @@
 require File.expand_path("../../../spec_helper", __FILE__)
-require 'rack'
+require File.expand_path("a_bcsec_mode", File.dirname(__FILE__))
+require "rack"
 
 module Bcsec::Modes
   describe Form do
@@ -11,6 +12,8 @@ module Bcsec::Modes
       # Rack::Request manipulations modify the environment in-place
       @request = Rack::Request.new(@env)
     end
+
+    it_should_behave_like "a bcsec mode"
 
     describe "#key" do
       it "is :form" do
