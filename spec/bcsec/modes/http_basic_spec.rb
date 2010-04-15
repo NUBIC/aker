@@ -19,6 +19,24 @@ module Bcsec::Modes
       end
     end
 
+    describe "#credentials" do
+      it "returns username and password given an Authorization header" do
+        @env["HTTP_AUTHORIZATION"] = "Basic " + Base64.encode64("foo:bar")
+
+        @mode.credentials.should == ["foo", "bar"]
+      end
+
+      it "returns an empty array when no Authorization header is present" do
+        @mode.credentials.should == []
+      end
+
+      it "returns an empty array when the Authorization header isn't a valid response to a Basic challenge" do
+        @env["HTTP_AUTHORIZATION"] = "garbage"
+
+        @mode.credentials.should == []
+      end
+    end
+
     describe "#valid?" do
       it "is not valid if the Authorization header is blank" do
         @mode.should_not be_valid
@@ -44,6 +62,29 @@ module Bcsec::Modes
       end
     end
 
+    describe "#authenticate!" do
+      before do
+        @authority = mock
+        @mode.stub!(:authority => @authority)
+      end
+
+      it "signals success if the username and password are good" do
+        @env["HTTP_AUTHORIZATION"] = "Basic " + Base64.encode64("foo:bar")
+        user = stub
+        @authority.should_receive(:valid_credentials?).with(:user, 'foo', 'bar').and_return(user)
+        @mode.should_receive(:success!).with(user)
+
+        @mode.authenticate!
+      end
+
+      it "does not signal success if the username or password are bad" do
+        @authority.stub(:valid_credentials? => nil)
+        @mode.should_not_receive(:success!)
+
+        @mode.authenticate!
+      end
+    end
+
     describe "#realm" do
       it "uses the :realm parameter of the :http_basic configuration group" do
         @mode.should_receive(:parameters_for).with(:http_basic).and_return(:realm => 'Realm')
@@ -63,29 +104,6 @@ module Bcsec::Modes
         @mode.stub!(:parameters_for => { :realm => 'Realm' })
 
         @mode.scheme.should == %q{Basic realm="Realm"}
-      end
-    end
-
-    describe "#authenticate!" do
-      before do
-        @authority = mock
-        @mode.stub!(:authority => @authority)
-        @env["HTTP_AUTHORIZATION"] = "Basic " + Base64.encode64("foo:bar")
-      end
-
-      it "signals success if the username and password are good" do
-        user = stub
-        @authority.should_receive(:valid_credentials?).with(:user, 'foo', 'bar').and_return(user)
-        @mode.should_receive(:success!).with(user)
-
-        @mode.authenticate!
-      end
-
-      it "does not signal success if the username or password are bad" do
-        @authority.stub(:valid_credentials? => nil)
-        @mode.should_not_receive(:success!)
-
-        @mode.authenticate!
       end
     end
 

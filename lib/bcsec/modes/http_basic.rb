@@ -46,6 +46,31 @@ module Bcsec
         success!(user) if user
       end
 
+      # Decodes and extracts a (username, password) pair from an Authorization
+      # header.
+      #
+      # This method checks if the format of the Authorization header is a valid
+      # response to a Basic challenge.  If it is, then a username (and possibly
+      # a password) are returned.  If it is not, then an empty array is
+      # returned.
+      #
+      # @return [Array<String>] username and password, username, or an empty
+      #                         array
+      #
+      # @see BasicPattern
+      # @see http://www.ietf.org/rfc/rfc2617.txt
+      #      RFC 2617, section 2
+      def credentials
+        key = 'HTTP_AUTHORIZATION'
+        matches = env[key].match(BasicPattern) if env.has_key?(key)
+
+        if matches && matches[1]
+          Base64.decode64(matches[1]).split(':', 2)
+        else
+          []
+        end
+      end
+
       ##
       # Builds a Rack response with status 401 that indicates a need for
       # authentication.
@@ -82,29 +107,10 @@ module Bcsec
       ##
       # Returns true if a valid Basic challenge is present, false otherwise.
       def valid?
-        env['HTTP_AUTHORIZATION'] =~ BasicPattern
+        credentials.length == 2
       end
 
       private
-
-      ##
-      # Decodes and extracts a (username, password) pair from a Basic challenge.
-      #
-      # @return [Array<String>] username and password, or an empty array if the
-      #         encoded credentials do not conform to the Basic Authentication
-      #         Scheme
-      #
-      # @see http://www.ietf.org/rfc/rfc2617.txt
-      #      RFC 2617, section 2
-      def credentials
-        encoded_credentials = env['HTTP_AUTHORIZATION'].match(BasicPattern)
-
-        if encoded_credentials && encoded_credentials[1]
-          Base64.decode64(encoded_credentials[1]).split(':', 2)
-        else
-          []
-        end
-      end
     end
   end
 end
