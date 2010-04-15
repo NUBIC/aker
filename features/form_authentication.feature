@@ -20,7 +20,7 @@ Feature: Form authentication
 
     Then I should be able to access that protected resource
 
-  Scenario: Users accessing protected resources without autentication should be sent to the login page
+  Scenario: Users accessing protected resources without authentication should be sent to the login page
     When I access a protected resource
 
     Then I should be sent to the login page
