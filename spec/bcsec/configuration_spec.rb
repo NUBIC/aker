@@ -17,6 +17,10 @@ describe Bcsec::Configuration do
     it "requires at least one" do
       lambda { blank_config.authorities }.should raise_error("No authorities configured")
     end
+
+    it "can be safely accessed if empty" do
+      blank_config.authorities?.should be_false
+    end
   end
 
   describe "portal" do
@@ -27,6 +31,10 @@ describe Bcsec::Configuration do
     it "is always a symbol" do
       @config.portal = "foo"
       @config.portal.should == :foo
+    end
+
+    it "can be safely accessed if nil" do
+      @config.portal?.should be_false
     end
   end
 

@@ -63,7 +63,7 @@ module Bcsec
     # @return [Symbol] the portal to which this application belongs
     # @raise if no portal is set
     def portal
-      raise "No portal configured" unless @portal
+      raise "No portal configured" unless portal?
       @portal
     end
 
@@ -76,6 +76,12 @@ module Bcsec
     end
 
     ##
+    # @return [Boolean] true if there is a portal set, else false
+    def portal?
+      @portal
+    end
+
+    ##
     # Returns the actual authority objects created based on the last
     # call to {#authorities=}.  Note that `Authority` is concept and a
     # set of methods (all of them optional), not a base class; see
@@ -84,7 +90,7 @@ module Bcsec
     # @return [List<Authority>] the actual authority objects specified
     #   by this configuration
     def authorities
-      raise "No authorities configured" if @authorities.nil? || @authorities.empty?
+      raise "No authorities configured" unless authorities?
       @authorities
     end
 
@@ -94,18 +100,25 @@ module Bcsec
     # @param [Array<Symbol, String, Class, Object>] new_authorities
     #   each authority specification may take one of four forms.
     #
-    #     * A `Symbol` or a `String` will be camelized and then
-    #       interpreted as a class name in {Bcsec::Authorities}.
-    #       Then it will be treated as a `Class`.  E.g.,
-    #       `:all_access` will be converted into
-    #       `Bcsec::Authorities::AllAccess`.
-    #     * A `Class` will be instantiated, passing the
-    #       configuration (this object) as the sole constructor
-    #       parameter.
-    #     * Any other object will be used unchanged.
+    #   * A `Symbol` or a `String` will be camelized and then
+    #     interpreted as a class name in {Bcsec::Authorities}.
+    #     Then it will be treated as a `Class`.  E.g.,
+    #     `:all_access` will be converted into
+    #     `Bcsec::Authorities::AllAccess`.
+    #   * A `Class` will be instantiated, passing the
+    #     configuration (this object) as the sole constructor
+    #     parameter.
+    #   * Any other object will be used unchanged.
+    #
     # @return [void]
     def authorities=(new_authorities)
       @authorities = new_authorities.collect { |a| build_authority(a) }
+    end
+
+    ##
+    # @return [Boolean] true if there are any authorities configured
+    def authorities?
+      @authorities && !@authorities.empty?
     end
 
     ##
