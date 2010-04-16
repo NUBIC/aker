@@ -57,11 +57,10 @@ module Bcsec
       new_modes = new_modes.first if new_modes.size == 1 && Array === new_modes.first
       @api_modes = new_modes.compact.collect(&:to_sym)
     end
-    alias api_mode= api_modes=
+    alias :api_mode= :api_modes=
 
     ##
     # @return [Symbol] the portal to which this application belongs
-    # @raise if no portal is set
     def portal
       raise "No portal configured" unless portal?
       @portal
@@ -83,11 +82,11 @@ module Bcsec
 
     ##
     # Returns the actual authority objects created based on the last
-    # call to {#authorities=}.  Note that `Authority` is concept and a
+    # call to {#authorities=}.  Note that "authority" is concept and a
     # set of methods (all of them optional), not a base class; see
-    # {CompositeAuthority} for more details.
+    # {Bcsec::Authorities::Composite} for more details.
     #
-    # @return [List<Authority>] the actual authority objects specified
+    # @return [Array<Object>] the actual authority objects specified
     #   by this configuration
     def authorities
       raise "No authorities configured" unless authorities?

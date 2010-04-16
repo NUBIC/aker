@@ -1,6 +1,12 @@
 require 'bcsec'
 
 module Bcsec
+  ##
+  # The namespace for authorities in Bcsec.  The duck-typed meaning of
+  # what an authority is is outlined in the documentation for
+  # {Bcsec::Authorities::Composite Composite}.
+  #
+  # @see Bcsec::Configuration#authorities=
   module Authorities
     autoload :AllAccess, 'bcsec/authorities/all_access'
     autoload :Composite, 'bcsec/authorities/composite'
