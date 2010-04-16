@@ -46,12 +46,12 @@ module Bcsec
       ##
       # Authenticates a user.
       #
-      # {authenticate!} expects `kind` and `credentials` to be defined.  See
-      # superclasses for examples.
+      # {#authenticate!} expects `kind` and `credentials` to be
+      # defined.  See subclasses for examples.
       #
       # If authentication is successful, then success! (from
-      # Warden::Strategies::Base) is called with a {User} object.  If
-      # authentication fails, then nothing is done.
+      # `Warden::Strategies::Base`) is called with a {User} object.
+      # If authentication fails, then nothing is done.
       #
       # @return [nil]
       def authenticate!
