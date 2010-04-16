@@ -95,9 +95,31 @@ namespace :cucumber do
 end
 
 desc "Build API documentation with yard"
+docsrc = %w(lib/**/*.rb -) + Dir.glob("{CHANGELOG,README}")
 YARD::Rake::YardocTask.new do |t|
   t.options = %w(--no-private --markup markdown)
-  t.files = %w(lib/**/*.rb -) + Dir.glob("{CHANGELOG,README}")
+  t.files = docsrc
+end
+
+namespace :yard do
+  desc "Rebuild API documentation after each change to the source"
+  task :auto => :yard do
+    require 'fssm'
+    puts "Waiting for changes"
+    FSSM.monitor('.', docsrc) do
+      # have to run in a subshell because rake will only invoke a
+      # given task once per execution
+      yardoc = proc { |b, m|
+        print "Detected change in #{m} -- regenerating docs ... "
+        system("rake yard > /dev/null 2>&1")
+        puts "done"
+      }
+
+      create &yardoc
+      update &yardoc
+      delete &yardoc
+    end
+  end
 end
 
 task :default => :spec

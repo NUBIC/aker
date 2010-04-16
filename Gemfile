@@ -29,6 +29,7 @@ only :development do
   gem 'yard', '~> 0.5'
   # for yard; doesn't work in jruby
   gem 'bluecloth' unless RUBY_PLATFORM == 'java'
+  gem 'fssm'
 
   gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
