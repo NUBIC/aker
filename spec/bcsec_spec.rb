@@ -4,6 +4,7 @@ require 'bcsec'
 
 describe Bcsec do
   before do
+    Bcsec.authority = nil
     Bcsec.configuration = nil
   end
 
@@ -39,6 +40,34 @@ describe Bcsec do
       Bcsec.configure { portal :LIMS }
       Bcsec.configuration.api_modes.should == [:basic, :cas_proxy]
       Bcsec.configuration.portal.should == :LIMS
+    end
+  end
+
+  describe "authority" do
+    before do
+      @auth = Bcsec::Authorities::Static.new
+      @auth.valid_credentials!(:cas, "jo", "ST-12345")
+    end
+
+    it "can be set directly" do
+      Bcsec.authority = @auth
+      Bcsec.authority.valid_credentials?(:cas, "ST-12345").should_not be_nil
+    end
+
+    it "uses the composite authority from the configuration by default" do
+      Bcsec.configuration = Bcsec::Configuration.new {
+        a = Bcsec::Authorities::Static.new
+        a.valid_credentials!(:magic, "jo", "man")
+        authority a
+      }
+      Bcsec.authority.valid_credentials?(:magic, "man").username.should == "jo"
+    end
+
+    it "prefers a directly-set authority" do
+      Bcsec.configuration = Bcsec::Configuration.new { authority :static }
+      Bcsec.authority.valid_credentials?(:cas,  "ST-12345").should be_nil
+      Bcsec.authority = @auth
+      Bcsec.authority.valid_credentials?(:cas,  "ST-12345").should_not be_nil
     end
   end
 end

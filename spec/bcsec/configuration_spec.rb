@@ -301,4 +301,10 @@ describe Bcsec::Configuration do
       config_from { portal :NOTIS }.enhance { portal :eNOTIS }.portal.should == :eNOTIS
     end
   end
+
+  describe "#composite_authority" do
+    it "returns a composite authority for the configured authorities" do
+      config_from { authorities :static, :static }.composite_authority.authorities.size.should == 2
+    end
+  end
 end

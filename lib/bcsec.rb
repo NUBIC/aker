@@ -21,6 +21,14 @@ module Bcsec
     attr_accessor :configuration
 
     ##
+    # @return [Object,nil] a single authentication/authorization entry
+    #   point conforming to the authority protocol as defined by
+    #   {Bcsec::Authorities::Composite}.  By default, it is
+    #   automatically derived from the {.configuration configuration}.
+    # @see Bcsec::Configuration#composite_authority
+    attr_accessor :authority
+
+    ##
     # Create/update the global bcsec configuration.  Accepts a block
     # containing expressions in the {Configuration} DSL.
     #
@@ -29,6 +37,10 @@ module Bcsec
     def configure(&block)
       @configuration ||= Bcsec::Configuration.new
       @configuration.enhance(&block)
+    end
+
+    def authority
+      @authority || (@configuration && @configuration.composite_authority)
     end
   end
 end

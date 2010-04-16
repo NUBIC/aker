@@ -121,6 +121,15 @@ module Bcsec
     end
 
     ##
+    # Exposes a single object which aggregates all the authorities in
+    # this configuration.
+    #
+    # @return [Bcsec::Authorities::Composite]
+    def composite_authority
+      @composite_authority ||= Bcsec::Authorities::Composite.new(self)
+    end
+
+    ##
     # Returns the parameters for a particular group.  Never returns `nil`.
     #
     # @param [Symbol] group the group of parameters to return
