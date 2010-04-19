@@ -9,6 +9,7 @@ module Bcsec
   # @see Bcsec::Configuration#authorities=
   module Authorities
     autoload :AllAccess, 'bcsec/authorities/all_access'
+    autoload :Cas,       'bcsec/authorities/cas'
     autoload :Composite, 'bcsec/authorities/composite'
     autoload :Netid,     'bcsec/authorities/netid'
     autoload :Pers,      'bcsec/authorities/pers'

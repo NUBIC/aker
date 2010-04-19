@@ -14,11 +14,13 @@ require 'rack/test'
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
 
 Before('@cas') do
+  Capybara.current_driver = :culerity
   start_cas_server
 end
 
 After('@cas') do
   stop_cas_server
+  Capybara.use_default_driver
 end
 
 module Bcsec::Cucumber

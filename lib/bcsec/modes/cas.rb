@@ -40,17 +40,20 @@ module Bcsec
       # The service ticket is assumed to be a parameter named ST in either GET
       # or POST data.
       #
-      # @return [Array<String>] service ticket or an empty array if no service
-      #                         ticket found
+      # @return [Array<String>,nil] a two-item array containing the
+      #   service ticket and the service URL to which the ticket
+      #   (it is asserted) applies
       def credentials
-        [request['ticket']].compact
+        if request['ticket']
+          [request['ticket'], service_url]
+        end
       end
 
       ##
       # Returns true if a service ticket is present in the query string, false
       # otherwise.
       def valid?
-        !credentials.empty?
+        credentials
       end
 
       ##
@@ -74,20 +77,33 @@ module Bcsec
       private
 
       ##
-      # The service URL supplied to the CAS login page.  This is currently the
-      # URL of the requested resource.
+      # The service URL supplied to the CAS login page.  This is the
+      # requested URL, sans any service ticket.
       def service_url
-        if env['warden.options'] && env['warden.options'][:attempted_path]
-          url = "#{request.scheme}://#{request.host}"
+        requested = URI.parse(
+          if env['warden.options'] && env['warden.options'][:attempted_path]
+            url = "#{request.scheme}://#{request.host}"
 
-          unless [ ["https", 443], ["http", 80] ].include?([request.scheme, request.port])
-            url << ":#{request.port}"
+            unless [ ["https", 443], ["http", 80] ].include?([request.scheme, request.port])
+              url << ":#{request.port}"
+            end
+
+            url << env['warden.options'][:attempted_path]
+          else
+            request.url
           end
-
-          url << env['warden.options'][:attempted_path]
-        else
-          request.url
+                              )
+        if requested.query
+          requested.query.gsub!(/(&?)ticket=ST-[^&]+(&?)/) do
+            if [$1, $2].uniq == ['&'] # in the middle
+              '&'
+            else
+              nil
+            end
+          end
+          requested.query = nil if requested.query.empty?
         end
+        requested.to_s
       end
     end
   end

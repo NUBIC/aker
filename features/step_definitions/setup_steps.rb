@@ -6,6 +6,17 @@ Given /^I have an authority that accepts these usernames and passwords:$/ do |ta
   Bcsec.configure { authority static }
 end
 
+Given /^I have a CAS server that accepts these usernames and passwords:$/ do |table|
+  table.hashes.each do |u|
+    @cas_server.register_user(u['username'], u['password'])
+  end
+  cas = @cas_server
+  Bcsec.configure {
+    authority :cas
+    cas_parameters :base_url => cas.base_url
+  }
+end
+
 Given /^I have a bcsec\-protected application using$/ do |table|
   string_conf = table.hashes.first
   Bcsec.configure {

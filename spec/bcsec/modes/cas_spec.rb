@@ -38,14 +38,31 @@ module Bcsec::Modes
     end
 
     describe "#credentials" do
-      it "returns the service ticket" do
-        @env["QUERY_STRING"] = "ticket=ST-1foo"
-
-        @mode.credentials.should == ["ST-1foo"]
+      before do
+        @env["PATH_INFO"] = "/qu/ux"
+        @env["QUERY_STRING"] = "foo=baz"
       end
 
-      it "returns an empty array if no service ticket was supplied" do
-        @mode.credentials.should == []
+      describe "when there's a service ticket" do
+        before do
+          @env["QUERY_STRING"] << "&ticket=ST-1foo"
+        end
+
+        it "returns two elements" do
+          @mode.credentials.size.should == 2
+        end
+
+        it "returns the service ticket first" do
+          @mode.credentials[0].should == "ST-1foo"
+        end
+
+        it "returns the service URL second" do
+          @mode.credentials[1].should == "http://example.org/qu/ux?foo=baz"
+        end
+      end
+
+      it "returns nil if no service ticket was supplied" do
+        @mode.credentials.should be_nil
       end
     end
 
@@ -58,7 +75,8 @@ module Bcsec::Modes
 
       it "signals success if the service ticket is good" do
         user = stub
-        @authority.should_receive(:valid_credentials?).with(:cas, 'ST-1foo').and_return(user)
+        @authority.should_receive(:valid_credentials?).
+          with(:cas, 'ST-1foo', "http://example.org/").and_return(user)
         @mode.should_receive(:success!).with(user)
 
         @mode.authenticate!
@@ -89,40 +107,72 @@ module Bcsec::Modes
         location.path.should == "/login"
       end
 
+      it "includes the service URL" do
+        @env["PATH_INFO"] = "/foo/bar"
+
+        actual_uri.query.should == "service=http://example.org/foo/bar"
+      end
+
+      it "escapes query parameters in the service URL"
+
       def actual_uri
         response = @mode.on_ui_failure
         URI.parse(response.location)
       end
+    end
 
-      describe "service URL" do
-        it "is the user was trying to reach" do
-          @env["PATH_INFO"] = "/foo/bar"
+    describe "#service_url" do
+      def actual_url
+        @mode.send(:service_url)
+      end
 
-          actual_uri.query.should == "service=http://example.org/foo/bar"
-        end
+      it "is the URL the user was trying to reach" do
+        @env["PATH_INFO"] = "/qu/ux"
+        @env["QUERY_STRING"] = "a=b"
+        actual_url.should == "http://example.org/qu/ux?a=b"
+      end
 
-        it "is warden's 'attempted path' if present" do
-          @env["PATH_INFO"] = "/unauthenticated"
-          @env["warden.options"] = { :attempted_path => "/foo/quux" }
+      it "is warden's 'attempted path' if present" do
+        @env["PATH_INFO"] = "/unauthenticated"
+        @env["warden.options"] = { :attempted_path => "/foo/quux" }
 
-          actual_uri.query.should == "service=http://example.org/foo/quux"
-        end
+        actual_url.should == "http://example.org/foo/quux"
+      end
 
-        it "includes the port if not the default for http" do
-          @env["warden.options"] = { :attempted_path => "/foo/quux" }
-          @env["rack.url_scheme"] = "http"
-          @env["SERVER_PORT"] = 81
+      it "includes the port if not the default for http" do
+        @env["warden.options"] = { :attempted_path => "/foo/quux" }
+        @env["rack.url_scheme"] = "http"
+        @env["SERVER_PORT"] = 81
 
-          actual_uri.query.should == "service=http://example.org:81/foo/quux"
-        end
+        actual_url.should == "http://example.org:81/foo/quux"
+      end
 
-        it "includes the port if not the default for https" do
-          @env["warden.options"] = { :attempted_path => "/foo/quux" }
-          @env["rack.url_scheme"] = "https"
-          @env["SERVER_PORT"] = 80
+      it "includes the port if not the default for https" do
+        @env["warden.options"] = { :attempted_path => "/foo/quux" }
+        @env["rack.url_scheme"] = "https"
+        @env["SERVER_PORT"] = 80
 
-          actual_uri.query.should == "service=https://example.org:80/foo/quux"
-        end
+        actual_url.should == "https://example.org:80/foo/quux"
+      end
+
+      it "filters out a service ticket that's the sole parameter" do
+        @env["QUERY_STRING"] = "ticket=ST-foo"
+        actual_url.should == "http://example.org/"
+      end
+
+      it "filters out a service ticket that's the first parameter of several" do
+        @env["QUERY_STRING"] = "ticket=ST-bar&foo=baz"
+        actual_url.should == "http://example.org/?foo=baz"
+      end
+
+      it "filters out a service ticket that's the last parameter of several" do
+        @env["QUERY_STRING"] = "foo=baz&ticket=ST-bar"
+        actual_url.should == "http://example.org/?foo=baz"
+      end
+
+      it "filters out a service ticket that's in the middle of several" do
+        @env["QUERY_STRING"] = "foo=baz&ticket=ST-bar&zazz=quux"
+        actual_url.should == "http://example.org/?foo=baz&zazz=quux"
       end
     end
   end

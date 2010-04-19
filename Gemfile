@@ -18,21 +18,28 @@ gem 'composite_primary_keys', '~> 2.3.5', :require_as => 'date' # no nil
 # netid
 gem 'ruby-net-ldap', '>= 0.0.4'
 
+# cas
+gem 'rubycas-client', '~> 2.1.0'
+
 # modes
 gem 'warden', '~> 0.10.3'
 
 only :development do
+  # general testing
   gem 'capybara'
   gem 'cucumber', '~> 0.6'
   gem 'rack-test', '~> 0.5'
   gem 'rspec', '~> 1.3'
   gem 'test-unit', '1.2.3' if RUBY_VERSION == '1.9.1'
   gem 'rcov', '~> 0.9'
+
+  # docs
   gem 'yard', '~> 0.5'
   # for yard; doesn't work in jruby
   gem 'bluecloth' unless RUBY_PLATFORM == 'java'
   gem 'fssm'
 
+  # pers testing
   gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
   gem 'bcdatabase', '~> 1.0'
@@ -47,8 +54,11 @@ only :development do
   end
   gem 'bcoracle', '~>1.0'
 
+  # cas testing
   gem 'rubycas-server'
+  gem 'celerity', '~> 0.7.9', :require_as => 'date' # has to be installed for culerity
 
+  # ci & deployment
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'
   gem 'nokogiri'
