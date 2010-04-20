@@ -8,19 +8,25 @@ module Bcsec
 
     describe ".use_in" do
       before do
-        @builder = stub
-      end
+        @builder = Class.new do
+          def use(cls, *params, &block)
+            self.uses << [cls, params, block]
+          end
 
-      def build
+          def uses
+            @uses ||= []
+          end
+
+          def using?(klass)
+            self.uses.detect { |cls, params, block| cls == klass }
+          end
+          alias :find_use_of :using?
+        end.new
+
         Bcsec::Rack.use_in(@builder)
       end
 
       describe "setting up modes" do
-        before do
-          @builder.should_receive(:use).any_number_of_times
-          build
-        end
-
         it "installs the form mode" do
           ::Warden::Strategies[:form].should == Bcsec::Modes::Form
         end
@@ -40,8 +46,7 @@ module Bcsec
 
       describe "configuring warden" do
         it "uses a manager" do
-          @builder.should_receive(:use).with(Warden::Manager)
-          build
+          @builder.should be_using(Warden::Manager)
         end
 
         it "gives the manager the failure app" do
@@ -49,15 +54,14 @@ module Bcsec
 
           mock_manager = Object.new
           mock_manager.should_receive(:failure_app).with(Bcsec::Rack::Failure)
-          @builder.should_receive(:use).with(Warden::Manager).and_yield(mock_manager)
+
+          _, _, actual_block = @builder.find_use_of(Warden::Manager)
+          actual_block.call(mock_manager)
         end
       end
 
       it "attaches the bcsec middleware" do
-        pending
-
-        @builder.should_receive(:use).with(Bcsec::Rack::Setup)
-        build
+        @builder.should be_using(Bcsec::Rack::Setup)
       end
     end
   end

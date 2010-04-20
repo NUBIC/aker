@@ -4,6 +4,8 @@ require 'warden'
 ##
 # Integration of Bcsec with {http://rack.rubyforge.org/ Rack}.
 module Bcsec::Rack
+  autoload :Setup, 'bcsec/rack/setup'
+
   class << self
     ##
     # Configures all the necessary middleware for Bcsec into the given
@@ -25,6 +27,7 @@ module Bcsec::Rack
       install_modes
 
       builder.use Warden::Manager
+      builder.use Setup
     end
 
     private
