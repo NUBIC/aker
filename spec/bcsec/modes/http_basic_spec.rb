@@ -9,6 +9,7 @@ module Bcsec::Modes
       @env = ::Rack::MockRequest.env_for("/")
       @scope = mock
       @mode = HttpBasic.new(@env, @scope)
+      @env['bcsec.configuration'] = Bcsec::Configuration.new
     end
 
     it_should_behave_like "a bcsec mode"
@@ -71,7 +72,7 @@ module Bcsec::Modes
     describe "#authenticate!" do
       before do
         @authority = mock
-        @mode.stub!(:authority => @authority)
+        @env['bcsec.authority'] = @authority
       end
 
       it "signals success if the username and password are good" do
@@ -92,31 +93,25 @@ module Bcsec::Modes
     end
 
     describe "#realm" do
-      it "uses the :realm parameter of the :http_basic configuration group" do
-        @mode.should_receive(:parameters_for).with(:http_basic).and_return(:realm => 'Realm')
+      it "prefers the portal attribute of the configuration" do
+        @env['bcsec.configuration'].portal = "Realm"
 
         @mode.realm.should == "Realm"
       end
 
       it "defaults to 'Bcsec'" do
-        @mode.should_receive(:parameters_for).with(:http_basic).and_return({})
-
         @mode.realm.should == "Bcsec"
       end
     end
 
     describe "#scheme" do
       it "returns Basic with a realm" do
-        @mode.stub!(:parameters_for => { :realm => 'Realm' })
-
-        @mode.scheme.should == %q{Basic realm="Realm"}
+        @mode.scheme.should == %q{Basic realm="Bcsec"}
       end
     end
 
     describe "#on_ui_failure" do
       before do
-        @mode.stub!(:parameters_for => { :realm => 'Realm' })
-
         @response = @mode.on_ui_failure(@env)
       end
 
@@ -125,7 +120,7 @@ module Bcsec::Modes
       end
 
       it "returns a WWW-Authenticate header containing the Basic authentication scheme" do
-        @response.headers['WWW-Authenticate'].should == %q{Basic realm="Realm"}
+        @response.headers['WWW-Authenticate'].should == %q{Basic realm="Bcsec"}
       end
     end
   end

@@ -39,8 +39,27 @@ module Bcsec
       #
       # @see Bcsec::Configuration
       # @return [Hash]
+      # @deprecated replace with {#configuration}`#parameters_for`
       def parameters_for(mode)
-        env['bcsec.configuration'].parameters_for(mode)
+        configuration.parameters_for(mode)
+      end
+
+      ##
+      # Exposes the configuration this mode should use.
+      #
+      # @return Bcsec::Configuration
+      def configuration
+        env['bcsec.configuration']
+      end
+
+      ##
+      # Exposes the authority this mode will use to validate
+      # credentials.  Internally it is extracted from the
+      # `bcsec.authority` Rack environment variable.
+      #
+      # @return [Object]
+      def authority
+        env['bcsec.authority']
       end
 
       ##

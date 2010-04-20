@@ -93,7 +93,7 @@ module Bcsec
       # @see Bcsec::Configuration
       # @return [String]
       def realm
-        parameters_for(:http_basic)[:realm] || 'Bcsec'
+        (configuration.portal? ? configuration.portal : 'Bcsec').to_s
       end
 
       ##
