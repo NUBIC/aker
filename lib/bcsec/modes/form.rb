@@ -81,7 +81,7 @@ module Bcsec
       #
       # @return [Rack::Response]
       def on_ui_failure(env)
-        Rack::Response.new { |resp| resp.redirect(login_url) }
+        ::Rack::Response.new { |resp| resp.redirect(login_url) }
       end
     end
   end

@@ -5,12 +5,12 @@ require "rack"
 module Bcsec::Modes
   describe Form do
     before do
-      @env = Rack::MockRequest.env_for("/")
+      @env = ::Rack::MockRequest.env_for("/")
       @scope = mock
       @mode = Form.new(@env, @scope)
 
       # Rack::Request manipulations modify the environment in-place
-      @request = Rack::Request.new(@env)
+      @request = ::Rack::Request.new(@env)
     end
 
     it_should_behave_like "a bcsec mode"

@@ -55,7 +55,7 @@ module Bcsec
         # @param env the Rack environment
         # @return a finished Rack response
         def provide_login_html(env)
-          Rack::Response.new(assets.login_html(env)).finish
+          ::Rack::Response.new(assets.login_html(env)).finish
         end
 
         ##
@@ -64,7 +64,7 @@ module Bcsec
         # @param env the Rack environment
         # @return a finished Rack response
         def provide_login_css
-          Rack::Response.new(assets.login_css) do |resp|
+          ::Rack::Response.new(assets.login_css) do |resp|
             resp['Content-Type'] = 'text/css'
           end.finish
         end

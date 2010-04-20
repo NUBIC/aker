@@ -6,7 +6,7 @@ require 'rack'
 module Bcsec::Modes
   describe HttpBasic do
     before do
-      @env = Rack::MockRequest.env_for("/")
+      @env = ::Rack::MockRequest.env_for("/")
       @scope = mock
       @mode = HttpBasic.new(@env, @scope)
     end

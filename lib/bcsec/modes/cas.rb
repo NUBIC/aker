@@ -68,7 +68,7 @@ module Bcsec
       #
       # @return [Rack::Response]
       def on_ui_failure(env)
-        Rack::Response.new do |resp|
+        ::Rack::Response.new do |resp|
           login_uri = URI.parse(cas_login_url)
           login_uri.query = "service=#{service_url(env)}"
           resp.redirect(login_uri.to_s)

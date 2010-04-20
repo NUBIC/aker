@@ -6,7 +6,7 @@ require 'uri'
 module Bcsec::Modes
   describe Cas do
     before do
-      @env = Rack::MockRequest.env_for('/')
+      @env = ::Rack::MockRequest.env_for('/')
       @scope = mock
       @mode = Cas.new(@env, @scope)
     end
