@@ -10,6 +10,7 @@ module Bcsec
   autoload :Group,             'bcsec/group'
   autoload :GroupMemberships,  'bcsec/group_membership'
   autoload :GroupMembership,   'bcsec/group_membership'
+  autoload :Rack,              'bcsec/rack'
   autoload :User,              'bcsec/user'
   autoload :Modes,             'bcsec/modes'
 
