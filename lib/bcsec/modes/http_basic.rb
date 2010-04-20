@@ -81,7 +81,7 @@ module Bcsec
       #
       # @return [Rack::Response]
       def on_ui_failure(env)
-        ::Rack::Response.new([], 401, {'WWW-Authenticate' => scheme})
+        ::Rack::Response.new([], 401, {'WWW-Authenticate' => challenge})
       end
 
       ##
@@ -98,11 +98,17 @@ module Bcsec
 
       ##
       # Used to build a WWW-Authenticate header that will be returned to a
-      # client failing noninteractive authentication.
+      # client when authentication is required.
       #
       # @return [String]
       def scheme
-        %Q{Basic realm="#{realm}"}
+        "Basic"
+      end
+
+      private
+
+      def challenge
+        "#{scheme} realm=\"#{realm}\""
       end
     end
   end

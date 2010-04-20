@@ -105,8 +105,8 @@ module Bcsec::Modes
     end
 
     describe "#scheme" do
-      it "returns Basic with a realm" do
-        @mode.scheme.should == %q{Basic realm="Bcsec"}
+      it "is Basic" do
+        @mode.scheme.should == "Basic"
       end
     end
 
