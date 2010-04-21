@@ -13,7 +13,7 @@ module Bcsec::Rack
       Warden::Strategies.clear!
     end
 
-    describe "on' authentication" do
+    describe "on authentication" do
       describe "when interactive" do
         before do
           Warden::Strategies.add(:fake_ui) do
