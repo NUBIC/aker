@@ -50,13 +50,14 @@ module Bcsec
         end
 
         it "gives the manager the failure app" do
-          pending
-
-          mock_manager = Object.new
-          mock_manager.should_receive(:failure_app).with(Bcsec::Rack::Failure)
+          mock_manager = Class.new do
+            attr_accessor :failure_app
+          end.new
 
           _, _, actual_block = @builder.find_use_of(Warden::Manager)
           actual_block.call(mock_manager)
+
+          mock_manager.failure_app.class.should == Bcsec::Rack::Failure
         end
       end
 

@@ -4,7 +4,8 @@ require 'warden'
 ##
 # Integration of Bcsec with {http://rack.rubyforge.org/ Rack}.
 module Bcsec::Rack
-  autoload :Setup, 'bcsec/rack/setup'
+  autoload :Failure, 'bcsec/rack/failure'
+  autoload :Setup,   'bcsec/rack/setup'
 
   class << self
     ##
@@ -26,7 +27,9 @@ module Bcsec::Rack
     def use_in(builder)
       install_modes
 
-      builder.use Warden::Manager
+      builder.use Warden::Manager do |manager|
+        manager.failure_app = Bcsec::Rack::Failure.new
+      end
       builder.use Setup
     end
 
