@@ -11,8 +11,7 @@ module Bcsec::Rack
         headers = {}
         headers["WWW-Authenticate"] =
           conf.api_modes.collect { |mode_key|
-            mode = ::Warden::Strategies[mode_key].new(env)
-            "#{mode.scheme} realm=\"#{conf.portal? ? conf.portal : Bcsec}\""
+            ::Warden::Strategies[mode_key].new(env).challenge
           }.join("\n")
         headers["Content-Type"] = "text/plain"
         [401, headers, [""]]

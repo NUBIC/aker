@@ -15,6 +15,8 @@ module Bcsec
     #      RFC 2617
     # @author David Yip
     class HttpBasic < Bcsec::Modes::Base
+      include Rfc2617
+
       ##
       # Recognizes valid Basic challenges.
       #
@@ -85,30 +87,13 @@ module Bcsec
       end
 
       ##
-      # The authentication realm to be used in challenges.
-      #
-      # This is set via the `:realm` parameter in the `:http_basic`
-      # configuration group.  If no realm is set, defaults to `Bcsec`.
-      #
-      # @see Bcsec::Configuration
-      # @return [String]
-      def realm
-        (configuration.portal? ? configuration.portal : 'Bcsec').to_s
-      end
-
-      ##
       # Used to build a WWW-Authenticate header that will be returned to a
       # client when authentication is required.
       #
+      # @see HttpMode#challenge
       # @return [String]
       def scheme
         "Basic"
-      end
-
-      private
-
-      def challenge
-        "#{scheme} realm=\"#{realm}\""
       end
     end
   end

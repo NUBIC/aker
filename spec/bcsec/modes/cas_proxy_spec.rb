@@ -8,6 +8,7 @@ module Bcsec::Modes
       @env = Rack::MockRequest.env_for('/')
       @scope = mock
       @mode = CasProxy.new(@env, @scope)
+      @env['bcsec.configuration'] = Bcsec::Configuration.new
     end
 
     it_should_behave_like "a bcsec mode"
@@ -51,6 +52,12 @@ module Bcsec::Modes
     describe "#scheme" do
       it "returns CasProxy" do
         @mode.scheme.should == "CasProxy"
+      end
+    end
+
+    describe "#challenge" do
+      it "includes the scheme and the realm" do
+        @mode.challenge.should == "CasProxy realm=\"Bcsec\""
       end
     end
 

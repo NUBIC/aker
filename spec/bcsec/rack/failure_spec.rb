@@ -36,14 +36,14 @@ module Bcsec::Rack
         before do
           @env['bcsec.interactive'] = false
 
-          Warden::Strategies.add(:alpha) do
-            def authenticate!; nil; end
-            def scheme; "Alpha"; end
-          end
-
-          Warden::Strategies.add(:beta) do
-            def authenticate!; nil; end
-            def scheme; "Beta"; end
+          %w(Alpha Beta).each do |n|
+            cls = Class.new(Bcsec::Modes::Base)
+            cls.class_eval <<-RUBY
+              include Bcsec::Modes::Rfc2617
+              def authenticate!; nil; end
+              def scheme; #{n.inspect}; end
+            RUBY
+            Warden::Strategies.add(n.downcase.to_sym, cls)
           end
         end
 
