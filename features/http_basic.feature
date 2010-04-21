@@ -14,10 +14,9 @@ Scenario: A user can access a protected resource with the correct credentials
    When I access a protected resource
    Then I should be able to access that protected resource
 
-@wip
 Scenario: A request with no credentials is challenged
   Given that I am using no credentials
     And I am using the API
    When I access a protected resource
    Then the HTTP status should be 401
-    And the "WWW-Authenticate" header should be "Basic realm=Serenity"
+    And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'

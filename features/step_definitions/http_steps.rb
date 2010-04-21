@@ -19,6 +19,6 @@ Then /the HTTP status should be (\d{3})/ do |status|
   last_response.status.should == status.to_i
 end
 
-Then /^the "([^\"]*)" header should be "([^\"]*)"$/ do |header, expected|
+Then /^the '([^']*)' header should be '([^']*)'$/ do |header, expected|
   last_response.headers[header].should == expected
 end
