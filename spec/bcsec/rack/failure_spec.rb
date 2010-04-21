@@ -69,10 +69,6 @@ module Bcsec::Rack
           actual = @app.call(@env)
           actual[1]["WWW-Authenticate"].should == %Q{Alpha realm="ENU"}
         end
-
-        it "does the right thing if there are no API modes" do
-          pending "But what is that?"
-        end
       end
     end
   end

@@ -57,7 +57,7 @@ module Bcsec::Rack
     #
     # @return [Boolean]
     def interactive?(env)
-      env["HTTP_ACCEPT"] =~ %r{text/html}
+      configuration.api_modes.empty? or env["HTTP_ACCEPT"] =~ %r{text/html}
     end
 
     private

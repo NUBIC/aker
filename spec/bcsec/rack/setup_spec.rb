@@ -48,20 +48,40 @@ module Bcsec::Rack
         env.should have_key("bcsec.interactive")
       end
 
-      it "is interactive if the accept header includes text/html" do
+      it "is always interactive if the accept header includes text/html" do
         env = call("HTTP_ACCEPT" =>
                    "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5")
         env['bcsec.interactive'].should be_true
       end
 
-      it "is not interactive if the accept header does not include text/html" do
-        env = call("HTTP_ACCEPT" => "*/*")
-        env['bcsec.interactive'].should be_false
+      describe "when there are any API modes" do
+        before do
+          Bcsec.configure {
+            api_mode :http_basic
+          }
+        end
+
+        it "is not interactive if the accept header does not include text/html" do
+          env = call("HTTP_ACCEPT" => "*/*")
+          env['bcsec.interactive'].should be_false
+        end
+
+        it "is not interactive if there is no accept header" do
+          env = call
+          env['bcsec.interactive'].should be_false
+        end
       end
 
-      it "is not interactive if there is no accept header" do
-        env = call
-        env['bcsec.interactive'].should be_false
+      describe "when there are no API modes" do
+        it "is interactive if the accept header does not include text/html" do
+          env = call("HTTP_ACCEPT" => "*/*")
+          env['bcsec.interactive'].should be_true
+        end
+
+        it "is interactive if there is no accept header" do
+          env = call
+          env['bcsec.interactive'].should be_true
+        end
       end
     end
 
@@ -87,15 +107,6 @@ module Bcsec::Rack
         @warden.should_receive(:authenticate).with(:basic, :cas_proxy)
 
         call(@env.merge("HTTP_ACCEPT" => "application/json"))
-      end
-
-      it "calls the ui mode if not interactive and there are no api modes" do
-        Bcsec.configuration = nil
-        Bcsec.configure { ui_mode :form }
-
-        @warden.should_receive(:authenticate).with(:form)
-
-        call(@env.merge("HTTP_ACCEPT" => "application/xml"))
       end
     end
 
