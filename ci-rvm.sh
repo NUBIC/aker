@@ -5,6 +5,11 @@
 # Use it by sourcing it:
 #
 #  . ci-rvm.sh
+#
+# Assumes that the create-on-use settings are set in your ~/.rvmrc:
+#
+#  rvm_install_on_use_flag=1
+#  rvm_gemset_create_on_use_flag=1
 
 . ~/.rvm/scripts/rvm
 
@@ -31,18 +36,8 @@ if [ -z "$BCSEC_RVM_RUBY" ]; then
     fi
 fi
 
-DETECT_INSTALLED=`rvm list strings | grep ${BCSEC_RVM_RUBY}`
-if [ -z "$DETECT_INSTALLED"  ]; then
-    rvm install $BCSEC_RVM_RUBY;
-fi
-
 echo "Switching to ${BCSEC_RVM_RUBY}"
 rvm use "$BCSEC_RVM_RUBY"
-echo `ruby -v`
+ruby -v
 
-BCSEC_CI_GEMSET='bcsec_ci'
-if [ -z `rvm gemset list | grep ${BCSEC_CI_GEMSET}` ]; then
-    rvm gemset create "$BCSEC_CI_GEMSET";
-fi
-rvm gemset use "$BCSEC_CI_GEMSET"
-rvm info
+rvm gemset use bcsec_ci
