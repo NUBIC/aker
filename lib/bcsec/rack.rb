@@ -26,6 +26,7 @@ module Bcsec::Rack
     # @return [void]
     def use_in(builder)
       install_modes
+      install_mode_middleware(builder) if Bcsec.configuration
 
       builder.use Warden::Manager do |manager|
         manager.failure_app = Bcsec::Rack::Failure.new
@@ -43,6 +44,15 @@ module Bcsec::Rack
         select { |c| c.respond_to?(:key) }.
         each do |mode|
         Warden::Strategies.add(mode.key, mode)
+      end
+    end
+
+    ##
+    # @return [void]
+    def install_mode_middleware(builder)
+      [Bcsec.configuration.ui_mode, Bcsec.configuration.api_modes].flatten.each do |k|
+        mode = Warden::Strategies[k]
+        mode.prepend_middleware(builder) if mode.respond_to?(:prepend_middleware)
       end
     end
   end
