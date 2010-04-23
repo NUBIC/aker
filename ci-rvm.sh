@@ -39,5 +39,3 @@ fi
 echo "Switching to ${BCSEC_RVM_RUBY}"
 rvm use "$BCSEC_RVM_RUBY"
 ruby -v
-
-rvm gemset use bcsec_ci
