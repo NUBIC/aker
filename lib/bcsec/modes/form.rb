@@ -80,7 +80,7 @@ module Bcsec
       # Builds a Rack response that redirects to the login form.
       #
       # @return [Rack::Response]
-      def on_ui_failure(env)
+      def on_ui_failure
         ::Rack::Response.new { |resp| resp.redirect(login_url) }
       end
     end
