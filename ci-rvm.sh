@@ -16,7 +16,7 @@
 unset BCSEC_RVM_RUBY
 case "$BCSEC_ENV" in
 'ci_1.8.7')
-BCSEC_RVM_RUBY='ree-1.8.7-2009.10';
+BCSEC_RVM_RUBY='ree-1.8.7-2010.01';
 ;;
 'ci_jruby')
 BCSEC_RVM_RUBY='jruby-1.4.0';
