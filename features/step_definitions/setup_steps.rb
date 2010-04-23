@@ -45,6 +45,8 @@ Given /^I have a bcsec\-protected application using$/ do |table|
       }
     end
   end
+
+  Capybara.app = @app
 end
 
 After do
