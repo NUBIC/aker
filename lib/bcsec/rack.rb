@@ -12,8 +12,8 @@ module Bcsec::Rack
     # Configures all the necessary middleware for Bcsec into the given
     # rack application stack.  With `Rack::Builder`:
     #
-    #      Rack::Builder.new do |builder|
-    #        Bcsec::Rack.use_in(builder)
+    #      Rack::Builder.new do
+    #        Bcsec::Rack.use_in(self) # self is the builder instance
     #      end
     #
     # Bcsec's middleware stack relies on the existence of a session,
