@@ -27,7 +27,7 @@ module Bcsec::Authorities
 
     describe "#authorities" do
       it "uses the authorities from the configuration" do
-        actual { authorities Static.new, Static.new }.authorities.size.should == 2
+        actual { authorities Object.new, Object.new }.authorities.size.should == 2
       end
 
       it "prefers directly set authorities" do

@@ -32,7 +32,8 @@ module Bcsec
       def notify(message, version)
         level = determine_level(version)
         mode.report(level,
-                    full_message_for(level, message, version, caller[1].split('/').last),
+                    full_message_for(level, message, version,
+                                     caller[1].split('/').last.split(':')[0,2].join(':')),
                     version)
       end
 
@@ -91,7 +92,7 @@ module Bcsec
       def report(level, message, version)
         case level
         when :deprecated; $stderr.puts message;
-        when :obsolete: raise ObsoleteError, message
+        when :obsolete; raise ObsoleteError.new(message)
         end
       end
     end
