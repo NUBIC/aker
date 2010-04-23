@@ -2,7 +2,21 @@ require 'bcsec/rack'
 require 'warden'
 
 module Bcsec::Rack
+  ##
+  # The Rack endpoint which handles authentication failures.
+  #
+  # @see Bcsec::Rack.use_in
+  # @see http://wiki.github.com/hassox/warden/failures
+  #      Warden failures documentation
   class Failure
+    ##
+    # Receives the rack environment in case of a failure and renders a
+    # response based on the interactiveness of the request and the
+    # nature of the configured modes.
+    #
+    # @param [Hash] env a rack environment
+    #
+    # @return [Array] a rack response
     def call(env)
       conf = configuration(env)
       if interactive?(env)
