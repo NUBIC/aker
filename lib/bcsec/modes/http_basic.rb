@@ -82,7 +82,7 @@ module Bcsec
       # appear.
       #
       # @return [Rack::Response]
-      def on_ui_failure(env)
+      def on_ui_failure
         ::Rack::Response.new([], 401, {'WWW-Authenticate' => challenge})
       end
 

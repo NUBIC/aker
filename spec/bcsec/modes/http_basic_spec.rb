@@ -112,7 +112,7 @@ module Bcsec::Modes
 
     describe "#on_ui_failure" do
       before do
-        @response = @mode.on_ui_failure(@env)
+        @response = @mode.on_ui_failure
       end
 
       it "returns 401 Unauthorized" do
