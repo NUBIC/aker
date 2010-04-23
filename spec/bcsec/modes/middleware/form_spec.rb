@@ -9,7 +9,7 @@ module Bcsec::Modes::Middleware
       assets = mock
 
       @app = Rack::Builder.new do
-        use Bcsec::Modes::Middleware::Form, assets
+        use Bcsec::Modes::Middleware::Form, '/login', assets
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
 
@@ -30,7 +30,7 @@ module Bcsec::Modes::Middleware
     it "renders login forms for GETs on the login path" do
       @assets.should_receive(:login_html).with(hash_including("SCRIPT_NAME")).and_return("login form")
 
-      get "/"
+      get "/login"
 
       last_response.should be_ok
       last_response.content_type.should == "text/html"
@@ -40,7 +40,7 @@ module Bcsec::Modes::Middleware
     it "outputs CSS for GETs on (the login path) + .css" do
       @assets.should_receive(:login_css).and_return("login css")
 
-      get "/login.css"
+      get "/login/login.css"
 
       last_response.should be_ok
       last_response.content_type.should == "text/css"

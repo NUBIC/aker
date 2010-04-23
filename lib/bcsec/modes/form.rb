@@ -40,7 +40,7 @@ module Bcsec
       # Prepends the {Middleware::Form login form renderer} to its position in
       # the Rack middleware stack.
       def self.prepend_middleware(builder)
-        builder.map(login_path) { use Middleware::Form, Middleware::FormAssetProvider.new }
+        builder.use Middleware::Form, login_path, Middleware::FormAssetProvider.new
       end
 
       ##
