@@ -215,4 +215,15 @@ Bcdatabase::Oracle.wipe_task(
 )
 task "test:db:import" => "test:db:wipe"
 
-task :autobuild => ['ci:setup:rspec', 'spec:rcov']
+namespace :ci do
+  task :all => [:spec, :cucumber]
+
+  ENV["CI_REPORTS"] = "reports/spec-xml"
+  task :spec => ["ci:setup:rspec", 'spec:rcov']
+
+  Cucumber::Rake::Task.new(:cucumber, 'Run features using the ci profile') do |t|
+    t.fork = true
+    t.profile = 'ci'
+  end
+end
+task :autobuild => :'ci:all'

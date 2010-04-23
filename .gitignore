@@ -5,6 +5,7 @@ pkg
 doc
 .yardoc
 mydel.sql
+reports
 
 # editor swap files
 *.sw?

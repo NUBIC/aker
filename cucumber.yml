@@ -1,2 +1,3 @@
 default: --strict --tags ~@wip features
 wip: --tags @wip:3 --wip features
+ci: --tags ~@wip --tags ~@badci --format html --out reports/cucumber.html --format junit --out reports/cucumber-xml --format progress --strict features
