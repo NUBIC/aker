@@ -23,14 +23,15 @@ Given /^I have a bcsec\-protected application using$/ do |table|
     end
   }
 
-  @app = Rack::Builder.new do |builder|
+  @app = Rack::Builder.new do
     use Rack::Session::Cookie
-    Bcsec::Rack.use_in(builder)
+    Bcsec::Rack.use_in(self)
 
     map '/protected' do
       run Proc.new { |env|
         throw :warden unless env['warden'].authenticated?
-        [200, { "Content-Type" => "text/plain" }, "I'm protected, #{env['warden'].user.username}."]
+        [200, { "Content-Type" => "text/plain" },
+         ["I'm protected, #{env['warden'].user.username}."]]
       }
     end
 
