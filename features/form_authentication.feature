@@ -9,13 +9,14 @@ Feature: Form authentication
   Background:
     Given I have an authority that accepts these usernames and passwords:
       | username | password |
-      | abc123   | foobar   |
+      | mr296    | br0wn    |
     And I have a bcsec-protected application using
-      | ui mode | api mode |
-      | form    |          |
+      | ui_mode | api_modes | portal   |
+      | form    |           | Serenity |
+    And I am using the UI
 
   Scenario: A correct username and password should pass authentication
-    When I enter username "abc123" and password "foobar" into the login form
+    When I enter username "mr296" and password "br0wn" into the login form
     And I access a protected resource
 
     Then I should be able to access that protected resource
@@ -26,6 +27,6 @@ Feature: Form authentication
     Then I should be sent to the login page
 
   Scenario: Users failing authentication should be sent to the login page
-    When I enter username "abc123" and password "wrong" into the login form
+    When I enter username "mr296" and password "wrong" into the login form
 
     Then I should be sent to the login page
