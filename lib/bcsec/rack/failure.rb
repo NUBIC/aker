@@ -20,7 +20,7 @@ module Bcsec::Rack
     def call(env)
       conf = configuration(env)
       if interactive?(env)
-        ::Warden::Strategies[conf.ui_mode].new(env).on_ui_failure
+        ::Warden::Strategies[conf.ui_mode].new(env).on_ui_failure.finish
       else
         headers = {}
         headers["WWW-Authenticate"] =
