@@ -11,7 +11,10 @@
 #  rvm_install_on_use_flag=1
 #  rvm_gemset_create_on_use_flag=1
 
+set +x
+echo ". ~/.rvm/scripts/rvm"
 . ~/.rvm/scripts/rvm
+set -x
 
 unset BCSEC_RVM_RUBY
 case "$BCSEC_ENV" in
@@ -37,5 +40,7 @@ if [ -z "$BCSEC_RVM_RUBY" ]; then
 fi
 
 echo "Switching to ${BCSEC_RVM_RUBY}"
+set +x
 rvm use "$BCSEC_RVM_RUBY"
+set -x
 ruby -v
