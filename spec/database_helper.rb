@@ -8,6 +8,7 @@ module Bcsec
       PARAMS = {
         'test' => [:local_oracle, :cc_pers_test],
         'ci_1.8.7' => [:bcdev, :cc_pers_hudson_bcsec],
+        'ci_1.9.1' => [:bcdev, :cc_pers_hudson_bcsec_yarv],
         'ci_jruby' => [:bcdev, :cc_pers_hudson_bcsec_java]
       }
 
