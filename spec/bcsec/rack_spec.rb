@@ -9,6 +9,10 @@ module Bcsec
     describe ".use_in" do
       before do
         @builder = Class.new do
+          def reset!
+            self.uses.clear
+          end
+
           def use(cls, *params, &block)
             self.uses << [cls, params, block]
           end
@@ -58,6 +62,45 @@ module Bcsec
           actual_block.call(mock_manager)
 
           mock_manager.failure_app.class.should == Bcsec::Rack::Failure
+        end
+      end
+
+      describe "prepending middleware" do
+        before do
+          @builder.reset!
+
+          @test_ui = Class.new(Warden::Strategies::Base) do
+            def authenticate!; end
+            def self.prepend_middleware(builder); builder.use :ui_ware; end
+          end
+
+          @test_api_1 = Class.new(Warden::Strategies::Base) do
+            def authenticate!; end
+            def self.prepend_middleware(builder); builder.use :api_ware_1; end
+          end
+
+          @test_api_2 = Class.new(Warden::Strategies::Base) do
+            def authenticate!; end
+          end
+
+          Warden::Strategies.add(:test_ui, @test_ui)
+          Warden::Strategies.add(:test_api_1, @test_api_1)
+          Warden::Strategies.add(:test_api_2, @test_api_2)
+
+          Bcsec.configure do
+            ui_mode :test_ui
+            api_modes :test_api_1, :test_api_2
+          end
+
+          Bcsec::Rack.use_in(@builder)
+        end
+
+        it "prepends middleware for UI modes first" do
+          @builder.uses[0].first.should == :ui_ware
+        end
+
+        it "prepends middleware for API modes after UI modes" do
+          @builder.uses[1].first.should == :api_ware_1
         end
       end
 

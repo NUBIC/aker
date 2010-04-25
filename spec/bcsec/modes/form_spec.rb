@@ -91,7 +91,7 @@ module Bcsec::Modes
 
     describe "#on_ui_failure" do
       it "redirects to the login form" do
-        response = @mode.on_ui_failure(@env)
+        response = @mode.on_ui_failure
 
         response.should be_redirect
         URI.parse(response.location).path.should == "/login"

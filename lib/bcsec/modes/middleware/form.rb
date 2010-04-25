@@ -17,12 +17,19 @@ module Bcsec
         attr_accessor :assets
 
         ##
+        # The path at which the middleware will watch for login requests.
+        # @return [String] the login path
+        attr_accessor :login_path
+
+        ##
         # Instantiates the middleware.
         #
         # @param app [Rack app] The Rack application on which this middleware should be layered.
         # @param assets [#login_html, #login_css] a login asset provider
-        def initialize(app, assets)
+        # @param login_path [String] the login path
+        def initialize(app, login_path, assets)
           @app = app
+          self.login_path = login_path
           self.assets = assets
         end
 
@@ -31,19 +38,19 @@ module Bcsec
         #
         # `call` returns one of three responses, depending on the path.
         #
-        # * If the path is `/`, `call` returns an HTML form for submitting a
-        #   username and password.
-        # * If the path if `/login.css`, `call` returns the CSS for the
-        #   aforementioned form.
+        # * If the path is `login_path`, `call` returns an HTML form for
+        #   submitting a username and password.
+        # * If the path is `login_path + "/login.css"`, `call` returns the CSS
+        #   for the aforementioned form.
         # * If the path is anything else, `call` passes the request down
         #   through the Rack stack.
         #
         # @return a finished Rack response
         def call(env)
           case env['PATH_INFO']
-            when '/';          provide_login_html(env)
-            when '/login.css'; provide_login_css
-            else               @app.call(env)
+            when login_path;                provide_login_html(env)
+            when login_path + '/login.css'; provide_login_css
+            else                            @app.call(env)
           end
         end
 

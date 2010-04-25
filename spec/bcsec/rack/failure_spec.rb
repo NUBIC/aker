@@ -19,7 +19,7 @@ module Bcsec::Rack
           Warden::Strategies.add(:fake_ui) do
             def authenticate!; nil; end
             def on_ui_failure
-              [403, {}, "UI failed!"]
+              ::Rack::Response.new(["UI failed!"], 403, {})
             end
           end
 
@@ -28,7 +28,13 @@ module Bcsec::Rack
         end
 
         it "invokes #on_ui_failure on the appropriate mode" do
-          @app.call(@env).should == [403, {}, "UI failed!"]
+          actual_code, actual_headers, actual_body = @app.call(@env)
+          actual_code.should == 403
+          actual_lines = []
+          actual_body.each do |l|
+            actual_lines << l
+          end
+          actual_lines.should == ["UI failed!"]
         end
       end
 

@@ -6,6 +6,8 @@ $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
 
 require 'bcsec'
 
+require 'capybara'
+require 'capybara/cucumber'
 require 'rack/test'
 
 module Bcsec::Cucumber
