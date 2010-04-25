@@ -1,6 +1,22 @@
+require 'rack/builder'
+require 'yaml'
+require 'picnic/conf'
 require 'fileutils'
 require 'sqlite3'
 require File.expand_path('../spawned_http_server.rb', __FILE__)
+
+# Because rubycas-server's config.ru refers to the Rack module, it
+# needs to be interpreted outside of the Bcsec module.
+module CASServer
+  def self.app(config_filename)
+    $CONF = Picnic::Conf.new
+    $CONF.load_from_file(nil, nil, config_filename)
+
+    rackup = File.expand_path("../config.ru",
+                              $LOAD_PATH.detect { |path| path =~ /rubycas-server/ })
+    app = ::Rack::Builder.new.instance_eval(File.read(rackup))
+  end
+end
 
 module Bcsec
   module Cucumber
@@ -20,8 +36,17 @@ module Bcsec
       end
 
       def exec_server
-        config_filename = create_server_config(binding)
-        exec("gem_bin/rubycas-server -c '#{config_filename}'")
+        Signal.trap("TERM") {
+          $stdout.flush
+          $stderr.flush
+          exit!(0)
+        }
+
+        $stdout = File.open("#{tmpdir}/cas-out.log", "w")
+        $stderr = $stdout
+
+        app = CASServer.app(create_server_config(binding))
+        ::Rack::Handler::WEBrick.run app, :Port => port
       end
 
       def stop
