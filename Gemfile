@@ -47,6 +47,9 @@ only :development do
   end
   gem 'bcoracle', '~>1.0'
 
+  gem 'rubycas-server'
+  gem 'mongrel'
+
   gem 'net-ssh', '~> 2.0'
   gem 'net-scp', '~> 1.0'
   gem 'nokogiri'

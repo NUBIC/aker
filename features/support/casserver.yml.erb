@@ -1,0 +1,23 @@
+server: mongrel
+port: <%= port %>
+bind_address: <%= host %>
+
+database:
+  adapter: sqlite3
+  database: <%= tmpdir %>/casserver.db
+
+authenticator:
+  class: CASServer::Authenticators::SQL
+  database:
+    adapter: sqlite3
+    database: <%= users_database_filename %>
+  user_table: users
+  username_column: username
+  password_column: password
+
+default_locale: en
+
+log:
+  file: <%= tmpdir %>/casserver.log
+  level: INFO
+
