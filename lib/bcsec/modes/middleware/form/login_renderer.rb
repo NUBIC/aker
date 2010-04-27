@@ -40,21 +40,21 @@ module Bcsec
           ##
           # Rack entry point.
           #
-          # `call` returns one of three responses, depending on the path.
+          # `call` returns one of three responses, depending on the path and
+          # method.
           #
-          # * If the path is `login_path`, `call` returns an HTML form for
-          #   submitting a username and password.
-          # * If the path is `login_path + "/login.css"`, `call` returns the CSS
-          #   for the aforementioned form.
-          # * If the path is anything else, `call` passes the request down
-          #   through the Rack stack.
+          # * If the method is GET and the path is `login_path`, `call` returns
+          #   an HTML form for submitting a username and password.
+          # * If the method is GET and the path is `login_path + "/login.css"`,
+          #   `call` returns the CSS for the aforementioned form.
+          # * Otherwise, `call` passes the request down through the Rack stack.
           #
           # @return a finished Rack response
           def call(env)
-            case env['PATH_INFO']
-              when login_path;                provide_login_html(env)
-              when login_path + '/login.css'; provide_login_css
-              else                            @app.call(env)
+            case [env['REQUEST_METHOD'], env['PATH_INFO']]
+              when ['GET', login_path];                provide_login_html(env)
+              when ['GET', login_path + '/login.css']; provide_login_css
+              else                                     @app.call(env)
             end
           end
 

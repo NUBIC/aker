@@ -20,6 +20,13 @@ module Bcsec::Modes::Middleware::Form
       @app
     end
 
+    it "does not intercept POSTs to the login path" do
+      post "/login"
+
+      last_response.should be_ok
+      last_response.body.should == "Hello"
+    end
+
     it "does not intercept GETs to paths that are not the login path" do
       get "/foo"
 
