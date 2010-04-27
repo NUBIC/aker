@@ -33,7 +33,6 @@ only :development do
   gem 'bluecloth' unless RUBY_PLATFORM == 'java'
   gem 'fssm'
 
-  gem 'ruby-debug'
   gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
   gem 'bcdatabase', '~> 1.0'
