@@ -1,4 +1,4 @@
-@capybara @wip
+@capybara
 Feature: Form authentication
   In order to protect confidential data
   Users of bcsec-protected applications
@@ -13,7 +13,6 @@ Feature: Form authentication
     And I have a bcsec-protected application using
       | ui_mode | api_modes | portal   |
       | form    |           | Serenity |
-    And I am using the UI
 
   Scenario: A correct username and password should pass authentication
     When I enter username "mr296" and password "br0wn" into the login form
