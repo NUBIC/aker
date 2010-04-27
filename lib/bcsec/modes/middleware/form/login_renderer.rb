@@ -8,6 +8,9 @@ module Bcsec
         # Rack middleware used by {Bcsec::Modes::Form} to render an HTML login
         # form.
         #
+        # This middleware implements half of the form login process.  The
+        # other half is implemented by {LoginResponder}.
+        #
         # @author David Yip
         class LoginRenderer
           ##
