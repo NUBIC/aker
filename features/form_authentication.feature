@@ -25,7 +25,8 @@ Feature: Form authentication
 
     Then I should be sent to the login page
 
-  Scenario: Users failing authentication should be sent to the login page
+  Scenario: Users failing authentication should be told their login attempt failed
     When I enter username "mr296" and password "wrong" into the login form
 
     Then I should be sent to the login page
+    And I should see "Login failed" on the page
