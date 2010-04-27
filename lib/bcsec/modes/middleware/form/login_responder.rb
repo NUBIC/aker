@@ -65,7 +65,7 @@ module Bcsec
 
             ::Rack::Response.new(body, 401).finish
           end
-          
+
           def redirect_to_app_root(env)
             ::Rack::Response.new { |resp| resp.redirect(env['SCRIPT_NAME'] + '/') }.finish
           end

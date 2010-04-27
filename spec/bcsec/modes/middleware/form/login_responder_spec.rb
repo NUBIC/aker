@@ -54,7 +54,7 @@ module Bcsec::Modes::Middleware::Form
         last_response.status.should == 401
         last_response.body.should == 'Login failed'
       end
-      
+
       it "redirects to the application's root if authentication succeeded" do
         @warden.should_receive(:authenticated?).and_return(true)
 
