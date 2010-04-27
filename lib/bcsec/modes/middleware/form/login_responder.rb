@@ -39,7 +39,10 @@ module Bcsec
           private
 
           def render_login_response(env)
-            if !env['warden'].authenticated?
+            warden = env['warden']
+
+            if !warden.authenticated?
+              warden.custom_failure!
               render_unauthenticated_response(env)
             else
               redirect_to_app_root(env)
