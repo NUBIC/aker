@@ -6,6 +6,6 @@ When /^I enter username "([^\"]*)" and password "([^\"]*)" into the login form$/
 end
 
 Then /^I should be sent to the login page$/ do
-  last_response.status.should == 302
-  URI.parse(last_response.location).path.should == '/login'
+  page.should have_field('username')
+  page.should have_field('password')
 end

@@ -1,18 +1,23 @@
 When "I am using the API" do
   header "Accept", "application/json"
-end
-
-When "I am using the UI" do
-  header "Accept", "text/html"
+  @using_api = true
 end
 
 When /^I access a protected resource$/ do
-  get "/protected"
+  if @using_api
+    get "/protected"
+  else
+    visit "/protected"
+  end
 end
 
 Then /^I should be able to access that protected resource$/ do
-  last_response.status.should == 200
-  last_response.body.should =~ /I'm protected/
+  if @using_api
+    last_response.status.should == 200
+    last_response.body.should =~ /I'm protected/
+  else
+    page.source.should =~ /I'm protected/
+  end
 end
 
 Then /the HTTP status should be (\d{3})/ do |status|
