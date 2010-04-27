@@ -61,9 +61,9 @@ module Bcsec
           end
 
           def render_unauthenticated_response(env)
-            ::Rack::Response.new(assets.login_html(env, :show_failure => true)) do |resp|
-              resp.status = 401
-            end.finish
+            body = assets.login_html(env, :show_failure => true)
+
+            ::Rack::Response.new(body, 401).finish
           end
           
           def redirect_to_app_root(env)
