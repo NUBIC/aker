@@ -9,6 +9,7 @@ require 'bcsec'
 require 'capybara'
 require 'capybara/cucumber'
 require 'rack/test'
+require 'ruby-debug'
 
 module Bcsec::Cucumber
   class World
