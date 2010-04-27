@@ -11,7 +11,7 @@ module Bcsec
     # password in a `password` parameter.
     #
     # This mode also renders said HTML form if authentication fails.  This is
-    # provided by {Middleware::Form}.
+    # provided by {Middleware::Form::LoginRenderer}.
     #
     # @author David Yip
     class Form < Bcsec::Modes::Base
@@ -37,10 +37,12 @@ module Bcsec
       end
 
       ##
-      # Prepends the {Middleware::Form login form renderer} to its position in
-      # the Rack middleware stack.
+      # Prepends the {Middleware::Form::LoginRenderer login form renderer} to
+      # its position in the Rack middleware stack.
       def self.prepend_middleware(builder)
-        builder.use Middleware::Form, login_path, Middleware::FormAssetProvider.new
+        builder.use(Middleware::Form::LoginRenderer,
+                    login_path,
+                    Middleware::Form::AssetProvider.new)
       end
 
       ##

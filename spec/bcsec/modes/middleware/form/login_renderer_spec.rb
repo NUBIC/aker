@@ -1,15 +1,15 @@
-require File.expand_path("../../../../spec_helper", __FILE__)
+require File.expand_path("../../../../../spec_helper", __FILE__)
 require "rack/test"
 
-module Bcsec::Modes::Middleware
-  describe Form do
+module Bcsec::Modes::Middleware::Form
+  describe LoginRenderer do
     include Rack::Test::Methods
 
     before(:all) do
       assets = mock
 
       @app = Rack::Builder.new do
-        use Bcsec::Modes::Middleware::Form, '/login', assets
+        use LoginRenderer, '/login', assets
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
 
