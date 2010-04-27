@@ -13,14 +13,23 @@ module Bcsec
         #
         # @author David Yip
         class LoginResponder
-          attr_accessor :login_path
-
+          ##
+          # The form asset provider used by an instance of this middleware.
+          #
+          # @see AssetProvider
+          # @return [#login_html] a login asset provider
           attr_accessor :assets
+
+          ##
+          # The path at which the middleware will watch for login requests.
+          # @return [String] the login path
+          attr_accessor :login_path
 
           ##
           # Instantiates the middleware.
           #
-          # @param app [Rack app] The Rack application on which this middleware should be layered.
+          # @param app [Rack app] the Rack application on which this middleware
+          #                       should be layered
           # @param login_path [String] the login path
           # @param assets [#login_html, #login_css] a login asset provider
           def initialize(app, login_path, assets)
@@ -29,6 +38,8 @@ module Bcsec
             self.assets = assets
           end
 
+          ##
+          # Rack entry point.
           def call(env)
             case [env['REQUEST_METHOD'], env['PATH_INFO']]
               when ['POST', login_path]; render_login_response(env)
