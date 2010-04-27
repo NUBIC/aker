@@ -32,8 +32,10 @@ module Bcsec
           # form action URL generation.
           #
           # @param env [Rack environment] a Rack environment
+          # @param [Hash] options rendering options
+          # @option options [Boolean] :show_failure If true, will render a failure message
           # @return [String] HTML data
-          def login_html(env)
+          def login_html(env, options = {})
             script_name = env['SCRIPT_NAME']
             template = File.read(File.join(asset_root, 'login.html.erb'))
             ERB.new(template).result(binding)

@@ -7,6 +7,9 @@
   <body>
     <form method="POST" action="<%= script_name %>/login">
       <h1>Please log in</h1>
+      <% if options[:show_failure] %>
+        <p class="error">Login failed</p>
+      <% end %>
       <div class="contents">
         <div class="row">
           <div class="label">
