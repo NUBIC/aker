@@ -9,16 +9,22 @@ module Bcsec::Modes::Middleware::Form
 
     describe "#login_html" do
       before do
-        env = { 'SCRIPT_NAME' => '/login' }
+        env = { 'SCRIPT_NAME' => '/foo' }
         @doc = Nokogiri.HTML(@provider.login_html(env))
       end
 
       it "includes SCRIPT_NAME in the postback URL" do
-        (@doc/'form').first.attributes["action"].value.should == "/login"
+        (@doc/'form').first.attributes["action"].value.should == "/foo/login"
       end
 
       it "includes SCRIPT_NAME in the CSS URL" do
-        (@doc/'link[rel="stylesheet"]').first.attributes["href"].value.should == "/login/login.css"
+        (@doc/'link[rel="stylesheet"]').first.attributes["href"].value.should == "/foo/login.css"
+      end
+
+      it "can render a failure message" do
+        @doc = Nokogiri.HTML(@provider.login_html({}, { :show_failure => true }))
+
+        (@doc/'.error').first.inner_html.should == 'Login failed'
       end
     end
 
