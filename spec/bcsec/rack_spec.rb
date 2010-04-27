@@ -65,18 +65,20 @@ module Bcsec
         end
       end
 
-      describe "prepending middleware" do
+      describe "modifying the Rack stack" do
         before do
           @builder.reset!
 
           @test_ui = Class.new(Warden::Strategies::Base) do
             def authenticate!; end
-            def self.prepend_middleware(builder); builder.use :ui_ware; end
+            def self.prepend_middleware(builder); builder.use :ui_ware_before; end
+            def self.append_middleware(builder); builder.use :ui_ware_after; end
           end
 
           @test_api_1 = Class.new(Warden::Strategies::Base) do
             def authenticate!; end
-            def self.prepend_middleware(builder); builder.use :api_ware_1; end
+            def self.prepend_middleware(builder); builder.use :api_ware_before; end
+            def self.append_middleware(builder); builder.use :api_ware_after; end
           end
 
           @test_api_2 = Class.new(Warden::Strategies::Base) do
@@ -93,14 +95,24 @@ module Bcsec
           end
 
           Bcsec::Rack.use_in(@builder)
+
+          @bcsec_index = @builder.uses.map { |u| u.first }.index(Bcsec::Rack::Setup)
         end
 
         it "prepends middleware for UI modes first" do
-          @builder.uses[0].first.should == :ui_ware
+          @builder.uses[0].first.should == :ui_ware_before
         end
 
         it "prepends middleware for API modes after UI modes" do
-          @builder.uses[1].first.should == :api_ware_1
+          @builder.uses[1].first.should == :api_ware_before
+        end
+
+        it "appends middleware for UI modes directly after the bcsec middleware" do
+          @builder.uses[@bcsec_index + 1].first.should == :ui_ware_after
+        end
+
+        it "appends middleware for API modes after appended UI middleware" do
+          @builder.uses[@bcsec_index + 2].first.should == :api_ware_after
         end
       end
 

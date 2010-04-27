@@ -26,12 +26,13 @@ module Bcsec::Rack
     # @return [void]
     def use_in(builder)
       install_modes
-      install_mode_middleware(builder) if Bcsec.configuration
 
-      builder.use Warden::Manager do |manager|
-        manager.failure_app = Bcsec::Rack::Failure.new
+      with_mode_middlewares(builder) do
+        builder.use Warden::Manager do |manager|
+          manager.failure_app = Bcsec::Rack::Failure.new
+        end
+        builder.use Setup
       end
-      builder.use Setup
     end
 
     private
@@ -49,11 +50,22 @@ module Bcsec::Rack
 
     ##
     # @return [void]
-    def install_mode_middleware(builder)
-      [Bcsec.configuration.ui_mode, Bcsec.configuration.api_modes].flatten.each do |k|
-        mode = Warden::Strategies[k]
-        mode.prepend_middleware(builder) if mode.respond_to?(:prepend_middleware)
+    def with_mode_middlewares(builder)
+      mode_classes.each { |m| m.prepend_middleware(builder) if m.respond_to?(:prepend_middleware) }
+      yield
+      mode_classes.each { |m| m.append_middleware(builder) if m.respond_to?(:append_middleware) }
+    end
+
+    def mode_classes
+      return [] unless configuration
+
+      [configuration.ui_mode, configuration.api_modes].flatten.map do |key|
+        Warden::Strategies[key]
       end
+    end
+
+    def configuration
+      Bcsec.configuration
     end
   end
 end
