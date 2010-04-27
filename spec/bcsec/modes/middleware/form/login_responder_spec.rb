@@ -38,14 +38,15 @@ module Bcsec::Modes::Middleware::Form
 
     describe "#call" do
       before do
-        @warden = stub(:authenticated?)
+        @warden = mock
         @env = Rack::MockRequest.env_for(@login_path)
         @env['warden'] = @warden
         @env['REQUEST_METHOD'] = 'POST'
       end
 
       it "renders a 'login failed' message if authentication failed" do
-        @warden.stub!(:authenticated? => false)
+        @warden.should_receive(:authenticated?).and_return(false)
+        @warden.should_receive(:custom_failure!)
         @assets.should_receive(:login_html).with(anything(), { :show_failure => true }).and_return('Login failed')
 
         post @login_path, {}, @env
@@ -55,7 +56,8 @@ module Bcsec::Modes::Middleware::Form
       end
       
       it "redirects to the application's root if authentication succeeded" do
-        @warden.stub!(:authenticated? => true)
+        @warden.should_receive(:authenticated?).and_return(true)
+
         post @login_path, {}, @env
 
         last_response.should be_redirect
