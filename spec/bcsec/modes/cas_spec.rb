@@ -24,8 +24,8 @@ module Bcsec::Modes
         @mode.should_not be_valid
       end
 
-      it "returns true if the ST parameter is in the query string" do
-        @env['QUERY_STRING'] = 'ST=ST-1foo'
+      it "returns true if the ticket parameter is in the query string" do
+        @env['QUERY_STRING'] = 'ticket=ST-1foo'
 
         @mode.should be_valid
       end
@@ -39,7 +39,7 @@ module Bcsec::Modes
 
     describe "#credentials" do
       it "returns the service ticket" do
-        @env["QUERY_STRING"] = "ST=ST-1foo"
+        @env["QUERY_STRING"] = "ticket=ST-1foo"
 
         @mode.credentials.should == ["ST-1foo"]
       end
@@ -53,7 +53,7 @@ module Bcsec::Modes
       before do
         @authority = mock
         @env['bcsec.authority'] = @authority
-        @env['QUERY_STRING'] = 'ST=ST-1foo'
+        @env['QUERY_STRING'] = 'ticket=ST-1foo'
       end
 
       it "signals success if the service ticket is good" do

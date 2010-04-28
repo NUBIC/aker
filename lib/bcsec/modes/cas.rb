@@ -43,7 +43,7 @@ module Bcsec
       # @return [Array<String>] service ticket or an empty array if no service
       #                         ticket found
       def credentials
-        [request['ST']].compact
+        [request['ticket']].compact
       end
 
       ##
