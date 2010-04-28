@@ -16,18 +16,14 @@ module Bcsec
     #
     # @author David Yip
     class Cas < Bcsec::Modes::Base
+      include Bcsec::Cas::ConfigurationHelper
+
       ##
       # A key that refers to this mode; used for configuration convenience.
       #
       # @return [Symbol]
       def self.key
         :cas
-      end
-
-      ##
-      # The login URL on the CAS server.
-      def cas_login_url
-        parameters_for(:cas)[:login_url]
       end
 
       ##

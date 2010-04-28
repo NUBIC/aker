@@ -52,7 +52,7 @@ module Bcsec::Modes
     describe "#authenticate!" do
       before do
         @authority = mock
-        @mode.stub!(:authority => @authority)
+        @env['bcsec.authority'] = @authority
         @env['QUERY_STRING'] = 'ST=ST-1foo'
       end
 
@@ -74,7 +74,9 @@ module Bcsec::Modes
 
     describe "#on_ui_failure" do
       before do
-        @mode.stub!(:parameters_for => { :login_url => 'https://cas.example.edu/login' })
+        @env['bcsec.configuration'] = Bcsec::Configuration.new do
+          cas_parameters :login_url => 'https://cas.example.edu/login'
+        end
       end
 
       it "redirects to the CAS server's login page" do
