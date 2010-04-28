@@ -78,7 +78,7 @@ module Bcsec::Modes
       end
 
       it "redirects to the CAS server's login page" do
-        response = @mode.on_ui_failure(@env)
+        response = @mode.on_ui_failure
         location = URI.parse(response.location)
         response.should be_redirect
 
@@ -90,7 +90,7 @@ module Bcsec::Modes
       it "uses the URL the user was trying to reach as the CAS service URL" do
         @env["PATH_INFO"] = "/foo/bar"
 
-        response = @mode.on_ui_failure(@env)
+        response = @mode.on_ui_failure
         location = URI.parse(response.location)
 
         location.query.should == "service=http://example.org/foo/bar"

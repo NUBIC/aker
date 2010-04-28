@@ -67,7 +67,7 @@ module Bcsec
       #      Section 2.2.1 of the CAS 2 protocol
       #
       # @return [Rack::Response]
-      def on_ui_failure(env)
+      def on_ui_failure
         ::Rack::Response.new do |resp|
           login_uri = URI.parse(cas_login_url)
           login_uri.query = "service=#{service_url(env)}"
