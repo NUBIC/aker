@@ -70,7 +70,7 @@ module Bcsec
       def on_ui_failure
         ::Rack::Response.new do |resp|
           login_uri = URI.parse(cas_login_url)
-          login_uri.query = "service=#{service_url(env)}"
+          login_uri.query = "service=#{service_url}"
           resp.redirect(login_uri.to_s)
         end
       end
@@ -80,8 +80,18 @@ module Bcsec
       ##
       # The service URL supplied to the CAS login page.  This is currently the
       # URL of the requested resource.
-      def service_url(env)
-        request.url
+      def service_url
+        if env['warden.options'] && env['warden.options'][:attempted_path]
+          url = "#{request.scheme}://#{request.host}"
+
+          unless [ ["https", 443], ["http", 80] ].include?([request.scheme, request.port])
+            url << ":#{request.port}"
+          end
+
+          url << env['warden.options'][:attempted_path]
+        else
+          request.url
+        end
       end
     end
   end

@@ -87,13 +87,40 @@ module Bcsec::Modes
         location.path.should == "/login"
       end
 
-      it "uses the URL the user was trying to reach as the CAS service URL" do
-        @env["PATH_INFO"] = "/foo/bar"
-
+      def actual_uri
         response = @mode.on_ui_failure
-        location = URI.parse(response.location)
+        URI.parse(response.location)
+      end
 
-        location.query.should == "service=http://example.org/foo/bar"
+      describe "service URL" do
+        it "is the user was trying to reach" do
+          @env["PATH_INFO"] = "/foo/bar"
+
+          actual_uri.query.should == "service=http://example.org/foo/bar"
+        end
+
+        it "is warden's 'attempted path' if present" do
+          @env["PATH_INFO"] = "/unauthenticated"
+          @env["warden.options"] = { :attempted_path => "/foo/quux" }
+
+          actual_uri.query.should == "service=http://example.org/foo/quux"
+        end
+
+        it "includes the port if not the default for http" do
+          @env["warden.options"] = { :attempted_path => "/foo/quux" }
+          @env["rack.url_scheme"] = "http"
+          @env["SERVER_PORT"] = 81
+
+          actual_uri.query.should == "service=http://example.org:81/foo/quux"
+        end
+
+        it "includes the port if not the default for https" do
+          @env["warden.options"] = { :attempted_path => "/foo/quux" }
+          @env["rack.url_scheme"] = "https"
+          @env["SERVER_PORT"] = 80
+
+          actual_uri.query.should == "service=https://example.org:80/foo/quux"
+        end
       end
     end
   end
