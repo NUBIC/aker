@@ -42,7 +42,14 @@ module Bcsec
       #
       # @return [Array<String>] the proxy ticket or an empty array
       def credentials
-        [request['PT']].compact
+        key = 'HTTP_AUTHORIZATION'
+        matches = env[key].match(/CasProxy\s+([SP]T-\S+)/) if env.has_key?(key)
+
+        if matches && matches[1]
+          [matches[1]]
+        else
+          []
+        end
       end
 
       ##

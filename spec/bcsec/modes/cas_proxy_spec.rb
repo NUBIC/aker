@@ -26,10 +26,22 @@ module Bcsec::Modes
     end
 
     describe "#credentials" do
-      it "returns the proxy ticket" do
-        @env["QUERY_STRING"] = "PT=PT-1foo"
+      it "finds a proxy ticket that starts with PT" do
+        @env["HTTP_AUTHORIZATION"] = "CasProxy PT-1foo"
 
         @mode.credentials.should == ["PT-1foo"]
+      end
+
+      it "finds a proxy ticket that starts with ST" do
+        @env["HTTP_AUTHORIZATION"] = "CasProxy ST-9936-bam"
+
+        @mode.credentials.should == ["ST-9936-bam"]
+      end
+
+      it "ignores an out-of-spec proxy ticket" do
+        @env["HTTP_AUTHORIZATION"] = "CasProxy MyAttackVector"
+
+        @mode.credentials.should == []
       end
 
       it "returns an empty array if no proxy ticket is present" do
@@ -38,12 +50,18 @@ module Bcsec::Modes
     end
 
     describe "#valid?" do
-      it "returns false if the PT parameter is not in the query string" do
+      it "returns false if there is no authorization header" do
         @mode.should_not be_valid
       end
 
-      it "returns true if the PT parameter is in the query string" do
-        @env["QUERY_STRING"] = "PT=PT-1foo"
+      it "returns false if the authorization header is for a different scheme" do
+        @env["HTTP_AUTHORIZATION"] = "Basic " + Base64.encode64("bas:baz")
+
+        @mode.should_not be_valid
+      end
+
+      it "returns true if the authorization header is for CasProxy" do
+        @env["HTTP_AUTHORIZATION"] = "CasProxy PT-5-256a"
 
         @mode.should be_valid
       end
@@ -65,7 +83,7 @@ module Bcsec::Modes
       before do
         @authority = mock
         @mode.stub!(:authority => @authority)
-        @env["QUERY_STRING"] = "PT=PT-1foo"
+        @env["HTTP_AUTHORIZATION"] = "CasProxy PT-1foo"
       end
 
       it "signals success if the proxy ticket is good" do
