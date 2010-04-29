@@ -14,13 +14,12 @@ Scenario: A user can access a protected resource when already logged into CAS
    When I access a protected resource
    Then I should be able to access that protected resource
 
-@wip
-Scenario: A user is prompted to log in when requesting a protected resource and may immediately access the resource after logging in
+Scenario: A user is prompted to log in when requesting a protected resource and is immediately sent to the resource after logging in
   Given I am not logged into CAS
-    And I am using the UI
    When I access a protected resource
    Then I should be on the CAS login page
-   When I submit the form with:
+   When I fill out the form with:
      | username | password |
      | mr296    | br0wn    |
+    And I click "LOGIN"
    Then I should be able to access that protected resource

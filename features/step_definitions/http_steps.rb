@@ -16,7 +16,6 @@ Then /^I should be able to access that protected resource$/ do
     last_response.status.should == 200
     last_response.body.should =~ /I'm protected/
   else
-    puts page.current_url
     page.source.should =~ /I'm protected/
   end
 end
