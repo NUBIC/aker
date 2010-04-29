@@ -2,7 +2,7 @@ require 'rack/builder'
 require 'yaml'
 require 'picnic/conf'
 require 'fileutils'
-require 'sqlite3'
+require 'active_record' # see below
 require File.expand_path('../spawned_http_server.rb', __FILE__)
 
 # Because rubycas-server's config.ru refers to the Rack module, it
@@ -50,22 +50,26 @@ module Bcsec
       end
 
       def stop
-        @db.close if @db
+        PrivateModel.connection_handler.clear_all_connections!
         super
       end
 
       def register_user(username, password)
-        @db.execute("INSERT INTO users (username, password) VALUES (?, ?)",
-                    username, password)
+        PrivateModel.connection.
+          update("INSERT INTO users (username, password) VALUES ('#{username}', '#{password}')")
       end
 
       private
 
+      def active_record_adapter
+        (RUBY_PLATFORM == 'java' ? 'jdbcsqlite3' : 'sqlite3')
+      end
+
       def create_user_database
         File.join(tmpdir, 'cas-users.db').tap do |fn|
           rm fn if File.exist?(fn)
-          @db = SQLite3::Database.new(fn)
-          @db.execute("CREATE TABLE users (username, password)")
+          PrivateModel.establish_connection :database => fn, :adapter => active_record_adapter
+          PrivateModel.connection.update("CREATE TABLE users (username, password)")
         end
       end
 
@@ -76,6 +80,13 @@ module Bcsec
               result(scope))
           end
         end
+      end
+
+      # This class is used to provide an isolated point to use to
+      # build the connection to the user database.  This hack is
+      # required because jdbc-sqlite3 is wholly undocumented, so I
+      # can't do JRuby compat without using an AR connection.
+      class PrivateModel < ActiveRecord::Base
       end
     end
   end

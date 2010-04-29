@@ -3,13 +3,13 @@ port: <%= port %>
 bind_address: <%= host %>
 
 database:
-  adapter: sqlite3
+  adapter: <%= active_record_adapter %>
   database: <%= tmpdir %>/casserver.db
 
 authenticator:
   class: CASServer::Authenticators::SQL
   database:
-    adapter: sqlite3
+    adapter: <%= active_record_adapter %>
     database: <%= users_database_filename %>
   user_table: users
   username_column: username
