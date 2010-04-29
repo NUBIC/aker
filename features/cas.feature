@@ -1,4 +1,4 @@
-@cas @no_jruby
+@cas @no_jruby @no_19
 Feature: CAS UI authentication
 
 Background:
