@@ -26,5 +26,20 @@ module Bcsec::Cas
         @actual.cas_login_url.should == "https://cas.example.org/entry-point"
       end
     end
+
+    describe "#cas_base_url" do
+      before do
+        @config.parameters_for(:cas)[:cas_base_url] = "https://cas2.example.org/"
+      end
+
+      it "is preferentially loaded from the :base_url property" do
+        @actual.cas_base_url.should == "https://cas.example.org/"
+      end
+
+      it "is loaded from the :cas_base_url property if that's all that's provided" do
+        @config.parameters_for(:cas)[:base_url] = nil
+        @actual.cas_base_url.should == "https://cas2.example.org/"
+      end
+    end
   end
 end
