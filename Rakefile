@@ -90,8 +90,14 @@ namespace :cucumber do
     t.profile = "wip"
   end
 
+  desc "Run features that are flagged as failing on the current platform"
+  Cucumber::Rake::Task.new(:wip_platform) do |t|
+    t.fork = true
+    t.profile = "wip_platform"
+  end
+
   desc "Run all features"
-  task :all => [:ok, :wip]
+  task :all => [:ok, :wip, :wip_platform]
 end
 
 desc "Build API documentation with yard"
