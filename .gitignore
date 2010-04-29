@@ -14,6 +14,7 @@ reports
 # bundler08
 gem_bin
 jgem_bin
+19gem_bin
 vendor/gems/*.rb
 vendor/gems/*/*/*
 !vendor/gems/*/*/cache

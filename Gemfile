@@ -3,6 +3,8 @@ source 'http://download.bioinformatics.northwestern.edu/gems/'
 
 if RUBY_PLATFORM == 'java'
   bin_path 'jgem_bin'
+elsif RUBY_VERSION =~ /^1.9/
+  bin_path '19gem_bin'
 else
   bin_path 'gem_bin'
 end
