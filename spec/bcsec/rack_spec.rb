@@ -6,26 +6,28 @@ module Bcsec
       ::Warden::Strategies.clear!
     end
 
+    class MockBuilder
+      def reset!
+        self.uses.clear
+      end
+
+      def use(cls, *params, &block)
+        self.uses << [cls, params, block]
+      end
+
+      def uses
+        @uses ||= []
+      end
+
+      def using?(klass)
+        self.uses.detect { |cls, params, block| cls == klass }
+      end
+      alias :find_use_of :using?
+    end
+
     describe ".use_in" do
       before do
-        @builder = Class.new do
-          def reset!
-            self.uses.clear
-          end
-
-          def use(cls, *params, &block)
-            self.uses << [cls, params, block]
-          end
-
-          def uses
-            @uses ||= []
-          end
-
-          def using?(klass)
-            self.uses.detect { |cls, params, block| cls == klass }
-          end
-          alias :find_use_of :using?
-        end.new
+        @builder = MockBuilder.new
 
         Bcsec::Rack.use_in(@builder)
       end
@@ -114,10 +116,29 @@ module Bcsec
         it "appends middleware for API modes after appended UI middleware" do
           @builder.uses[@bcsec_index + 2].first.should == :api_ware_after
         end
+
+        it "uses middleware for the passed-in configuration instead of the global configuration if present" do
+          config = Bcsec::Configuration.new {
+            ui_mode :test_ui
+          }
+
+          builder = MockBuilder.new
+          Bcsec::Rack.use_in(builder, config)
+
+          builder.uses[0].first.should == :ui_ware_before
+          builder.uses[1].first.should_not == :api_ware_before
+        end
       end
 
       it "attaches the bcsec middleware" do
         @builder.should be_using(Bcsec::Rack::Setup)
+      end
+
+      it "passes on the configuration to the setup middleware if provided" do
+        b = MockBuilder.new
+        config = Bcsec::Configuration.new { portal :hello }
+        Bcsec::Rack.use_in(b, config)
+        b.find_use_of(Bcsec::Rack::Setup)[1].first.portal.should == :hello
       end
     end
   end

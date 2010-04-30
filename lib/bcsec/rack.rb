@@ -23,15 +23,18 @@ module Bcsec::Rack
     # @param [#use] builder the target application builder.  This
     #   could be a `Rack::Builder` object or something that acts like
     #   one.
+    # @param [Bcsec::Configuration,nil] configuration the
+    #   configuration to apply to this use.  If nil, uses the global
+    #   configuration ({Bcsec.configuration}).
     # @return [void]
-    def use_in(builder)
+    def use_in(builder, configuration=nil)
       install_modes
 
-      with_mode_middlewares(builder) do
+      with_mode_middlewares(builder, configuration) do
         builder.use Warden::Manager do |manager|
           manager.failure_app = Bcsec::Rack::Failure.new
         end
-        builder.use Setup
+        builder.use Setup, configuration
       end
     end
 
@@ -50,22 +53,19 @@ module Bcsec::Rack
 
     ##
     # @return [void]
-    def with_mode_middlewares(builder)
-      mode_classes.each { |m| m.prepend_middleware(builder) if m.respond_to?(:prepend_middleware) }
+    def with_mode_middlewares(builder, configuration)
+      conf = configuration || Bcsec.configuration
+      mode_classes(conf).each { |m| m.prepend_middleware(builder) if m.respond_to?(:prepend_middleware) }
       yield
-      mode_classes.each { |m| m.append_middleware(builder) if m.respond_to?(:append_middleware) }
+      mode_classes(conf).each { |m| m.append_middleware(builder) if m.respond_to?(:append_middleware) }
     end
 
-    def mode_classes
+    def mode_classes(configuration)
       return [] unless configuration
 
       [configuration.ui_mode, configuration.api_modes].flatten.map do |key|
         Warden::Strategies[key]
       end
-    end
-
-    def configuration
-      Bcsec.configuration
     end
   end
 end

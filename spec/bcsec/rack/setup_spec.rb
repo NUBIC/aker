@@ -30,16 +30,46 @@ module Bcsec::Rack
       }.merge(base)
     end
 
-    it "adds the configuration to the environment as 'bcsec.configuration'" do
-      Bcsec.configure { portal :NOTIS }
-      env = call
-      env['bcsec.configuration'].portal.should == :NOTIS
+    describe "env['bcsec.configuration']" do
+      it "is the global configuration by default" do
+        Bcsec.configure { portal :NOTIS }
+        env = call
+        env['bcsec.configuration'].portal.should == :NOTIS
+      end
+
+      it "is an explicitly-passed configuration if provided" do
+        config = Bcsec::Configuration.new { portal :local }
+        Bcsec.configure { portal :global }
+        @actual = Setup.new(@app, config)
+        env = call
+        env['bcsec.configuration'].portal.should == :local
+      end
     end
 
-    it "adds the configured authority to the environment as 'bcsec.authority'" do
-      Bcsec.authority = Object.new
-      env = call
-      env['bcsec.authority'].object_id.should == Bcsec.authority.object_id
+    describe "env['bcsec.authority']" do
+      it "is the global authority by default" do
+        Bcsec.authority = Object.new
+        env = call
+        env['bcsec.authority'].object_id.should == Bcsec.authority.object_id
+      end
+
+      it "is the local configuration-derived authority if there's a local configuration" do
+        config = Bcsec::Configuration.new
+        expected_authority = Object.new
+        config.should_receive(:composite_authority).and_return(expected_authority)
+
+        @actual = Setup.new(@app, config)
+        env = call
+        env['bcsec.authority'].object_id.should == expected_authority.object_id
+      end
+
+      it "is the explicitly provided authority if there is one" do
+        expected_authority = Object.new
+
+        @actual = Setup.new(@app, Bcsec::Configuration.new, expected_authority)
+        env = call
+        env['bcsec.authority'].object_id.should == expected_authority.object_id
+      end
     end
 
     describe "determining whether to use interactive mode" do
