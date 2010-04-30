@@ -17,7 +17,7 @@ Given /^I have a CAS server that accepts these usernames and passwords:$/ do |ta
   }
 end
 
-Given /^I have a bcsec\-protected application using$/ do |table|
+Given /^I have bcsec configured like so$/ do |table|
   string_conf = table.hashes.first
   Bcsec.configure {
     string_conf.each_pair do |attr, value|
@@ -33,28 +33,25 @@ Given /^I have a bcsec\-protected application using$/ do |table|
       end
     end
   }
+end
+
+After do
+  Bcsec.configuration = nil
+end
+
+Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
+  Given "I have bcsec configured like so", bcsec_params
 
   @app = Rack::Builder.new do
     use Rack::Session::Cookie
     Bcsec::Rack.use_in(self)
 
     map '/protected' do
-      run Proc.new { |env|
-        throw :warden unless env['warden'].authenticated?
-        [200, { "Content-Type" => "text/plain" },
-         ["I'm protected, #{env['warden'].user.username}."]]
-      }
+      run Bcsec::Cucumber::RackEndpoints.authentication_required
     end
 
     map '/' do
-      run Proc.new { |env|
-        user = env['warden'].user
-        [
-          200,
-          { "Content-Type" => "text/plain" },
-          ["Anyone can see this.", ("Even #{user.username}." if user)].compact.join("\n")
-        ]
-      }
+      run Bcsec::Cucumber::RackEndpoints.public
     end
   end
 
