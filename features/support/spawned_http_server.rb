@@ -6,12 +6,13 @@ module Bcsec
     class SpawnedHttpServer
       include FileUtils
 
-      attr_reader :host, :port, :pid
+      attr_reader :host, :port, :pid, :tmpdir
 
       def initialize(options={})
         @port = options.delete(:port) or raise "Please specify a port"
         @host = options.delete(:host) || '127.0.0.1'
         @timeout = options.delete(:timeout) || 30
+        @tmpdir = options.delete(:tmpdir) or raise "Please specify tmpdir"
       end
 
       def exec_server

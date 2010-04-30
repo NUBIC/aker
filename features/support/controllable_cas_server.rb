@@ -3,7 +3,7 @@ require 'yaml'
 require 'picnic/conf'
 require 'fileutils'
 require 'active_record' # see below
-require File.expand_path('../spawned_http_server.rb', __FILE__)
+require File.expand_path("../controllable_rack_server.rb", __FILE__)
 
 # Because rubycas-server's config.ru refers to the Rack module, it
 # needs to be interpreted outside of the Bcsec module.
@@ -20,33 +20,20 @@ end
 
 module Bcsec
   module Cucumber
-    class ControllableCasServer < SpawnedHttpServer
+    class ControllableCasServer < ControllableRackServer
       include FileUtils
 
-      attr_reader :tmpdir, :users_database_filename
+      attr_reader :users_database_filename
 
       def initialize(tmpdir, port)
-        super(:port => port)
-        @tmpdir = tmpdir
+        super(:port => port, :tmpdir => tmpdir, :app_creator => lambda {
+                CASServer.app(create_server_config(binding))
+              })
       end
 
       def start
         @users_database_filename = create_user_database
         super
-      end
-
-      def exec_server
-        Signal.trap("TERM") {
-          $stdout.flush
-          $stderr.flush
-          exit!(0)
-        }
-
-        $stdout = File.open("#{tmpdir}/cas-out.log", "w")
-        $stderr = $stdout
-
-        app = CASServer.app(create_server_config(binding))
-        ::Rack::Handler::WEBrick.run app, :Port => port
       end
 
       def stop
@@ -57,6 +44,12 @@ module Bcsec
       def register_user(username, password)
         PrivateModel.connection.
           update("INSERT INTO users (username, password) VALUES ('#{username}', '#{password}')")
+      end
+
+      protected
+
+      def log_filename
+        "cas-out.log"
       end
 
       private
