@@ -8,5 +8,6 @@ module Bcsec
   # @see Bcsec::Authorities::Cas
   module Cas
     autoload :ConfigurationHelper, 'bcsec/cas/configuration_helper'
+    autoload :RackProxyCallback,   'bcsec/cas/rack_proxy_callback'
   end
 end
