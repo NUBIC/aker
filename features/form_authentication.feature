@@ -1,4 +1,3 @@
-@capybara
 Feature: Form authentication
   In order to protect confidential data
   Users of bcsec-protected applications
