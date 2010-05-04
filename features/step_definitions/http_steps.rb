@@ -35,3 +35,7 @@ end
 Then /^the '([^']*)' header should be '([^']*)'$/ do |header, expected|
   last_response.headers[header].should == expected
 end
+
+Then /^the '([^']*)' header should include '([^']*)'$/ do |header, expected|
+  last_response.headers[header].should =~ Regexp.new(expected)
+end

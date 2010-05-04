@@ -15,7 +15,7 @@ Scenario: A user can access a protected resource with the correct credentials
    Then I should be able to access that protected resource
 
 Scenario: A request with no credentials is challenged
-  Given that I am using no credentials
+  Given I am using no credentials
     And I am using the API
    When I access a protected resource
    Then the HTTP status should be 401

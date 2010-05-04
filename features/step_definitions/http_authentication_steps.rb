@@ -1,4 +1,4 @@
-Given /^that I am using no credentials$/ do
+Given /^I am using no credentials$/ do
   header "Authorization", nil
 end
 
