@@ -31,8 +31,10 @@ module Bcsec::Cas
     # @param [String] service_base_url the URL by which CAS knows the
     #   service that this proxy will be used for.  For bcsec-protected
     #   applications, this will always be the base URL for the whole
-    #   application -- i.e., the URL for the server plus the mount
+    #   application &mdash; i.e., the URL for the server plus the mount
     #   point for the application, if any.
+    #
+    # @see Bcsec::Modes::CasProxy#service_url
     #
     # @return [String] a new ticket
     def cas_proxy_ticket(service_base_url)
