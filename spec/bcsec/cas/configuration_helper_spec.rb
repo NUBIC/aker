@@ -41,5 +41,19 @@ module Bcsec::Cas
         @actual.cas_base_url.should == "https://cas2.example.org/"
       end
     end
+
+    describe "#cas_proxy_callback_url" do
+      it "is loaded from the :proxy_callback_url property" do
+        @config.parameters_for(:cas)[:proxy_callback_url] = "https://cas.example.net/callback/gpgt"
+        @actual.cas_proxy_callback_url.should == "https://cas.example.net/callback/gpgt"
+      end
+    end
+
+    describe "#cas_proxy_retrieval_url" do
+      it "is loaded from the :proxy_retrieval_url property" do
+        @config.parameters_for(:cas)[:proxy_retrieval_url] = "https://cas.example.net/callback/rpgt"
+        @actual.cas_proxy_retrieval_url.should == "https://cas.example.net/callback/rpgt"
+      end
+    end
   end
 end

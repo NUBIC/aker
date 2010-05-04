@@ -26,11 +26,18 @@ module Bcsec::Authorities
       unless cas_base_url
         raise ":base_url parameter is required for CAS"
       end
-      @client = CASClient::Client.new(:cas_base_url => cas_base_url)
+      @client = CASClient::Client.new(:cas_base_url => cas_base_url,
+                                      :proxy_callback_url => cas_proxy_callback_url,
+                                      :proxy_retrieval_url => cas_proxy_retrieval_url)
     end
 
     ##
-    # Verifies the given credentials with the CAS server.
+    # Verifies the given credentials with the CAS server.  The `:cas`
+    # and `:cas_proxy` kinds are supported.  Both kinds require two
+    # credentials:
+    #
+    # * The ticket (either a service ticket or proxy ticket)
+    # * The service URL associated with the ticket
     #
     # The returned user will be extended with {Bcsec::Cas::CasUser}.
     #
@@ -38,10 +45,15 @@ module Bcsec::Authorities
     #   are valid, `:unsupported` if the kind is anything but `:cas`
     #   or `:cas_proxy`, and nil otherwise
     def valid_credentials?(kind, *credentials)
-      return :unsupported unless kind == :cas
+      return :unsupported unless [:cas, :cas_proxy].include?(kind)
 
       ticket, service = credentials
-      st = client.validate_service_ticket(CASClient::ServiceTicket.new(ticket, service))
+      st = case kind
+           when :cas
+             client.validate_service_ticket(CASClient::ServiceTicket.new(ticket, service))
+           when :cas_proxy
+             client.validate_proxy_ticket(CASClient::ProxyTicket.new(ticket, service))
+           end
 
       if st.response.is_failure?
         nil

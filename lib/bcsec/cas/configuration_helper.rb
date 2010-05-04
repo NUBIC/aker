@@ -30,5 +30,30 @@ module Bcsec::Cas
       configuration.parameters_for(:cas)[:base_url] ||
         configuration.parameters_for(:cas)[:cas_base_url]
     end
+
+    ##
+    # The URL that CAS will provide the PGT and PGTIOU to, per section
+    # 2.5.4 of the spec.  Some CAS servers require that this be an
+    # SSL-protected resource.  It is set in the CAS parameters as
+    # `:proxy_callback_url`.
+    #
+    # @return [String, nil]
+    def cas_proxy_callback_url
+      configuration.parameters_for(:cas)[:proxy_callback_url]
+    end
+
+    ##
+    # The URL that the CAS client can retrieve the PGT from once it
+    # has been deposited at the {#cas_proxy_callback_url} by the CAS
+    # server.  It is set in the CAS parameters as
+    # `:proxy_retrieval_url`.
+    #
+    # (Note that this is not part of the CAS protocol &mdash; it is
+    # rubycas-client specific.)
+    #
+    # @return [String, nil]
+    def cas_proxy_retrieval_url
+      configuration.parameters_for(:cas)[:proxy_retrieval_url]
+    end
   end
 end
