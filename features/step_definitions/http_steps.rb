@@ -20,6 +20,14 @@ Then /^I should be able to access that protected resource$/ do
   end
 end
 
+When /^I access an API\-using resource$/ do
+  visit "/consume"
+end
+
+Then /^the page contains the results of the API call$/ do
+  page.source.should =~ /The API said: I'm protected/
+end
+
 Then /the HTTP status should be (\d{3})/ do |status|
   last_response.status.should == status.to_i
 end

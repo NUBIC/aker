@@ -13,6 +13,7 @@ module Bcsec
         @host = options.delete(:host) || '127.0.0.1'
         @timeout = options.delete(:timeout) || 30
         @tmpdir = options.delete(:tmpdir) or raise "Please specify tmpdir"
+        @ssl = options.delete(:ssl) || false
       end
 
       def exec_server
@@ -39,7 +40,11 @@ module Bcsec
       end
 
       def base_url
-        "http://#{host}:#{port}/"
+        "http#{ssl? ? 's' : ''}://#{host}:#{port}/"
+      end
+
+      def ssl?
+        @ssl
       end
 
       protected
@@ -47,9 +52,12 @@ module Bcsec
       def http_available?(url)
         url = URI.parse(url)
         begin
-          Net::HTTP.start(url.host, url.port) do |http|
+          session = Net::HTTP.new(url.host, url.port)
+          session.use_ssl = ssl?
+          session.start do |http|
             status = http.get(url.request_uri).code
-            return status =~ /[23]\d\d/
+            # anything indicating a functioning server
+            return status =~ /[1234]\d\d/
           end
         rescue => e
           false

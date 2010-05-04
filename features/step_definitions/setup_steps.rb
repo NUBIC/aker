@@ -12,27 +12,12 @@ Given /^I have a CAS server that accepts these usernames and passwords:$/ do |ta
   end
   cas = @cas_server
   Bcsec.configure {
-    authority :cas
     cas_parameters :base_url => cas.base_url
   }
 end
 
 Given /^I have bcsec configured like so$/ do |table|
-  string_conf = table.hashes.first
-  Bcsec.configure {
-    string_conf.each_pair do |attr, value|
-      value =
-        case attr
-        when /mode/
-          value.split(' ')
-        else
-          value
-        end
-      if value && !value.empty?
-        self.send(attr.to_sym, *value)
-      end
-    end
-  }
+  pending
 end
 
 After do
@@ -40,7 +25,7 @@ After do
 end
 
 Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
-  Given "I have bcsec configured like so", bcsec_params
+  enhance_configuration_from_table(bcsec_params)
 
   @app = Rack::Builder.new do
     use Rack::Session::Cookie
@@ -58,6 +43,57 @@ Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
   Capybara.app = @app
 end
 
-After do
-  Bcsec.configuration = nil
+Given /^I have a bcsec\-protected RESTful API using$/ do |bcsec_params|
+  config = Bcsec::Configuration.new
+  if (@cas_server)
+    config.parameters_for(:cas)[:base_url] = @cas_server.base_url
+  end
+  enhance_configuration_from_table(bcsec_params, config)
+
+  api_app = Rack::Builder.new do
+    use Rack::Session::Cookie
+    Bcsec::Rack.use_in(self, config)
+
+    map '/a-resource' do
+      run Bcsec::Cucumber::RackEndpoints.authenticated_api_resource
+    end
+
+    map '/' do
+      run Bcsec::Cucumber::RackEndpoints.public
+    end
+  end
+
+  @api_server = start_rack_server(api_app, 5427)
+end
+
+Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
+  pgt_app = Bcsec::Cas::RackProxyCallback.application(:store => "#{tmpdir}/pgt_store")
+  pgt_server = start_rack_server(pgt_app, 5310, :ssl => true)
+
+  Bcsec.configuration.
+    parameters_for(:cas)[:proxy_retrieval_url] = URI.join(pgt_server.base_url, "retrieve_pgt").to_s
+  Bcsec.configuration.
+    parameters_for(:cas)[:proxy_callback_url] = URI.join(pgt_server.base_url, "receive_pgt").to_s
+
+  Bcsec.configure {
+    authority :cas
+    ui_mode :cas
+  }
+
+  api_server = @api_server
+  @app = Rack::Builder.new do
+    use Rack::Session::Cookie
+    Bcsec::Rack.use_in(self)
+
+    map '/consume' do
+      run Bcsec::Cucumber::RackEndpoints.
+        cas_api_consumer(api_server.base_url, "/a-resource")
+    end
+
+    map '/' do
+      run Bcsec::Cucumber::RackEndpoints.public
+    end
+  end
+
+  Capybara.app = @app
 end

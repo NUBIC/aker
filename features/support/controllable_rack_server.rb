@@ -8,6 +8,7 @@ module Bcsec::Cucumber
       super(options)
       @app_creator = options.delete(:app_creator)
       @app = options.delete(:app)
+      @ssl_env = SslEnv.new if ssl?
     end
 
     def app
@@ -28,13 +29,18 @@ module Bcsec::Cucumber
       $stdout = File.open("#{tmpdir}/#{log_filename}", "w")
       $stderr = $stdout
 
-      ::Rack::Handler::WEBrick.run app, :Port => port
+      options = { :Port => port }
+      if ssl?
+        options.merge!(SslEnv.new.webrick_ssl)
+      end
+
+      ::Rack::Handler::WEBrick.run app, options
     end
 
     protected
 
     def log_filename
-      "rack-#{Process.pid}.log"
+      "rack-#{port}.log"
     end
   end
 end

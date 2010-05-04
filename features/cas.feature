@@ -6,8 +6,8 @@ Background:
     | username | password |
     | mr296    | br0wn    |
   And I have a bcsec-protected application using
-    | ui_mode |
-    | cas     |
+    | ui_mode | authority |
+    | cas     | cas       |
 
 Scenario: A user can access a protected resource when already logged into CAS
   Given I have logged into CAS using "mr296" / "br0wn"

@@ -19,8 +19,11 @@ Before('@cas') do
 end
 
 After('@cas') do
-  stop_cas_server
   Capybara.use_default_driver
+end
+
+After do
+  stop_spawned_servers
 end
 
 module Bcsec::Cucumber
@@ -32,7 +35,26 @@ module Bcsec::Cucumber
     CAS_PORT = 5409
 
     def app
-      @app or fail "No rack app created yet"
+      @app or fail "No main rack app created yet"
+    end
+
+    def enhance_configuration_from_table(cucumber_table, bcsec_configuration=nil)
+      bcsec_configuration ||= (Bcsec.configuration ||= Bcsec::Configuration.new)
+      string_conf = cucumber_table.hashes.first
+      bcsec_configuration.enhance {
+        string_conf.each_pair do |attr, value|
+          value =
+            case attr
+            when /mode/
+              value.split(' ')
+            else
+              value
+            end
+          if value && !value.empty?
+            self.send(attr.to_sym, *value)
+          end
+        end
+      }
     end
 
     def tmpdir
@@ -44,13 +66,34 @@ module Bcsec::Cucumber
       @tmpdir
     end
 
-    def start_cas_server
-      @cas_server = ControllableCasServer.new(tmpdir, CAS_PORT)
-      @cas_server.start
+    def spawned_servers
+      @spawned_servers ||= []
     end
 
-    def stop_cas_server
-      @cas_server.stop
+    def start_cas_server
+      @cas_server = ControllableCasServer.new(tmpdir, CAS_PORT)
+      self.spawned_servers << @cas_server
+      @cas_server.start
+      @cas_server
+    end
+
+    # @return [Bcsec::Cucumber::ControllableRackServer]
+    def start_rack_server(app, port, options={})
+      opts = { :app => app, :port => port, :tmpdir => tmpdir }.merge(options)
+      new_server = Bcsec::Cucumber::ControllableRackServer.new(opts)
+      self.spawned_servers << new_server
+      new_server.start
+      new_server
+    end
+
+    def stop_spawned_servers
+      spawned_servers.each do |server|
+        begin
+          server.stop
+        rescue => m
+          $stderr.puts "Stopping server pid=#{server.pid} port=#{server.port} failed: #{m}"
+        end
+      end
     end
   end
 end
