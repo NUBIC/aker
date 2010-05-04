@@ -46,6 +46,7 @@ module Bcsec::Authorities
         it "returns a user based on the service ticket response" do
           @st.response = Class.new do
             def user; "jo"; end
+            def pgt_iou; "foo"; end
             def is_failure?; false; end
           end.new
 
@@ -60,7 +61,29 @@ module Bcsec::Authorities
           @authority.valid_credentials?(:cas, @ticket, @service).should be_nil
         end
 
-        it "requests and stores the pgt somehow"
+        describe "user modifications" do
+          before do
+            @st.response = Class.new do
+              def user; "jo"; end
+              def is_failure?; false; end
+              def pgt_iou; "PGTIOU-bazmotron"; end
+            end.new
+
+            @user = @authority.valid_credentials?(:cas, @ticket, @service)
+          end
+
+          it "mixes in with Bcsec::Cas::CasUser" do
+            @user.should respond_to(:init_cas_user)
+          end
+
+          it "initializes the user with the pgt_iou" do
+            @user.send(:instance_variable_get, :@cas_pgt_iou).should == "PGTIOU-bazmotron"
+          end
+
+          it "initializes the user with the client" do
+            @user.send(:instance_variable_get, :@cas_client).should == @client
+          end
+        end
       end
 
       describe ":cas_proxy" do

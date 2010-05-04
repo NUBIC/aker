@@ -5,6 +5,8 @@ require 'casclient'
 module Bcsec::Authorities
   ##
   # An authority which verifies CAS tickets with an actual CAS server.
+  #
+  # @see Bcsec::Cas::CasUser
   class Cas
     include Bcsec::Cas::ConfigurationHelper
     attr_reader :configuration
@@ -27,6 +29,14 @@ module Bcsec::Authorities
       @client = CASClient::Client.new(:cas_base_url => cas_base_url)
     end
 
+    ##
+    # Verifies the given credentials with the CAS server.
+    #
+    # The returned user will be extended with {Bcsec::Cas::CasUser}.
+    #
+    # @return [Bcsec::User,:unsupported,nil] a user if the credentials
+    #   are valid, `:unsupported` if the kind is anything but `:cas`
+    #   or `:cas_proxy`, and nil otherwise
     def valid_credentials?(kind, *credentials)
       return :unsupported unless kind == :cas
 
@@ -36,7 +46,10 @@ module Bcsec::Authorities
       if st.response.is_failure?
         nil
       else
-        Bcsec::User.new(st.response.user)
+        Bcsec::User.new(st.response.user).tap do |u|
+          u.extend Bcsec::Cas::CasUser
+          u.init_cas_user :client => @client, :pgt_iou => st.response.pgt_iou
+        end
       end
     end
   end
