@@ -93,6 +93,85 @@ module Bcsec
       end
     end
 
+    describe "#permit?" do
+      before do
+        @user = User.new('jo')
+        @user.portals = [:ENU, :NOTIS]
+        @user.default_portal = :ENU
+        @user.group_memberships(:ENU) << GroupMembership.new(Group.new('Developer'))
+        @user.group_memberships(:NOTIS) << GroupMembership.new(Group.new('Admin'))
+      end
+
+      it "returns true if the user matches any of the groups in the default portal" do
+        @user.permit?(:Developer, :Admin).should be_true
+      end
+
+      it "returns false if the user does not match any of the groups in the default portal" do
+        @user.permit?(:Admin).should be_false
+      end
+
+      describe "with an explicit portal" do
+        it "returns true if the user is in any of the groups" do
+          @user.permit?(:Developer, :Admin, :portal => :NOTIS).should be_true
+        end
+
+        it "returns false if the user is not in any of the groups" do
+          @user.permit?(:Developer, :portal => :NOTIS).should be_false
+        end
+      end
+
+      describe "without any groups" do
+        describe "with the default portal" do
+          it "returns true if the user is in the portal" do
+            @user.permit?.should be_true
+          end
+
+          it "returns false if the user is not in the portal" do
+            @user.default_portal = :BSPORE
+            @user.permit?.should be_false
+          end
+        end
+
+        describe "with an explicit portal" do
+          it "returns true if the user is in the portal" do
+            @user.permit?(:portal => :NOTIS).should be_true
+          end
+
+          it "returns false if the user is not in the portal" do
+            @user.permit?(:portal => :BSPORE).should be_false
+          end
+        end
+      end
+
+      describe "with a block" do
+        it "yields to a passed block if the user matches the group" do
+          executed = nil
+          @user.permit? :Developer do
+            executed = true
+          end
+
+          executed.should be_true
+        end
+
+        it "does not yield if the user doesn't match the group" do
+          executed = nil
+          @user.permit? :Admin do
+            executed = true
+          end
+
+          executed.should be_nil
+        end
+
+        it "returns the block's return value if the user matches the group" do
+          @user.permit?(:Developer) { "block value" }.should == "block value"
+        end
+
+        it "returns nil if the user does not match the group" do
+          @user.permit?(:Admin) { "block value" }.should == nil
+        end
+      end
+    end
+
     describe "#merge!" do
       before do
         @a = User.new("jo")
