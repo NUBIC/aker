@@ -38,8 +38,12 @@ only :development do
 
   # docs
   gem 'yard', '~> 0.5'
-  # for yard; doesn't work in jruby
-  gem 'bluecloth' unless RUBY_PLATFORM == 'java'
+  # for yard
+  if RUBY_PLATFORM == 'java'
+    gem 'maruku'
+  else
+    gem 'rdiscount'
+  end
   gem 'fssm'
 
   # pers testing
