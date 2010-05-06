@@ -1,8 +1,8 @@
 BUNDLER_VERSION="= 0.8.5"
 
-# For ruby-oci8 (at least on OS X Intel)
+# For ruby-oci8 (at least on OS X Intel 10.5)
 unless ENV["RC_ARCHS"]
-  if `uname -p` =~ /i386/
+  if `file #{`which ruby`}` =~ /32-bit/
     ENV["RC_ARCHS"] = "i386"
   end
 end
