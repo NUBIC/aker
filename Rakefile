@@ -126,6 +126,12 @@ namespace :yard do
       delete &yardoc
     end
   end
+
+  desc "Purge all YARD artifacts"
+  task :clean do
+    rm_rf 'doc'
+    rm_rf '.yardoc'
+  end
 end
 
 task :default => :spec
