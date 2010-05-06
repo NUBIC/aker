@@ -12,20 +12,24 @@ module Bcsec::Rack
   # {Bcsec::Rack.use_in} to configure in this middleware and all its
   # dependencies simultaneously.
   #
-  # @param [#call] app the application this middleware is being
-  #   wrapped around.
-  # @param [Bcsec::Configuration,nil] the configuration to use for
-  #   this instance.  If nil, the global configuration
-  #   ({Bcsec.configuration}) will be used instead.
-  # @param [Object,nil] the authority to use for this instance.  If
-  #   nil, it will be derived from the local configuration.  If
-  #   there's no local configuration either, the global authority
-  #   ({Bcsec.authority}) will be used.
-  #
   # @see Bcsec::Rack.use_in
   # @see Bcsec::Configuration#ui_mode
   # @see Bcsec::Configuration#api_modes
   class Setup
+    ##
+    # Create a new instance of the middleware
+    #
+    # @param [#call] app the application this middleware is being
+    #   wrapped around.
+    # @param [Bcsec::Configuration,nil] configuration the configuration to use for
+    #   this instance.  If nil, the global configuration
+    #   ({Bcsec.configuration}) will be used instead.
+    # @param [Object,nil] authority the authority to use for this instance.  If
+    #   nil, it will be derived from the local configuration.  If
+    #   there's no local configuration either, the global authority
+    #   ({Bcsec.authority}) will be used.
+    #
+    # @see Bcsec::Rack.use_in
     def initialize(app, configuration=nil, authority=nil)
       @app = app
       @configuration = configuration
