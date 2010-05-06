@@ -6,8 +6,7 @@
 #
 # Hopefully this will not be necessary after bundler 0.10 comes out.
 
-# 1.8.7 doesn't match the CI version because the CI version doesn't work on OS X 10.5
-RVM_VERSIONS="ree-1.8.7-2009.10,ruby-1.9.1-p378,jruby-1.4.0"
+RVM_VERSIONS="ree-1.8.7-2010.01,ruby-1.9.1-p378,jruby-1.4.0"
 
 rvm $RVM_VERSIONS gem bundle
 rvm $RVM_VERSIONS gem bundle --prune-cache
