@@ -29,7 +29,7 @@ gem 'warden', '~> 0.10.3'
 only :development do
   # general testing
   gem 'capybara'
-  gem 'cucumber', '~> 0.6'
+  gem 'cucumber', '~> 0.6.0'
   gem 'rack-test', '~> 0.5'
   gem 'rspec', '~> 1.3'
   gem 'test-unit', '1.2.3' if RUBY_VERSION == '1.9.1'
