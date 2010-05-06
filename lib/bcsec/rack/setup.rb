@@ -17,7 +17,7 @@ module Bcsec::Rack
   # @see Bcsec::Configuration#api_modes
   class Setup
     ##
-    # Create a new instance of the middleware
+    # Creates a new instance of the middleware.
     #
     # @param [#call] app the application this middleware is being
     #   wrapped around.
