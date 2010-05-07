@@ -164,6 +164,8 @@ module Bcsec::Authorities
     #
     # @return [void]
     def on_authentication_success(user, kind, credentials, authenticating_authority)
+      @config.logger.info("User \"#{user.username}\" was successfully authenticated " <<
+                          "by #{authenticating_authority.class}.")
       poll(:on_authentication_success, user, kind, credentials, authenticating_authority)
     end
 
@@ -189,6 +191,8 @@ module Bcsec::Authorities
     #
     # @return [void]
     def on_authentication_failure(user, kind, credentials, reason)
+      @config.logger.info("Authentication attempt#{" by \"#{user.username}\"" if user} " <<
+                          "failed: #{reason}.")
       poll(:on_authentication_failure, user, kind, credentials, reason)
     end
 

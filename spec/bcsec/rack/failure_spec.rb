@@ -5,7 +5,9 @@ require 'rack/mock'
 module Bcsec::Rack
   describe Failure do
     before do
-      @env = ::Rack::MockRequest.env_for("/", "bcsec.configuration" => Bcsec::Configuration.new)
+      @config = Bcsec::Configuration.new
+      @config.logger = spec_logger
+      @env = ::Rack::MockRequest.env_for("/", "bcsec.configuration" => @config)
       @app = Failure.new
     end
 
@@ -59,7 +61,8 @@ module Bcsec::Rack
         it_should_behave_like "an authorization failure"
 
         it "logs the failure appropriately" do
-          pending "#2702"
+          call
+          actual_log.should =~ /Resource authorization failure: User "jo" is not in the :ENU portal./
         end
       end
 
@@ -71,7 +74,8 @@ module Bcsec::Rack
         it_should_behave_like "an authorization failure"
 
         it "logs the failure appropriately" do
-          pending "#2702"
+          call
+          actual_log.should =~ /Resource authorization failure: User "jo" is not in any of the required groups \[:Admin, :Developer\]./
         end
       end
     end

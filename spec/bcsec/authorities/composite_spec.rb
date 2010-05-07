@@ -4,10 +4,17 @@ module Bcsec::Authorities
   describe Composite do
     def actual(*auths, &block)
       conf = Bcsec::Configuration.new
+
+      conf.logger = spec_logger
       conf.enhance(&block) if block
+
       Composite.new(conf).tap do |c|
         c.authorities = auths unless auths.empty?
       end
+    end
+
+    def actual_log
+      @log_io.string
     end
 
     before do
@@ -130,6 +137,10 @@ module Bcsec::Authorities
             it "receives the right authority" do
               @args[:authority].should == @a
             end
+
+            it "logs an appropriate message" do
+              actual_log.should =~ /User "jo" was successfully authenticated by Object./
+            end
           end
 
           it "is not invoked on failure" do
@@ -184,6 +195,10 @@ module Bcsec::Authorities
               it "receives no user" do
                 @args[:user].should be_nil
               end
+
+              it "logs an appropriate message" do
+                actual_log.should =~ /Authentication attempt failed: invalid credentials./
+              end
             end
 
             describe "because the kind is not supported" do
@@ -198,6 +213,10 @@ module Bcsec::Authorities
 
               it "receives no user" do
                 @args[:user].should be_nil
+              end
+
+              it "logs an appropriate message" do
+                actual_log.should =~ /Authentication attempt failed: no configured authorities support :user credentials./
               end
             end
 
@@ -217,6 +236,10 @@ module Bcsec::Authorities
 
               it "receives the user" do
                 @args[:user].should == @user
+              end
+
+              it "logs an appropriate message" do
+                actual_log.should =~ /Authentication attempt by "jo" failed: credentials vetoed by A, C./
               end
             end
 
@@ -265,7 +288,8 @@ module Bcsec::Authorities
 
     describe "#on_authentication_success" do
       it "doesn't cause an error if none of the authorities implement it" do
-        lambda { @comp.on_authentication_success(:dc, :dc, [:dc], :dc) }.should_not raise_error
+        lambda { @comp.on_authentication_success(Bcsec::User.new("dc"), :dc, [:dc], :dc) }.
+          should_not raise_error
       end
 
       def implement_on(auth)
@@ -314,7 +338,8 @@ module Bcsec::Authorities
 
     describe "#on_authentication_failure" do
       it "doesn't cause an error if none of the authorities implement it" do
-        lambda { @comp.on_authentication_failure(:dc, :dc, [:dc], :dc) }.should_not raise_error
+        lambda { @comp.on_authentication_failure(Bcsec::User.new("dc"), :dc, [:dc], :dc) }.
+          should_not raise_error
       end
 
       def implement_on(auth)

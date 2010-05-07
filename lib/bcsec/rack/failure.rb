@@ -32,10 +32,10 @@ module Bcsec::Rack
           [401, headers, ["Authentication required"]]
         end
       else
+        log_authorization_failure(env)
         msg = "#{user(env).username} may not use this page."
         Rack::Response.
-          new(
-              "<html><head><title>Authorization denied</title></head><body>#{msg}</body></html>",
+          new("<html><head><title>Authorization denied</title></head><body>#{msg}</body></html>",
               403,
               "Content-Type" => "text/html").finish
       end
@@ -57,6 +57,19 @@ module Bcsec::Rack
 
     def user(env)
       env['bcsec'].user
+    end
+
+    def log_authorization_failure(env)
+      wo = env['warden.options']
+      msg = "Resource authorization failure: User \"#{user(env).username}\" " <<
+        if wo[:portal_required]
+          "is not in the #{wo[:portal_required].inspect} portal."
+        elsif wo[:groups_required]
+          "is not in any of the required groups #{wo[:groups_required].inspect}."
+        else
+          "is just generally unauthorized.  Don't ask questions."
+        end
+      configuration(env).logger.info(msg)
     end
   end
 end

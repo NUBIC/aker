@@ -60,11 +60,13 @@ describe Bcsec do
         a.valid_credentials!(:magic, "jo", "man")
         authority a
       }
+      Bcsec.configuration.logger = spec_logger
       Bcsec.authority.valid_credentials?(:magic, "man").username.should == "jo"
     end
 
     it "prefers a directly-set authority" do
       Bcsec.configuration = Bcsec::Configuration.new { authority :static }
+      Bcsec.configuration.logger = spec_logger
       Bcsec.authority.valid_credentials?(:cas,  "ST-12345").should be_nil
       Bcsec.authority = @auth
       Bcsec.authority.valid_credentials?(:cas,  "ST-12345").should_not be_nil
