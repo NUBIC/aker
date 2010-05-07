@@ -39,7 +39,7 @@ module Bcsec::Modes::Middleware::Form
     describe "#call" do
       before do
         @warden = mock
-        @env = Rack::MockRequest.env_for(@login_path)
+        @env = {}
         @env['warden'] = @warden
         @env['REQUEST_METHOD'] = 'POST'
       end
@@ -58,7 +58,13 @@ module Bcsec::Modes::Middleware::Form
       end
 
       it "passes the supplied username to the login form renderer" do
-        pending "rack-test's POST method does not appear to properly set parameters"
+        @warden.stub(:authenticated? => false, :custom_failure! => nil)
+
+        @assets.should_receive(:login_html).
+          with(hash_including(@env), hash_including({ :username => "username" })).
+          and_return("Login failed")
+
+        post @login_path, {"username" => "username"}, @env
       end
 
       it "redirects to the application's root if authentication succeeded" do
