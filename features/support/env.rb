@@ -13,6 +13,13 @@ require 'rack/test'
 
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
 
+Before do
+  # suppress logging
+  Bcsec.configure {
+    logger Logger.new(StringIO.new)
+  }
+end
+
 Before('@cas') do
   Capybara.current_driver = :culerity
   start_cas_server
