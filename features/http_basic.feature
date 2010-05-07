@@ -4,6 +4,7 @@ Background:
   Given I have an authority that accepts these usernames and passwords:
     | username | password |
     | mr296    | br0wn    |
+  And mr296 is in Serenity
   And I have a bcsec-protected application using
     | ui_mode | api_modes  | portal   |
     |         | http_basic | Serenity |

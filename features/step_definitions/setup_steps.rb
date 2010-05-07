@@ -6,6 +6,20 @@ Given /^I have an authority that accepts these usernames and passwords:$/ do |ta
   Bcsec.configure { authority static }
 end
 
+Given /^(\w+) is in (?:the (.*?) groups? for )?(\w+)$/ do |username, group_clause, portal|
+  static = Bcsec.configuration.authorities.find { |a| Bcsec::Authorities::Static === a }
+  raise "No static authority configured" unless static
+  static.user(username) do |user|
+    user.portals << portal.to_sym
+    user.default_portal = portal.to_sym unless user.default_portal
+    if group_clause
+      group_clause.gsub(/ and /, ' ').split(/[\s,]+/).each do |group|
+        user.group_memberships(portal) << Bcsec::GroupMembership.new(Bcsec::Group.new(group))
+      end
+    end
+  end
+end
+
 Given /^I have a CAS server that accepts these usernames and passwords:$/ do |table|
   table.hashes.each do |u|
     @cas_server.register_user(u['username'], u['password'])
@@ -33,6 +47,14 @@ Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
 
     map '/protected' do
       run Bcsec::Cucumber::RackEndpoints.authentication_required
+    end
+
+    map '/owners' do
+      run Bcsec::Cucumber::RackEndpoints.group_only("Owners")
+    end
+
+    map '/shared' do
+      run Bcsec::Cucumber::RackEndpoints.partial_group("Owners")
     end
 
     map '/' do

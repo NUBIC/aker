@@ -13,7 +13,74 @@ module Bcsec::Rack
       Warden::Strategies.clear!
     end
 
-    describe "on authentication" do
+    def call
+      @app.call(@env)
+    end
+
+    def actual_code
+      call[0]
+    end
+
+    def actual_headers
+      call[1]
+    end
+
+    def actual_body
+      actual_lines = []
+      call[2].each { |l| actual_lines << l }
+      actual_lines.join
+    end
+
+    describe "of authorization" do
+      before do
+        @env['bcsec'] = Facade.new(@env["bcsec.configuration"], Bcsec::User.new("jo"))
+      end
+
+      shared_examples_for "an authorization failure" do
+        it "403s" do
+          actual_code.should == 403
+        end
+
+        it "returns HTML" do
+          actual_headers["Content-Type"].should == "text/html"
+        end
+
+        it "returns a somewhat friendly message" do
+          actual_body.should ==
+            "<html><head><title>Authorization denied</title></head><body>jo may not use this page.</body></html>"
+        end
+      end
+
+      describe "at the portal level" do
+        before do
+          @env['warden.options'] = { :portal_required => :ENU }
+        end
+
+        it_should_behave_like "an authorization failure"
+
+        it "logs the failure appropriately" do
+          pending "#2702"
+        end
+      end
+
+      describe "at the group level" do
+        before do
+          @env['warden.options'] = { :groups_required => [:Admin, :Developer] }
+        end
+
+        it_should_behave_like "an authorization failure"
+
+        it "logs the failure appropriately" do
+          pending "#2702"
+        end
+      end
+    end
+
+    describe "of authentication" do
+      before do
+        @env['warden.options'] = { :login_required => true }
+      end
+
       describe "when interactive" do
         before do
           Warden::Strategies.add(:fake_ui) do
@@ -28,13 +95,8 @@ module Bcsec::Rack
         end
 
         it "invokes #on_ui_failure on the appropriate mode" do
-          actual_code, actual_headers, actual_body = @app.call(@env)
           actual_code.should == 403
-          actual_lines = []
-          actual_body.each do |l|
-            actual_lines << l
-          end
-          actual_lines.should == ["UI failed!"]
+          actual_body.should == "UI failed!"
         end
       end
 
@@ -56,7 +118,7 @@ module Bcsec::Rack
         it "responds with a challenge" do
           @env['bcsec.configuration'].api_mode = :beta
 
-          actual = @app.call(@env)
+          actual = call
           actual[0].should == 401
           actual[1]["WWW-Authenticate"].should == 'Beta realm="Bcsec"'
         end
@@ -64,16 +126,20 @@ module Bcsec::Rack
         it "responds for with challenges for all modes" do
           @env['bcsec.configuration'].api_mode = [:beta, :alpha]
 
-          actual = @app.call(@env)
-          actual[1]["WWW-Authenticate"].should == %Q{Beta realm="Bcsec"\nAlpha realm="Bcsec"}
+          actual_headers["WWW-Authenticate"].should == %Q{Beta realm="Bcsec"\nAlpha realm="Bcsec"}
         end
 
         it "uses the portal as the realm if it is set" do
           @env['bcsec.configuration'].portal = :ENU
           @env['bcsec.configuration'].api_mode = [:alpha]
 
-          actual = @app.call(@env)
-          actual[1]["WWW-Authenticate"].should == %Q{Alpha realm="ENU"}
+          actual_headers["WWW-Authenticate"].should == %Q{Alpha realm="ENU"}
+        end
+
+        it "gives a human-readable message in the body for debugging" do
+          @env['bcsec.configuration'].api_mode = :beta
+          actual_headers["Content-Type"].should == "text/plain"
+          actual_body.should == "Authentication required"
         end
       end
     end

@@ -297,19 +297,22 @@ module Bcsec
 
     def replace_deprecated_authenticators(args)
       args.collect { |name|
-        new_name = case name
-                   when :authenticate_only; :all_access;
-                   when :mock; :static;
-                   end
-        if new_name
-          Deprecation.notify("The #{name.inspect} authenticator is now the " <<
-                             "#{new_name.inspect} authority.  Please update your configuration.",
+        case name
+        when :mock
+          Deprecation.notify("The :mock authenticator is now the " <<
+                             ":static authority.  Please update your configuration.",
                              "2.2")
-          new_name
+          :static
+        when :authenticate_only
+          Deprecation.notify("The :authenticate_only authenticator is no longer " <<
+                             "necessary.  To prevent the portal access check, " <<
+                             "don't include a portal in the configuration.",
+                             "2.2")
+          nil
         else
           name
         end
-      }
+      }.compact
     end
   end
 

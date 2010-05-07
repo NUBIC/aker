@@ -42,6 +42,44 @@ module Bcsec
     end
 
     ##
+    # @overload permit?(*groups, options={})
+    #   Determines whether this user has access to any of the given
+    #   groups.
+    #   @param [Array<#to_sym>] groups the names of the groups to query
+    #   @param [Hash] options additional constraints on the query
+    #   @option options [#to_sym] :portal (#default_portal) the portal
+    #     within which to do the group check
+    #   @return [Boolean]
+    #
+    # @overload permit?(*groups, options={}, &block)
+    #   Evaluates the given block if the user is in any of the given
+    #   groups.
+    #   @param [Array<#to_sym>] groups the names of the groups to use
+    #     as the condition
+    #   @param [Hash] options additional constraints on the condition
+    #   @option options [#to_sym] :portal (#default_portal) the portal
+    #     within which to do the group check
+    #   @return [Object,nil] the value of the block if it is
+    #     executed; otherwise nil
+    def permit?(*args)
+      options = args.last.is_a?(Hash) ? args.pop : { }
+      portal = options[:portal] || default_portal
+
+      permitted =
+        if args.empty?
+          may_access?(portal)
+        else
+          args.detect { |group| group_memberships(portal).include?(group.to_sym) }
+        end
+
+      if block_given?
+        permitted ? yield : nil
+      else
+        permitted
+      end
+    end
+
+    ##
     # A display-friendly name for this user.  Uses `first_name` and
     # `last_name` if available, otherwise it just uses the username.
     #
