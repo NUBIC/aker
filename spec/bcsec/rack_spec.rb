@@ -22,6 +22,7 @@ module Bcsec
       def using?(klass)
         self.uses.detect { |cls, params, block| cls == klass }
       end
+
       alias :find_use_of :using?
     end
 
@@ -99,6 +100,7 @@ module Bcsec
           Bcsec::Rack.use_in(@builder)
 
           @bcsec_index = @builder.uses.map { |u| u.first }.index(Bcsec::Rack::Setup)
+          @logout_index = @builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
         end
 
         it "prepends middleware for UI modes first" do
@@ -109,12 +111,22 @@ module Bcsec
           @builder.uses[1].first.should == :api_ware_before
         end
 
-        it "appends middleware for UI modes directly after the bcsec middleware" do
-          @builder.uses[@bcsec_index + 1].first.should == :ui_ware_after
+        it "attaches the logout middleware directly after Bcsec::Rack::Setup" do
+          @logout_index.should == @bcsec_index + 1
+        end
+
+        it "mounts the logout middleware to /logout" do
+          _, args, _ = @builder.uses[@logout_index]
+
+          args.should == ["/logout"]
+        end
+
+        it "appends middleware for UI modes directly after the logout middleware" do
+          @builder.uses[@logout_index + 1].first.should == :ui_ware_after
         end
 
         it "appends middleware for API modes after appended UI middleware" do
-          @builder.uses[@bcsec_index + 2].first.should == :api_ware_after
+          @builder.uses[@logout_index + 2].first.should == :api_ware_after
         end
 
         it "uses middleware for the passed-in configuration instead of the global configuration if present" do

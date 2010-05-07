@@ -5,6 +5,7 @@ require 'warden'
 # Integration of Bcsec with {http://rack.rubyforge.org/ Rack}.
 module Bcsec::Rack
   autoload :Failure, 'bcsec/rack/failure'
+  autoload :Logout,  'bcsec/rack/logout'
   autoload :Setup,   'bcsec/rack/setup'
 
   class << self
@@ -35,6 +36,7 @@ module Bcsec::Rack
           manager.failure_app = Bcsec::Rack::Failure.new
         end
         builder.use Setup, configuration
+        builder.use Logout, '/logout'
       end
     end
 
