@@ -9,8 +9,12 @@ module Bcsec
     #
     # ## Implications of GET
     #
-    # `GET` was chosen for backwards-compatibility with bcsec 1.x applications
-    # and the convenience of being able to have logout actions as HTML links.
+    # `GET` was chosen to ensure that there always exists a way to clear
+    # application session data independent of whether it is possible to get to a
+    # logout link.  (If unmarshalable data exists in the session -- say, stored
+    # objects whose format has changed between application revisions -- it is
+    # possible to get into a state where logout links cannot be accessed.)
+    #
     # Using `GET` does mean that it is possible to execute CSRF attacks that
     # will log out the user.  The severity of this can range from a minor
     # annoyance (just having to log in again while browsing a series of pages)
