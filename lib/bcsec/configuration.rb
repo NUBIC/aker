@@ -165,6 +165,26 @@ module Bcsec
       })
     end
 
+    ##
+    # Retrieves the logger which bcsec will use for internal messages.
+    #
+    # The default instance logs to standard error.
+    #
+    # @return [Object] an object which conforms to the
+    #   protocol of ruby's built-in Logger class
+    def logger
+      @logger ||= Logger.new($stderr)
+    end
+
+    ##
+    # Specifies the logger bcsec will use for internal messages.
+    #
+    # @param [Object] logger an object which conforms to the protocol
+    #   of ruby's built-in Logger class
+    def logger=(logger)
+      @logger = logger
+    end
+
     private
 
     def nil_or_sym(x)

@@ -70,6 +70,27 @@ describe Bcsec::Configuration do
     end
   end
 
+  describe "#logger" do
+    before do
+      @captured_stderr = StringIO.new
+      @real_stderr, $stderr = $stderr, @captured_stderr
+    end
+
+    after do
+      $stderr = @real_stderr
+    end
+
+    it "defaults to something that prints to stderr" do
+      @config.logger.info("Hello, world")
+
+      @captured_stderr.string.should =~ /Hello, world/
+    end
+
+    it "can be set" do
+      lambda { @config.logger = Logger.new(STDOUT) }.should_not raise_error
+    end
+  end
+
   describe "DSL" do
     describe "for basic attributes" do
       it "can set the portal" do
