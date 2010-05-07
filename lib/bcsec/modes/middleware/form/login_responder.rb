@@ -13,12 +13,7 @@ module Bcsec
         #
         # @author David Yip
         class LoginResponder
-          ##
-          # The form asset provider used by an instance of this middleware.
-          #
-          # @see AssetProvider
-          # @return [#login_html] a login asset provider
-          attr_accessor :assets
+          include Support::LoginFormRenderer
 
           ##
           # The path at which the middleware will watch for login requests.

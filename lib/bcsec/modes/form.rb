@@ -15,6 +15,8 @@ module Bcsec
     #
     # @author David Yip
     class Form < Bcsec::Modes::Base
+      include Support::LoginFormRenderer
+
       ##
       # A key that refers to this mode; used for configuration convenience.
       #

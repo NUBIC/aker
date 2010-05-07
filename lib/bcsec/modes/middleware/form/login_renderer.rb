@@ -13,12 +13,7 @@ module Bcsec
         #
         # @author David Yip
         class LoginRenderer
-          ##
-          # The form asset provider used by an instance of this middleware.
-          #
-          # @see AssetProvider
-          # @return [#login_html, #login_css] a login asset provider
-          attr_accessor :assets
+          include Support::LoginFormRenderer
 
           ##
           # The path at which the middleware will watch for login requests.
@@ -66,16 +61,15 @@ module Bcsec
           # @param env the Rack environment
           # @return a finished Rack response
           def provide_login_html(env)
-            ::Rack::Response.new(assets.login_html(env)).finish
+            ::Rack::Response.new(super).finish
           end
 
           ##
           # CSS for the form provided by {provide_login_html}.
           #
-          # @param env the Rack environment
           # @return a finished Rack response
           def provide_login_css
-            ::Rack::Response.new(assets.login_css) do |resp|
+            ::Rack::Response.new(super) do |resp|
               resp['Content-Type'] = 'text/css'
             end.finish
           end
