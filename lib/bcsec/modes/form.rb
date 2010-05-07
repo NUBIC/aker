@@ -39,21 +39,30 @@ module Bcsec
       end
 
       ##
+      # The login form asset provider used by this middleware.
+      #
+      # @return [Support::LoginFormAssetProvider]
+      def self.assets
+        Support::LoginFormAssetProvider.new
+      end
+
+      ##
       # Appends the {Middleware::Form::LoginResponder login responder} to its
       # position in the Rack middleware stack.
       def self.append_middleware(builder)
-        builder.use(Middleware::Form::LoginResponder,
-                    login_path,
-                    Middleware::Form::AssetProvider.new)
+        builder.use(Middleware::Form::LoginResponder, login_path, assets)
       end
 
       ##
       # Prepends the {Middleware::Form::LoginRenderer login form renderer} to
       # its position in the Rack middleware stack.
       def self.prepend_middleware(builder)
-        builder.use(Middleware::Form::LoginRenderer,
-                    login_path,
-                    Middleware::Form::AssetProvider.new)
+        builder.use(Middleware::Form::LoginRenderer, login_path, assets)
+      end
+
+      def initialize(env, scope=nil)
+        super
+        self.assets = self.class.assets
       end
 
       ##
@@ -95,6 +104,17 @@ module Bcsec
       # @return [Rack::Response]
       def on_ui_failure
         ::Rack::Response.new { |resp| resp.redirect(login_url) }
+      end
+
+      ##
+      # Builds a Rack response containing the login form with a "you have been
+      # logged out" notification.
+      #
+      # @return [Rack::Response]
+      def on_logout
+        body = provide_login_html(env, :logged_out => true)
+
+        ::Rack::Response.new(body, 200)
       end
     end
   end

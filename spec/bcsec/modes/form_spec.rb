@@ -97,5 +97,26 @@ module Bcsec::Modes
         URI.parse(response.location).path.should == "/login"
       end
     end
+
+    describe "#on_logout" do
+      before do
+        @mode.assets = mock
+      end
+
+      it "renders the login form" do
+        @mode.assets = stub(:login_html => 'login form')
+
+        response = @mode.on_logout
+
+        response.status.should == 200
+        response.body.should == ['login form']
+      end
+
+      it "renders a notification in the form" do
+        @mode.assets.should_receive(:login_html).with(hash_including(@env), { :logged_out => true }).and_return([])
+
+        @mode.on_logout
+      end
+    end
   end
 end

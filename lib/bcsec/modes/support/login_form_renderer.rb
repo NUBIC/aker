@@ -5,7 +5,7 @@ module Bcsec::Modes::Support
     ##
     # The form asset provider.
     #
-    # @see FormAssetProvider
+    # @see LoginFormAssetProvider
     # @return [#login_html, #login_css] a form asset provider
     attr_accessor :assets
 

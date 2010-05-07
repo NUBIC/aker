@@ -1,10 +1,10 @@
-require File.expand_path("../../../../../spec_helper", __FILE__)
+require File.expand_path("../../../../spec_helper", __FILE__)
 require 'nokogiri'
 
-module Bcsec::Modes::Middleware::Form
-  describe AssetProvider do
+module Bcsec::Modes::Support
+  describe LoginFormAssetProvider do
     before do
-      @provider = AssetProvider.new
+      @provider = LoginFormAssetProvider.new
     end
 
     describe "#login_html" do
@@ -37,7 +37,7 @@ module Bcsec::Modes::Middleware::Form
     describe "#login_css" do
       it "provides CSS for the login form" do
         expected_css = File.read(File.join(File.dirname(__FILE__),
-                                           %w(.. .. .. .. .. assets bcsec modes middleware form login.css)))
+                                           %w(.. .. .. .. assets bcsec modes middleware form login.css)))
 
         @provider.login_css.should == expected_css
       end
