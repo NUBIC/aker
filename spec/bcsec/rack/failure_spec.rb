@@ -45,7 +45,7 @@ module Bcsec::Rack
           %w(Alpha Beta).each do |n|
             cls = Class.new(Bcsec::Modes::Base)
             cls.class_eval <<-RUBY
-              include Bcsec::Modes::Rfc2617
+              include Bcsec::Modes::Support::Rfc2617
               def authenticate!; nil; end
               def scheme; #{n.inspect}; end
             RUBY

@@ -14,7 +14,7 @@ module Bcsec
     #
     # @author David Yip
     class CasProxy < Bcsec::Modes::Base
-      include Rfc2617
+      include Support::Rfc2617
 
       ##
       # A key that refers to this mode; used for configuration convenience.

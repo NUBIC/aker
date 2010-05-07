@@ -15,7 +15,7 @@ module Bcsec
     #      RFC 2617
     # @author David Yip
     class HttpBasic < Bcsec::Modes::Base
-      include Rfc2617
+      include Support::Rfc2617
 
       ##
       # Recognizes valid Basic challenges.
