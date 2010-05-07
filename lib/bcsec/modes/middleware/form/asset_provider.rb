@@ -33,7 +33,8 @@ module Bcsec
           #
           # @param env [Rack environment] a Rack environment
           # @param [Hash] options rendering options
-          # @option options [Boolean] :show_failure If true, will render a failure message
+          # @option options [Boolean] :login_failed If true, will render a failure message
+          # @option options [Boolean] :logged_out If true, will render a logout notification
           # @return [String] HTML data
           def login_html(env, options = {})
             script_name = env['SCRIPT_NAME']

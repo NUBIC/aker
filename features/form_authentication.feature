@@ -38,11 +38,10 @@ Feature: Form authentication
 
     Then I should be sent to the login page
 
-  @wip
   Scenario: Logging out of an application shows the login form
     Given I enter username "mr296" and password "br0wn" into the login form
 
     When I log out of the application
 
     Then I should be sent to the login page
-    And I should see "You have been logged out" on the page
+    And I should see "Logged out" on the page

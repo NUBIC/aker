@@ -21,10 +21,16 @@ module Bcsec::Modes::Middleware::Form
         (@doc/'link[rel="stylesheet"]').first.attributes["href"].value.should == "/foo/login.css"
       end
 
-      it "can render a failure message" do
-        @doc = Nokogiri.HTML(@provider.login_html({}, { :show_failure => true }))
+      it "can render a 'login failed' message" do
+        @doc = Nokogiri.HTML(@provider.login_html({}, { :login_failed => true }))
 
         (@doc/'.error').first.inner_html.should == 'Login failed'
+      end
+
+      it "can render a 'logged out' message" do
+        @doc = Nokogiri.HTML(@provider.login_html({}, { :logged_out => true }))
+
+        (@doc/'.message').first.inner_html.should == 'Logged out'
       end
     end
 

@@ -47,7 +47,7 @@ module Bcsec::Modes::Middleware::Form
       it "renders a 'login failed' message if authentication failed" do
         @warden.should_receive(:authenticated?).and_return(false)
         @warden.should_receive(:custom_failure!)
-        @assets.should_receive(:login_html).with(anything(), { :show_failure => true }).and_return('Login failed')
+        @assets.should_receive(:login_html).with(anything(), { :login_failed => true }).and_return('Login failed')
 
         post @login_path, {}, @env
 
