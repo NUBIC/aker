@@ -5,6 +5,7 @@ module Bcsec::Rack
     before do
       @app = stub()
       @app.stub(:call)
+      @user = Bcsec::User.new("jo")
 
       @actual = Setup.new(@app)
       Bcsec.configure { } # defaults
@@ -24,6 +25,7 @@ module Bcsec::Rack
     def min_env(base={})
       warden = Object.new
       warden.stub(:authenticate)
+      warden.stub(:user).and_return(@user)
 
       {
         'warden' => warden
@@ -122,6 +124,7 @@ module Bcsec::Rack
           api_modes :basic, :cas_proxy
         }
         @warden = Object.new
+        @warden.stub(:user)
         @env = {
           'warden' => @warden
         }
@@ -137,6 +140,25 @@ module Bcsec::Rack
         @warden.should_receive(:authenticate).with(:basic, :cas_proxy)
 
         call(@env.merge("HTTP_ACCEPT" => "application/json"))
+      end
+    end
+
+    describe "env['bcsec']" do
+      before do
+        @actual_facade = call['bcsec']
+      end
+
+      it "is a facade" do
+        @actual_facade.class.should == Facade
+      end
+
+      it "has the user" do
+        @actual_facade.user.username.should == "jo"
+      end
+
+      it "has the configuration" do
+        Bcsec.configure { portal :NOTIS }
+        @actual_facade.configuration.portal.should == :NOTIS
       end
     end
 

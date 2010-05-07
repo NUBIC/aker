@@ -64,6 +64,8 @@ module Bcsec::Rack
         warden.authenticate(*configuration.api_modes)
       end
 
+      env['bcsec'] = Facade.new(configuration, warden.user)
+
       @app.call(env)
     end
 
