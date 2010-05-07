@@ -18,9 +18,18 @@ module Bcsec::Authorities
         lambda { Cas.new(@config) }.should raise_error(":base_url parameter is required for CAS")
       end
 
-      it "creates a cas client instance" do
-        Cas.new(@config).client.class.should == CASClient::Client
-        Cas.new(@config).client.cas_base_url.should == "https://cas.example.net/cas"
+      describe "of the client" do
+        before do
+          @actual_client = Cas.new(@config).client
+        end
+
+        it "is a rubycas-client instance" do
+          @actual_client.class.should == CASClient::Client
+        end
+
+        it "has the right base URL" do
+          @actual_client.cas_base_url.should == "https://cas.example.net/cas"
+        end
       end
     end
 
