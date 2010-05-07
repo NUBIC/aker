@@ -29,3 +29,21 @@ Feature: Form authentication
 
     Then I should be sent to the login page
     And I should see "Login failed" on the page
+
+  @wip
+  Scenario: Logging out of an application means the user can no longer access protected resources
+    Given I enter username "mr296" and password "br0wn" into the login form
+
+    When I log out of the application
+    And I access a protected resource
+
+    Then I should be sent to the login page
+
+  @wip
+  Scenario: Logging out of an application shows the login form
+    Given I enter username "mr296" and password "br0wn" into the login form
+
+    When I log out of the application
+
+    Then I should be sent to the login page
+    And I should see "You have been logged out" on the page

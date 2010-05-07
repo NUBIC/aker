@@ -20,6 +20,14 @@ Then /^I should be able to access that protected resource$/ do
   end
 end
 
+When /^I log out of the application$/ do
+  if @using_api
+    get "/logout"
+  else
+    visit "/logout"
+  end
+end
+
 When /^I access an API\-using resource$/ do
   visit "/consume"
 end

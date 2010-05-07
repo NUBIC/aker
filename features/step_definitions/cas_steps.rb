@@ -15,3 +15,8 @@ Then /^I should be on the CAS login page$/ do
   login_base = File.join(@cas_server.base_url, "login")
   page.current_url.should =~ %r{^#{login_base}}
 end
+
+Then /^I should be on the CAS logout page$/ do
+  logout_base = File.join(@cas_server.base_url, "logout")
+  page.current_url.should =~ %r{^#{logout_base}}
+end
