@@ -20,6 +20,16 @@ module Bcsec::Cas
     end
 
     ##
+    # The logout URL on the CAS server.  This may be set explicitly
+    # in the configuration as `parameters_for(:cas)[:logout_url]`.  If
+    # not set explicitly, it will be derived from the base URL.
+    #
+    # @return [String]
+    def cas_logout_url
+      configuration.parameters_for(:cas)[:logout_url] || File.join(cas_base_url, '/logout')
+    end
+
+    ##
     # The base URL for all not-otherwise-explicitly-specified URLs on
     # the CAS server.  It may be set in the CAS parameters as either
     # `:base_url` (preferred) or `:cas_base_url` (for backwards

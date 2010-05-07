@@ -25,7 +25,6 @@ Scenario: A user is prompted to log in when requesting a protected resource and 
     And I click "LOGIN"
    Then I should be able to access that protected resource
 
-@wip
 Scenario: Logging out of an application means the user can no longer access protected resources
   Given I have logged into CAS using "mr296" / "br0wn"
 
@@ -34,7 +33,6 @@ Scenario: Logging out of an application means the user can no longer access prot
 
   Then I should be on the CAS login page
 
-@wip
 Scenario: Logging out of an application redirects the user to the CAS server's logout URL
   Given I have logged into CAS using "mr296" / "br0wn"
 

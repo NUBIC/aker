@@ -27,6 +27,17 @@ module Bcsec::Cas
       end
     end
 
+    describe "#cas_logout_url" do
+      it "is built from the base URL" do
+        @actual.cas_logout_url.should == "https://cas.example.org/logout"
+      end
+
+      it "uses an explicit one if provided" do
+        @config.parameters_for(:cas)[:logout_url] = "https://cas.example.org/exit-point"
+        @actual.cas_logout_url.should == "https://cas.example.org/exit-point"
+      end
+    end
+
     describe "#cas_base_url" do
       before do
         @config.parameters_for(:cas)[:cas_base_url] = "https://cas2.example.org/"

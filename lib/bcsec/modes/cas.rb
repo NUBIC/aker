@@ -74,6 +74,17 @@ module Bcsec
         end
       end
 
+      ##
+      # Builds a Rack response that redirects to a CAS server's logout page.
+      #
+      # @see http://www.jasig.org/cas/protocol
+      #      Section 2.3 of the CAS 2 protocol
+      #
+      # @return [Rack::Response]
+      def on_logout
+        ::Rack::Response.new { |resp| resp.redirect(cas_logout_url) }
+      end
+
       private
 
       ##
