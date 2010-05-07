@@ -10,8 +10,8 @@ Feature: Form authentication
       | username | password |
       | mr296    | br0wn    |
     And I have a bcsec-protected application using
-      | ui_mode | api_modes | portal   |
-      | form    |           | Serenity |
+      | ui_mode | api_modes |
+      | form    |           |
 
   Scenario: A correct username and password should pass authentication
     When I enter username "mr296" and password "br0wn" into the login form

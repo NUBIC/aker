@@ -7,6 +7,7 @@ Background:
   Given I have an authority that accepts these usernames and passwords:
     | username | password |
     | mr296    | br0wn    |
+  And mr296 is in Serenity
   And I have a bcsec-protected application using
     | api_modes            | portal   |
     | cas_proxy http_basic | Serenity |
