@@ -24,6 +24,20 @@ module Bcsec
         end
         alias :authenticated_api_resource :authentication_required
 
+        def search
+          Proc.new { |env|
+            env['bcsec'].authentication_required!
+            request = ::Rack::Request.new(env)
+
+            [200, { "Content-Type" => "text/plain" },
+              ["Format: ",
+                request.params["format"],
+                ", ",
+                "results: ",
+                request.params["q"]].compact]
+          }
+        end
+
         def group_only(group)
           Proc.new { |env|
             env['bcsec'].permit! group.to_sym

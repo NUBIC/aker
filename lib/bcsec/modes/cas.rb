@@ -17,6 +17,7 @@ module Bcsec
     # @author David Yip
     class Cas < Bcsec::Modes::Base
       include Bcsec::Cas::ConfigurationHelper
+      include ::Rack::Utils
 
       ##
       # A key that refers to this mode; used for configuration convenience.
@@ -69,7 +70,7 @@ module Bcsec
       def on_ui_failure
         ::Rack::Response.new do |resp|
           login_uri = URI.parse(cas_login_url)
-          login_uri.query = "service=#{service_url}"
+          login_uri.query = "service=#{escape(service_url)}"
           resp.redirect(login_uri.to_s)
         end
       end

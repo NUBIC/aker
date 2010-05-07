@@ -108,12 +108,10 @@ module Bcsec::Modes
       end
 
       it "includes the service URL" do
-        @env["PATH_INFO"] = "/foo/bar"
+        @env["PATH_INFO"] = "/foo?a=b&c=d"
 
-        actual_uri.query.should == "service=http://example.org/foo/bar"
+        actual_uri.query.should == "service=http%3A%2F%2Fexample.org%2Ffoo%3Fa%3Db%26c%3Dd"
       end
-
-      it "escapes query parameters in the service URL"
 
       def actual_uri
         response = @mode.on_ui_failure

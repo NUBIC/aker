@@ -8,6 +8,8 @@ When /^I access an? (\S+) resource$/ do |resource_kind|
     case resource_kind
     when "protected"
       "/protected"
+    when "search"
+      "/search?q=something&format=json"
     when "owners-only"
       "/owners"
     when "group-sensitive"
@@ -42,6 +44,10 @@ Then /^I should be able to access that (\S+) resource$/ do |resource_kind|
   else
     page.source.should =~ pattern
   end
+end
+
+Then /^I should see the search results$/ do
+  page.source.should == 'Format: json, results: something'
 end
 
 When /^I log out of the application$/ do

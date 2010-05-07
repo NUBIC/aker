@@ -49,6 +49,10 @@ Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
       run Bcsec::Cucumber::RackEndpoints.authentication_required
     end
 
+    map '/search' do
+      run Bcsec::Cucumber::RackEndpoints.search
+    end
+
     map '/owners' do
       run Bcsec::Cucumber::RackEndpoints.group_only("Owners")
     end
