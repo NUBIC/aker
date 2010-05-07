@@ -1,5 +1,6 @@
 require 'bcsec/modes/support'
 require 'erb'
+require 'rack'
 
 module Bcsec::Modes::Support
   ##
@@ -7,6 +8,8 @@ module Bcsec::Modes::Support
   #
   # @author David Yip
   class LoginFormAssetProvider
+    include Rack::Utils
+
     ##
     # Where to look for HTML and CSS assets.
     #

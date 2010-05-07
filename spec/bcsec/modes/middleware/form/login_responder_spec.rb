@@ -47,12 +47,18 @@ module Bcsec::Modes::Middleware::Form
       it "renders a 'login failed' message if authentication failed" do
         @warden.should_receive(:authenticated?).and_return(false)
         @warden.should_receive(:custom_failure!)
-        @assets.should_receive(:login_html).with(anything(), { :login_failed => true }).and_return('Login failed')
+        @assets.should_receive(:login_html).
+          with(hash_including(@env), hash_including({ :login_failed => true })).
+          and_return("Login failed")
 
         post @login_path, {}, @env
 
         last_response.status.should == 401
-        last_response.body.should == 'Login failed'
+        last_response.body.should == "Login failed"
+      end
+
+      it "passes the supplied username to the login form renderer" do
+        pending "rack-test's POST method does not appear to properly set parameters"
       end
 
       it "redirects to the application's root if authentication succeeded" do
@@ -61,7 +67,7 @@ module Bcsec::Modes::Middleware::Form
         post @login_path, {}, @env
 
         last_response.should be_redirect
-        last_response.location.should == '/'
+        last_response.location.should == "/"
       end
     end
   end

@@ -56,7 +56,9 @@ module Bcsec
           end
 
           def render_unauthenticated_response(env)
-            body = provide_login_html(env, :login_failed => true)
+            request = ::Rack::Request.new(env)
+
+            body = provide_login_html(env, :login_failed => true, :username => request['username'])
 
             ::Rack::Response.new(body, 401).finish
           end

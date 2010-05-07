@@ -30,6 +30,12 @@ Feature: Form authentication
     Then I should be sent to the login page
     And I should see "Login failed" on the page
 
+  Scenario: The supplied username is persisted across failed login attempts
+    When I enter username "mr296" and password "wrong" into the login form
+
+    Then I should be sent to the login page
+    And I should see "mr296" in the "username" field
+
   Scenario: Logging out of an application means the user can no longer access protected resources
     Given I enter username "mr296" and password "br0wn" into the login form
 

@@ -19,7 +19,7 @@
             <label for="username">Username</label>
           </div>
           <div class="value">
-            <input type="text" name="username" class="text" />
+            <input type="text" name="username" class="text" value="<%= escape_html(options[:username]) %>"/>
           </div>
         </div>
         <div class="row">

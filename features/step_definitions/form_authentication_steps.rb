@@ -9,3 +9,7 @@ Then /^I should be sent to the login page$/ do
   page.should have_field('username')
   page.should have_field('password')
 end
+
+Then /^I should see "([^\"]*)" in the "([^\"]*)" field$/ do |text, field|
+  page.should have_field(field, :with => text)
+end

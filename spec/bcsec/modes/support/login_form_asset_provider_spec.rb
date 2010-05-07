@@ -32,6 +32,21 @@ module Bcsec::Modes::Support
 
         (@doc/'.message').first.inner_html.should == 'Logged out'
       end
+
+      it "can render text in the username text field" do
+        @doc = Nokogiri.HTML(@provider.login_html({}, { :username => "user" }))
+
+        (@doc/'input[name="username"]').first['value'].should == 'user'
+      end
+
+      it "escapes HTML in usernames" do
+        html = @provider.login_html({}, { :username => "user<a/>" })
+
+        # Annoyingly, Nokogiri.HTML automatically unescapes escaped entities in
+        # attribute values.
+        html.should include("user&lt;a/&gt;")
+        html.should_not include("user<a/>")
+      end
     end
 
     describe "#login_css" do
