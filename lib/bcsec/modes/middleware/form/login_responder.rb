@@ -34,28 +34,31 @@ module Bcsec
           end
 
           ##
-          # Rack entry point.
+          # Rack entry point.  Responds to `POST /login`.
+          #
+          # @param env the Rack environment
+          # @return a finished Rack response
           def call(env)
             case [env['REQUEST_METHOD'], env['PATH_INFO']]
-              when ['POST', login_path]; render_login_response(env)
+              when ['POST', login_path]; respond(env)
               else @app.call(env)
             end
           end
 
           private
 
-          def render_login_response(env)
+          def respond(env)
             warden = env['warden']
 
             if !warden.authenticated?
               warden.custom_failure!
-              render_unauthenticated_response(env)
+              unauthenticated(env)
             else
               redirect_to_app_root(env)
             end
           end
 
-          def render_unauthenticated_response(env)
+          def unauthenticated(env)
             request = ::Rack::Request.new(env)
 
             body = provide_login_html(env, :login_failed => true, :username => request['username'])
