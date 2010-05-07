@@ -115,10 +115,6 @@ describe Bcsec::Configuration do
         config_from { authority "static" }.authorities.first.class.should == Bcsec::Authorities::Static
       end
 
-      it "can configure an authority from a symbol with underscores" do
-        config_from { authority :all_access }.authorities.first.class.should == Bcsec::Authorities::AllAccess
-      end
-
       it "can configure an authority from a class" do
         config_from { authority Bcsec::Authorities::Static }.authorities.first.class.should == Bcsec::Authorities::Static
       end
@@ -201,12 +197,11 @@ describe Bcsec::Configuration do
       it "warns when using the :authenticate_only authenticator" do
         config_from { authenticator :authenticate_only }
         deprecation_message(1).should =~
-          /The :authenticate_only authenticator is now the :all_access authority.  Please update your configuration..*2.2/
+          /The :authenticate_only authenticator is no longer necessary.  To prevent the portal access check, don't include a portal in the configuration..*2.2/
       end
 
-      it "converts the :authenticate_only authenticator to the :all_access authority" do
-        config_from { authenticator :authenticate_only }.authorities.first.class.
-          should == Bcsec::Authorities::AllAccess
+      it "ignores the :authenticate_only authenticator" do
+        config_from { authenticator :static, :authenticate_only }.authorities.size.should == 1
       end
 
       it "warns when using the :mock authenticator" do
