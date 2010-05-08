@@ -16,47 +16,7 @@ require 'ci/reporter/rake/rspec'
 
 require 'bcsec'
 
-# Evaluates a gemfile and appends the deps to a gemspec
-class GemfileGemspecDeps
-  def initialize(gemspec)
-    @spec = gemspec
-    instance_eval(File.read('Gemfile'))
-  end
-
-  def gem(name, version=[], *ignored)
-    if @only && @only.include?(:development)
-      @spec.add_development_dependency(name, *version)
-    else
-      @spec.add_runtime_dependency(name, *version)
-    end
-  end
-
-  def only(*envs)
-    @only = envs
-    yield
-    @only = nil
-  end
-
-  def method_missing(msg, *args)
-    # do nothing for unimplemented bits
-  end
-end
-
-gemspec = Gem::Specification.new do |s|
-  s.platform = Gem::Platform::RUBY
-  s.summary = "Bioinformatics core security infrastructure library"
-  s.name = 'bcsec'
-  s.version = File.read("VERSION").strip
-
-  GemfileGemspecDeps.new(s)
-
-  s.require_path = 'lib'
-  s.bindir = 'bin'
-  s.files = Dir.glob("{CHANGELOG,README,VERSION,{lib,spec}/**/*}")
-  s.author = "Rhett Sutphin"
-  s.email = "r-sutphin@northwestern.edu"
-  s.homepage = "http://bcwiki.bioinformatics.northwestern.edu/bcwiki/index.php/Bcsec"
-end
+gemspec = eval(File.read('bcsec.gemspec'), binding, 'bcsec.gemspec')
 
 Rake::GemPackageTask.new(gemspec).define
 
@@ -146,14 +106,6 @@ desc "Uninstall the current development gem (if any)"
 task :uninstall do
   puts "Removing existing #{gemspec.name}-#{gemspec.version}, if any"
   puts `sudo gem uninstall #{gemspec.name} --version '=#{gemspec.version}'`
-end
-
-desc "Regenerate the local gemspec (used for bundler's :path option)"
-task :gemspec do
-  puts "Regenerating gemspec"
-  File.open('bcsec.gemspec', 'w') do |f|
-    f.write gemspec.to_ruby
-  end
 end
 
 desc "Deploy to the internal gem server"
