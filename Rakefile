@@ -99,13 +99,13 @@ task :default => :spec
 desc "Reinstall the current development gem"
 task :install => [:repackage, :uninstall] do
   puts "Installing new snapshot of #{gemspec.name}-#{gemspec.version}"
-  puts `sudo gem install #{GEM_FILE}`
+  puts `gem install #{GEM_FILE}`
 end
 
 desc "Uninstall the current development gem (if any)"
 task :uninstall do
   puts "Removing existing #{gemspec.name}-#{gemspec.version}, if any"
-  puts `sudo gem uninstall #{gemspec.name} --version '=#{gemspec.version}'`
+  puts `gem uninstall #{gemspec.name} --version '=#{gemspec.version}'`
 end
 
 desc "Deploy to the internal gem server"
