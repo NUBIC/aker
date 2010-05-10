@@ -79,7 +79,7 @@ module Bcsec::Cas
     # @return [#call] a full rack application
     def self.application(options={})
       app = lambda { |env|
-        [404, { "Content-Type" => "text/plain" }, "Unknown resource #{env['PATH_INFO']}"]
+        [404, { "Content-Type" => "text/plain" }, ["Unknown resource #{env['PATH_INFO']}"]]
       }
       RackProxyCallback.new(app, options)
     end
@@ -135,15 +135,15 @@ module Bcsec::Cas
         missing = [("pgtId" unless pgt), ("pgtIou" unless pgt_iou)].compact
         missing_msg =
           if missing.size == 1
-            "#{missing} is a required query parameter."
+            "#{missing.first} is a required query parameter."
           else
             "Both #{missing.join(' and ')} are required query parameters."
           end
-        resp.body = "#{missing_msg}\nSee section 2.5.4 of the CAS protocol specification."
+        resp.body = ["#{missing_msg}\nSee section 2.5.4 of the CAS protocol specification."]
       else
         store_iou(pgt_iou, pgt)
 
-        resp.body = "PGT and PGTIOU received.  Thanks, my robotic friend."
+        resp.body = ["PGT and PGTIOU received.  Thanks, my robotic friend."]
       end
 
       resp.finish
@@ -159,14 +159,14 @@ module Bcsec::Cas
       if pgt_iou
         pgt = resolve_iou(pgt_iou)
         if pgt
-          resp.body = pgt
+          resp.body = [pgt]
         else
           resp.status = 404
-          resp.body = "pgtIou=#{pgt_iou} does not exist.  Perhaps it has already been retrieved."
+          resp.body = ["pgtIou=#{pgt_iou} does not exist.  Perhaps it has already been retrieved."]
         end
       else
         resp.status = 400
-        resp.body = "pgtIou is a required query parameter."
+        resp.body = ["pgtIou is a required query parameter."]
       end
 
       resp.finish

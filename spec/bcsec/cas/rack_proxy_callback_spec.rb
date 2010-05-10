@@ -160,7 +160,7 @@ module Bcsec::Cas
 
     describe "as middleware" do
       before do
-        endpoint = lambda { |env| [200, {}, "App invoked"] }
+        endpoint = lambda { |env| [200, {}, ["App invoked"]] }
         @app = RackProxyCallback.new(endpoint, :store => @store_filename)
       end
 
