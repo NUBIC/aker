@@ -6,7 +6,7 @@ doc
 .yardoc
 mydel.sql
 reports
-*.gem
+bcsec-*.gem
 
 # ci
 ci_bin
