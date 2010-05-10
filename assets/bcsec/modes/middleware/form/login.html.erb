@@ -4,7 +4,7 @@
     <title>Please log in</title>
     <link rel="stylesheet" type="text/css" href="<%= script_name %>/login/login.css" />
   </head>
-  <body>
+  <body class="access">
     <form method="POST" action="<%= script_name %>/login">
       <h1>Please log in</h1>
       <% if options[:login_failed] %>
@@ -19,7 +19,7 @@
             <label for="username">Username</label>
           </div>
           <div class="value">
-            <input type="text" name="username" class="text" value="<%= escape_html(options[:username]) %>"/>
+            <input type="text" id="username" name="username" class="text" value="<%= escape_html(options[:username]) %>"/>
           </div>
         </div>
         <div class="row">
@@ -27,7 +27,7 @@
             <label for="password">Password</label>
           </div>
           <div class="value">
-            <input type="password" name="password" class="text" />
+            <input type="password" id="password" name="password" class="text" />
           </div>
         </div>
         <div class="row">
