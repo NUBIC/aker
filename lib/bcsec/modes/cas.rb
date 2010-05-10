@@ -1,4 +1,5 @@
 require 'bcsec'
+require 'rack'
 
 module Bcsec
   module Modes
