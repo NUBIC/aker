@@ -60,6 +60,8 @@ only :development do
     gem 'sqlite3-ruby'
   end
   gem 'bcoracle', '~>1.0'
+  # silence warning from oracle_enhanced on 1.9.1
+  gem 'unicode_utils' if RUBY_VERSION == '1.9.1'
 
   # cas testing
   gem 'rubycas-server'
