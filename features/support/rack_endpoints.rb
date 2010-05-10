@@ -10,7 +10,7 @@ module Bcsec
             [
              200,
              { "Content-Type" => "text/plain" },
-             ["Anyone can see this.", ("Even #{user.username}." if user)].compact.join("\n")
+             ["Anyone can see this.", ("  Even #{user.username}." if user)].compact
             ]
           }
         end
