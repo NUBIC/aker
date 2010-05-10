@@ -23,5 +23,3 @@ vendor/gems/*.rb
 vendor/gems/*/*/*
 !vendor/gems/*/*/cache
 vendor/bundler_gem
-
-vendor/jruby
