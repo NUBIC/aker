@@ -9,7 +9,7 @@ module Bcsec::Modes::Middleware::Form
       assets = mock
 
       @app = Rack::Builder.new do
-        use LoginRenderer, '/login', assets
+        use Bcsec::Modes::Middleware::Form::LoginRenderer, '/login', assets
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
 

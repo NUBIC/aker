@@ -29,7 +29,7 @@ module Bcsec::Rack
       Warden::Strategies.add(:mode_without_logout, @mode_without_logout)
 
       self.app = Rack::Builder.new do
-        use Logout, "/logout"
+        use Bcsec::Rack::Logout, "/logout"
         run lambda { |env| [200, {'Content-Type' => 'text/html'}, []] }
       end
     end

@@ -10,7 +10,7 @@ module Bcsec::Modes::Middleware::Form
       login_path = "/login"
 
       @app = Rack::Builder.new do
-        use LoginResponder, login_path, assets
+        use Bcsec::Modes::Middleware::Form::LoginResponder, login_path, assets
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
 
