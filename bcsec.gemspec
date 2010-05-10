@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   GemfileGemspecDeps.new(s)
 
   s.require_path = 'lib'
-  s.files = Dir.glob("{CHANGELOG,README,VERSION,{lib,spec}/**/*}")
+  s.files = Dir.glob("{CHANGELOG,README,VERSION,{assets,lib,spec}/**/*}")
   s.authors = ["Rhett Sutphin", "David Yip"]
   s.email = "r-sutphin@northwestern.edu"
   s.homepage = "https://code.bioinformatics.northwestern.edu/redmine/projects/bcsec-ruby"
