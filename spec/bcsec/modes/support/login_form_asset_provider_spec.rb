@@ -18,7 +18,7 @@ module Bcsec::Modes::Support
       end
 
       it "includes SCRIPT_NAME in the CSS URL" do
-        (@doc/'link[rel="stylesheet"]').first.attributes["href"].value.should == "/foo/login.css"
+        (@doc/'link[rel="stylesheet"]').first.attributes["href"].value.should == "/foo/login/login.css"
       end
 
       it "can render a 'login failed' message" do
