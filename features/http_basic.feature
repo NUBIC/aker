@@ -28,3 +28,32 @@ Feature: HTTP Basic Authentication
      When I access a protected resource
      Then the HTTP status should be 401
       And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'
+
+  @rack_test
+  Scenario: A user can access a protected resource in interactive mode
+    Given I have a bcsec-protected application using
+        | ui_mode    | api_modes | portal   |
+        | http_basic |           | Serenity |
+      And I am using the basic credentials "mr296" / "br0wn"
+     When I access a protected resource
+     Then I should be able to access that protected resource
+
+  @rack_test
+  Scenario: An interactive request with no credentials is challenged
+    Given I have a bcsec-protected application using
+        | ui_mode    | api_modes | portal   |
+        | http_basic |           | Serenity |
+      And I am using no credentials
+     When I access a protected resource
+     Then the HTTP status should be 401
+     And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'
+
+  @rack_test
+  Scenario: An interactive request with incorrect credentials is challenged
+    Given I have a bcsec-protected application using
+        | ui_mode    | api_modes | portal   |
+        | http_basic |           | Serenity |
+      And I am using the basic credentials "mr296" / "wrong"
+     When I access a protected resource
+     Then the HTTP status should be 401
+      And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'

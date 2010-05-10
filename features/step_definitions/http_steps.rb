@@ -1,6 +1,6 @@
 When "I am using the API" do
   header "Accept", "application/json"
-  @using_api = true
+  @using_rack_test = true
 end
 
 When /^I access an? (\S+) resource$/ do |resource_kind|
@@ -20,7 +20,7 @@ When /^I access an? (\S+) resource$/ do |resource_kind|
       pending "No URL defined for #{resource_kind.inspect}"
     end
 
-  if @using_api
+  if @using_rack_test
     get url
   else
     visit url
@@ -38,7 +38,7 @@ Then /^I should be able to access that (\S+) resource$/ do |resource_kind|
       pending "No pattern defined for #{resource_kind.inspect}"
     end
 
-  if @using_api
+  if @using_rack_test
     last_response.status.should == 200
     last_response.body.should =~ pattern
   else
@@ -51,7 +51,7 @@ Then /^I should see the search results$/ do
 end
 
 When /^I log out of the application$/ do
-  if @using_api
+  if @using_rack_test
     get "/logout"
   else
     visit "/logout"
