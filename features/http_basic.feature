@@ -21,3 +21,10 @@ Feature: HTTP Basic Authentication
      When I access a protected resource
      Then the HTTP status should be 401
       And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'
+
+  Scenario: A request with incorrect credentials is challenged
+    Given I am using the basic credentials "mr296" / "wrong"
+      And I am using the API
+     When I access a protected resource
+     Then the HTTP status should be 401
+      And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'
