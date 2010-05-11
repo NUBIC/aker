@@ -7,12 +7,13 @@
   <body class="access">
     <form method="POST" action="<%= script_name %>/login">
       <input type="hidden" name="url" value="<%= options[:url] %>" />
-      <h1>Please log in</h1>
+      <% if options[:logged_out] %>
+        <h1>Logged out</h1>
+      <% else %>
+        <h1>Please log in</h1>
+      <% end %>
       <% if options[:login_failed] %>
         <p class="error">Login failed</p>
-      <% end %>
-      <% if options[:logged_out] %>
-        <p class="message">Logged out</p>
       <% end %>
       <div class="contents">
         <div class="row">

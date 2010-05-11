@@ -30,7 +30,7 @@ module Bcsec::Modes::Support
       it "can render a 'logged out' message" do
         @doc = Nokogiri.HTML(@provider.login_html({}, { :logged_out => true }))
 
-        (@doc/'.message').first.inner_html.should == 'Logged out'
+        (@doc/'h1').first.inner_html.should == 'Logged out'
       end
 
       it "can render text in the username text field" do
