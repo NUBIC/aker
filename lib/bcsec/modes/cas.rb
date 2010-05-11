@@ -19,6 +19,7 @@ module Bcsec
     class Cas < Bcsec::Modes::Base
       include Bcsec::Cas::ConfigurationHelper
       include ::Rack::Utils
+      include Support::AttemptedPath
 
       ##
       # A key that refers to this mode; used for configuration convenience.
@@ -94,14 +95,14 @@ module Bcsec
       # requested URL, sans any service ticket.
       def service_url
         requested = URI.parse(
-          if env['warden.options'] && env['warden.options'][:attempted_path]
+          if attempted_path
             url = "#{request.scheme}://#{request.host}"
 
             unless [ ["https", 443], ["http", 80] ].include?([request.scheme, request.port])
               url << ":#{request.port}"
             end
 
-            url << env['warden.options'][:attempted_path]
+            url << attempted_path
           else
             request.url
           end

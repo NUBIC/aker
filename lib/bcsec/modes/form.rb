@@ -15,8 +15,9 @@ module Bcsec
     #
     # @author David Yip
     class Form < Bcsec::Modes::Base
-      include Support::LoginFormRenderer
       include ::Rack::Utils
+      include Support::AttemptedPath
+      include Support::LoginFormRenderer
 
       ##
       # A key that refers to this mode; used for configuration convenience.
@@ -104,12 +105,6 @@ module Bcsec
       #
       # @return [Rack::Response]
       def on_ui_failure
-        attempted_path = if env['warden.options']
-                           env['warden.options'][:attempted_path]
-                         else
-                           ''
-                         end
-
         ::Rack::Response.new do |resp|
           resp.redirect(login_url + '?url=' + escape(attempted_path))
         end
