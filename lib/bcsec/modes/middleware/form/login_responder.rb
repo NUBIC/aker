@@ -36,6 +36,9 @@ module Bcsec
           ##
           # Rack entry point.  Responds to `POST /login`.
           #
+          # If the user is authenticated and a URL is given in the `url`
+          # parameter, then this action will redirect to `url`.
+          #
           # @param env the Rack environment
           # @return a finished Rack response
           def call(env)
@@ -49,25 +52,29 @@ module Bcsec
 
           def respond(env)
             warden = env['warden']
+            request = ::Rack::Request.new(env)
 
             if !warden.authenticated?
               warden.custom_failure!
-              unauthenticated(env)
+              unauthenticated(request)
             else
-              redirect_to_app_root(env)
-            end
+              redirect_to_target(request)
+            end.finish
           end
 
-          def unauthenticated(env)
-            request = ::Rack::Request.new(env)
+          def unauthenticated(request)
+            body = provide_login_html(request.env,
+                                      :login_failed => true,
+                                      :username => request['username'],
+                                      :url => request['url'])
 
-            body = provide_login_html(env, :login_failed => true, :username => request['username'])
-
-            ::Rack::Response.new(body, 401).finish
+            ::Rack::Response.new(body, 401)
           end
 
-          def redirect_to_app_root(env)
-            ::Rack::Response.new { |resp| resp.redirect(env['SCRIPT_NAME'] + '/') }.finish
+          def redirect_to_target(request)
+            target = !(request['url'].blank?) ? request['url'] : request.env['SCRIPT_NAME'] + '/'
+
+            ::Rack::Response.new { |resp| resp.redirect(target) }
           end
         end
       end

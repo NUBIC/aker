@@ -61,7 +61,9 @@ module Bcsec
           # @param env the Rack environment
           # @return a finished Rack response
           def provide_login_html(env)
-            ::Rack::Response.new(super).finish
+            request = ::Rack::Request.new(env)
+
+            ::Rack::Response.new(super(env, :url => request['url'])).finish
           end
 
           ##
