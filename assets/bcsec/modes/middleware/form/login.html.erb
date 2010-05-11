@@ -6,6 +6,7 @@
   </head>
   <body class="access">
     <form method="POST" action="<%= script_name %>/login">
+      <input type="hidden" name="url" value="<%= options[:url] %>" />
       <h1>Please log in</h1>
       <% if options[:login_failed] %>
         <p class="error">Login failed</p>

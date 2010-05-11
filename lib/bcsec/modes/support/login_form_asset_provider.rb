@@ -36,6 +36,7 @@ module Bcsec::Modes::Support
     # @option options [Boolean] :login_failed If true, will render a failure message
     # @option options [Boolean] :logged_out If true, will render a logout notification
     # @option options [String] :username Text for the username field
+    # @option options [String] :url A URL to redirect to upon successful login
     # @return [String] HTML data
     def login_html(env, options = {})
       script_name = env['SCRIPT_NAME']
