@@ -14,7 +14,8 @@ Feature: Form authentication
       | form    |           |
 
   Scenario: A correct username and password should pass authentication
-    When I enter username "mr296" and password "br0wn" into the login form
+    When I go to the login form
+    And I enter username "mr296" and password "br0wn"
     And I access a protected resource
 
     Then I should be able to access that protected resource
@@ -24,20 +25,39 @@ Feature: Form authentication
 
     Then I should be sent to the login page
 
+  Scenario: Successful login results in redirection to the requested resource
+    When I access a protected resource
+    Then I should be sent to the login page
+
+    When I enter username "mr296" and password "br0wn"
+    Then I should be able to access that protected resource
+
+  Scenario: The requested resource is persisted across failed login attempts
+    When I access a protected resource
+    Then I should be sent to the login page
+
+    When I enter username "mr296" and password "wrong"
+    Then I should be sent to the login page
+    But when I enter username "mr296" and password "br0wn"
+    Then I should be able to access that protected resource
+
   Scenario: Users failing authentication should be told their login attempt failed
-    When I enter username "mr296" and password "wrong" into the login form
+    When I go to the login form
+    And I enter username "mr296" and password "wrong"
 
     Then I should be sent to the login page
     And I should see "Login failed" on the page
 
   Scenario: The supplied username is persisted across failed login attempts
-    When I enter username "mr296" and password "wrong" into the login form
+    When I go to the login form
+    And I enter username "mr296" and password "wrong"
 
     Then I should be sent to the login page
     And I should see "mr296" in the "username" field
 
   Scenario: Logging out of an application means the user can no longer access protected resources
-    Given I enter username "mr296" and password "br0wn" into the login form
+    Given I go to the login form
+    And I enter username "mr296" and password "br0wn"
 
     When I log out of the application
     And I access a protected resource
@@ -45,7 +65,8 @@ Feature: Form authentication
     Then I should be sent to the login page
 
   Scenario: Logging out of an application shows the login form
-    Given I enter username "mr296" and password "br0wn" into the login form
+    Given I go to the login form
+    And I enter username "mr296" and password "br0wn"
 
     When I log out of the application
 

@@ -1,5 +1,8 @@
-When /^I enter username "([^\"]*)" and password "([^\"]*)" into the login form$/ do |username, password|
+When /^I go to the login form$/ do
   visit '/login'
+end
+
+When /^(?:when )?I enter username "([^\"]*)" and password "([^\"]*)"$/ do |username, password|
   fill_in 'username', :with => username
   fill_in 'password', :with => password
   click_button 'Log in'

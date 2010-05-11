@@ -39,6 +39,12 @@ module Bcsec::Modes::Support
         (@doc/'input[name="username"]').first['value'].should == 'user'
       end
 
+      it "can store a URL to go to after login succeeds" do
+        @doc = Nokogiri.HTML(@provider.login_html({}, { :url => 'http://www.example.edu' }))
+
+        (@doc/'input[name="url"]').first['value'].should == 'http://www.example.edu'
+      end
+
       it "escapes HTML in usernames" do
         html = @provider.login_html({}, { :username => "user<a/>" })
 

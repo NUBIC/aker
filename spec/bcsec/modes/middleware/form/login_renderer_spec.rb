@@ -35,13 +35,21 @@ module Bcsec::Modes::Middleware::Form
     end
 
     it "renders login forms for GETs on the login path" do
-      @assets.should_receive(:login_html).with(hash_including("SCRIPT_NAME")).and_return("login form")
+      @assets.should_receive(:login_html).with(hash_including("SCRIPT_NAME"), anything).and_return("login form")
 
       get "/login"
 
       last_response.should be_ok
       last_response.content_type.should == "text/html"
       last_response.body.should == "login form"
+    end
+
+    it 'inserts the redirection URL into the login form' do
+      @assets.should_receive(:login_html).
+        with(anything, hash_including(:url => "http://www.example.edu")).
+        and_return("login form")
+
+      get "/login", { "url" => "http://www.example.edu" }
     end
 
     it "outputs CSS for GETs on (the login path) + .css" do

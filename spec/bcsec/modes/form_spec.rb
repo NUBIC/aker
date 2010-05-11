@@ -90,11 +90,21 @@ module Bcsec::Modes
     end
 
     describe "#on_ui_failure" do
+      include Rack::Utils
+
       it "redirects to the login form" do
         response = @mode.on_ui_failure
 
         response.should be_redirect
         URI.parse(response.location).path.should == "/login"
+      end
+
+      it "puts the URL the user was trying to reach in the query string" do
+        @env["warden.options"] = { :attempted_path => "http://www.example.edu" }
+
+        response = @mode.on_ui_failure
+
+        URI.parse(response.location).query.should == "url=" + escape("http://www.example.edu")
       end
     end
 

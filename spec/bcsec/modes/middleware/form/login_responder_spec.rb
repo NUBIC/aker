@@ -39,41 +39,73 @@ module Bcsec::Modes::Middleware::Form
     describe "#call" do
       before do
         @warden = mock
-        @env = {}
-        @env['warden'] = @warden
-        @env['REQUEST_METHOD'] = 'POST'
+        @env = {
+          "warden" => @warden,
+          "REQUEST_METHOD" => "POST"
+        }
       end
 
-      it "renders a 'login failed' message if authentication failed" do
-        @warden.should_receive(:authenticated?).and_return(false)
-        @warden.should_receive(:custom_failure!)
-        @assets.should_receive(:login_html).
-          with(hash_including(@env), hash_including({ :login_failed => true })).
-          and_return("Login failed")
+      describe "when authentication failed" do
+        before do
+          @warden.stub(:authenticated? => false, :custom_failure! => nil)
+        end
 
-        post @login_path, {}, @env
+        it "renders a 'login failed' message" do
+          @assets.should_receive(:login_html).
+            with(hash_including(@env), hash_including({ :login_failed => true })).
+            and_return("Login failed")
 
-        last_response.status.should == 401
-        last_response.body.should == "Login failed"
+          post @login_path, {}, @env
+
+          last_response.status.should == 401
+          last_response.body.should == "Login failed"
+        end
+
+        it "passes the supplied username to the login form renderer" do
+          @assets.should_receive(:login_html).
+            with(hash_including(@env), hash_including({ :username => "username" })).
+            and_return("Login failed")
+
+          post @login_path, {"username" => "username"}, @env
+        end
+
+        it "passes the requested resource to the login form renderer" do
+          @assets.should_receive(:login_html).
+            with(hash_including(@env), hash_including({ :url => "/protected" })).
+            and_return("Login failed")
+
+          post @login_path, { :url => "/protected" }, @env
+        end
       end
 
-      it "passes the supplied username to the login form renderer" do
-        @warden.stub(:authenticated? => false, :custom_failure! => nil)
+      describe "when authentication succeeded" do
+        it "redirects to a given URL" do
+          @warden.should_receive(:authenticated?).and_return(true)
 
-        @assets.should_receive(:login_html).
-          with(hash_including(@env), hash_including({ :username => "username" })).
-          and_return("Login failed")
+          post @login_path, { :url => "/protected" }, @env
 
-        post @login_path, {"username" => "username"}, @env
-      end
+          last_response.should be_redirect
+          last_response.location.should == "/protected"
+        end
 
-      it "redirects to the application's root if authentication succeeded" do
-        @warden.should_receive(:authenticated?).and_return(true)
+        it "redirects to the application's root if no URL was given" do
+          @warden.should_receive(:authenticated?).and_return(true)
+          @env['SCRIPT_NAME'] = "/foo"
 
-        post @login_path, {}, @env
+          post @login_path, {}, @env
 
-        last_response.should be_redirect
-        last_response.location.should == "/"
+          last_response.should be_redirect
+          last_response.location.should == "/foo/"
+        end
+
+        it "redirects to the application's root if the URL given is a blank string" do
+          @warden.should_receive(:authenticated?).and_return(true)
+
+          post @login_path, { :url => "" }, @env
+
+          last_response.should be_redirect
+          last_response.location.should == "/"
+        end
       end
     end
   end
