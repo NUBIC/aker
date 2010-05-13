@@ -32,11 +32,17 @@ module Bcsec::Rack
     def use_in(builder, configuration=nil)
       install_modes
 
-      with_mode_middlewares(builder, configuration) do
+      effective_configuration = configuration || Bcsec.configuration
+      unless effective_configuration
+        fail "No configuration was provided and there's no global configuration.  " <<
+          "Please set one or the other before calling use_in."
+      end
+
+      with_mode_middlewares(builder, effective_configuration) do
         builder.use Warden::Manager do |manager|
           manager.failure_app = Bcsec::Rack::Failure.new
         end
-        builder.use Setup, configuration
+        builder.use Setup, effective_configuration
         builder.use Logout, '/logout'
       end
     end
@@ -56,8 +62,7 @@ module Bcsec::Rack
 
     ##
     # @return [void]
-    def with_mode_middlewares(builder, configuration)
-      conf = configuration || Bcsec.configuration
+    def with_mode_middlewares(builder, conf)
       mode_classes(conf).each { |m| m.prepend_middleware(builder) if m.respond_to?(:prepend_middleware) }
       yield
       mode_classes(conf).each { |m| m.append_middleware(builder) if m.respond_to?(:append_middleware) }

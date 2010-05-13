@@ -30,7 +30,17 @@ module Bcsec
       before do
         @builder = MockBuilder.new
 
+        Bcsec.configuration = Bcsec::Configuration.new
+
         Bcsec::Rack.use_in(@builder)
+      end
+
+      it "fails with a useful message if there's no configuration" do
+        @builder.reset!
+        Bcsec.configuration = nil
+
+        lambda { Bcsec::Rack.use_in(@builder) }.
+          should raise_error(/Please set one or the other before calling use_in./)
       end
 
       describe "setting up modes" do
