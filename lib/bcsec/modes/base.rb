@@ -30,21 +30,6 @@ module Bcsec
     #  `Warden::Strategies` at hassox:warden@v0.10.3
     class Base < Warden::Strategies::Base
       ##
-      # Returns parameters for a mode.
-      #
-      # Internally, this method pulls parameters from a {Bcsec::Configuration}
-      # object in the `bcsec.configuration` Rack environment variable.
-      #
-      # This method is guaranteed to always return a hash.
-      #
-      # @see Bcsec::Configuration
-      # @return [Hash]
-      # @deprecated replace with {#configuration}`#parameters_for`
-      def parameters_for(mode)
-        configuration.parameters_for(mode)
-      end
-
-      ##
       # Exposes the configuration this mode should use.
       #
       # @return Bcsec::Configuration
