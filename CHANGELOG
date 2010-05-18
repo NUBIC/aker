@@ -1,7 +1,9 @@
+Bcsec History
+=============
+
 2.0.0
-=====
+-----
 - Configuration properties now exposed through a separate object.  The
   default instance is Bcsec.configuration.
 
-#####
-The pre-2.0 CHANGELOG should be copied in here before releasing 2.0.0
+> The pre-2.0 CHANGELOG should be copied in here before releasing 2.0.0

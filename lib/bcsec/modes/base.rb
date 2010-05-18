@@ -8,7 +8,7 @@ module Bcsec
     #
     # An _authentication mode_ is an an object that implements an
     # authentication protocol. Modes may be _interactive_, meaning that they
-    # require input from a human, and/or _noninteractive_, meaning that they
+    # require input from a human, and/or _non-interactive_, meaning that they
     # can be used without user intervention.
     #
     # For mode implementors: It is not strictly necessary to implement bcsec
@@ -24,15 +24,15 @@ module Bcsec
     # @author David Yip
     # @see
     #  http://github.com/hassox/warden/blob/v0.10.3/lib/warden/strategies/base.rb
-    #  `Warden::Strategies::Base` at hassox:warden@v0.10.3
+    #  Warden::Strategies::Base at hassox:warden@v0.10.3
     # @see
     #  http://github.com/hassox/warden/blob/v0.10.3/lib/warden/strategies.rb#L14-16
-    #  `Warden::Strategies` at hassox:warden@v0.10.3
+    #  Warden::Strategies at hassox:warden@v0.10.3
     class Base < Warden::Strategies::Base
       ##
       # Exposes the configuration this mode should use.
       #
-      # @return Bcsec::Configuration
+      # @return [Bcsec::Configuration]
       def configuration
         env['bcsec.configuration']
       end
@@ -57,7 +57,7 @@ module Bcsec
       # `Warden::Strategies::Base`) is called with a {User} object.
       # If authentication fails, then nothing is done.
       #
-      # @return [nil]
+      # @return [void]
       def authenticate!
         user = authority.valid_credentials?(kind, *credentials)
         success!(user) if user

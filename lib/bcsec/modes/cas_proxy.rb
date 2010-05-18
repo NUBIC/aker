@@ -3,7 +3,7 @@ require 'bcsec'
 module Bcsec
   module Modes
     ##
-    # A noninteractive mode that provides CAS proxy authentication conformant to
+    # A non-interactive mode that provides CAS proxy authentication conformant to
     # CAS 2.
     #
     # This mode does _not_ handle interactive CAS authentication; see {Cas} for

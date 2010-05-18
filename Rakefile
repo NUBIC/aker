@@ -63,7 +63,8 @@ end
 desc "Build API documentation with yard"
 docsrc = %w(lib/**/*.rb -) + Dir.glob("{CHANGELOG,README}")
 YARD::Rake::YardocTask.new do |t|
-  t.options = %w(--no-private --markup markdown)
+  t.options = %w(--no-private --markup markdown --hide-void-return)
+  t.options += ["--title", "bcsec #{Bcsec::VERSION}"]
   t.files = docsrc
 end
 
@@ -72,12 +73,13 @@ namespace :yard do
   task :auto => :yard do
     require 'fssm'
     puts "Waiting for changes"
-    FSSM.monitor('.', docsrc) do
+    FSSM.monitor('.', docsrc + %w(Rakefile)) do
       # have to run in a subshell because rake will only invoke a
       # given task once per execution
       yardoc = proc { |b, m|
         print "Detected change in #{m} -- regenerating docs ... "
-        system("rake yard > /dev/null 2>&1")
+        out = `rake yard`
+        puts out if out =~ /warn|error/
         puts "done"
       }
 

@@ -5,13 +5,10 @@ module Bcsec
   module Modes
     ##
     # An interactive mode that provides CAS authentication conformant to CAS 2.
-    # This authenticator uses RubyCAS-Client.
     #
     # This mode does _not_ handle noninteractive CAS proxying.  See {CasProxy}
     # for that.
     #
-    # @see http://github.com/gunark/rubycas-client
-    #      RubyCAS-Client at Github
     # @see http://www.jasig.org/cas/protocol
     #      CAS 2 protocol specification
     #
