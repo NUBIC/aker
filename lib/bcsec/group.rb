@@ -11,7 +11,11 @@ module Bcsec
     ##
     # Creates a new group with the given name.  You can add children
     # using `<<`.
-    def initialize(name)
+    #
+    # @param [#to_s] name the desired name
+    # @param [Array,nil] args additional arguments.  Included for
+    #   marshalling compatibility with the base class.
+    def initialize(name, *args)
       super # overridden to attach docs
     end
 

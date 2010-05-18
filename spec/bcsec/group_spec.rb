@@ -2,6 +2,22 @@ require File.expand_path('../../spec_helper', __FILE__)
 
 module Bcsec
   describe Group do
+    describe "serialization" do
+      before do
+        g = Group.new("Foo")
+        serialized = Marshal.dump(g)
+        @deserialized = Marshal.restore(serialized)
+      end
+
+      it "deserializes into an object with the right type" do
+        @deserialized.class.should == Group
+      end
+
+      it "deserializes into an object with the right name" do
+        @deserialized.name.should == "Foo"
+      end
+    end
+
     describe "#include?" do
       it "matches the exact name" do
         Group.new("Foo").include?("Foo").should be_true
