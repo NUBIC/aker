@@ -20,7 +20,7 @@ module Bcsec::Modes::Support
     end
 
     ##
-    # CSS for the form provided by {provide_login_html}.
+    # CSS for the form provided by {#provide_login_html}.
     #
     # @return [String] login form CSS
     def provide_login_css
