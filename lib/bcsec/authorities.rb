@@ -28,5 +28,7 @@ module Bcsec
     autoload :Netid,     'bcsec/authorities/netid'
     autoload :Pers,      'bcsec/authorities/pers'
     autoload :Static,    'bcsec/authorities/static'
+
+    autoload :Support,   'bcsec/authorities/support'
   end
 end

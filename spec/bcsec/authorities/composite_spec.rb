@@ -477,5 +477,12 @@ module Bcsec::Authorities
         actual.first.full_name.should == "Jo Miller"
       end
     end
+
+    describe "#find_user" do
+      # behavior is tested in the module spec
+      it "exists" do
+        @comp.should respond_to(:find_user)
+      end
+    end
   end
 end

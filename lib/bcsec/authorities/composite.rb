@@ -255,6 +255,7 @@ module Bcsec::Authorities
         inject([]) { |aggregate, users| merge_user_lists!(aggregate, users.compact) }.
         each { |user| amplify!(user) }
     end
+    include Support::FindSoleUser
 
     protected
 
