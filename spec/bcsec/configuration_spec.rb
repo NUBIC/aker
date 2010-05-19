@@ -108,7 +108,6 @@ describe Bcsec::Configuration do
       it "can set several API modes" do
         config_from { api_modes :basic, :api_key }.api_modes.should == [:basic, :api_key]
       end
-
     end
 
     describe "for additional authority parameters" do
