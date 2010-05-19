@@ -421,5 +421,61 @@ module Bcsec::Authorities
         @comp.amplify!(@user).city.should == "Chicago"
       end
     end
+
+    describe "#find_users" do
+      it "returns an empty array if none of the authorities implement find_users" do
+        @comp.find_users("wak").should == []
+      end
+
+      it "aggregates distinct users into a single response array" do
+        def @a.find_users(options); [ Bcsec::User.new("fred") ]; end
+        def @c.find_users(options); [ Bcsec::User.new("katherine") ]; end
+
+        @comp.find_users(:something => "foo").
+          collect { |u| u.username }.should == %w(fred katherine)
+      end
+
+      it "merges users with the same username in authority order" do
+        def @a.find_users(options)
+          [ Bcsec::User.new('jo').tap { |u| u.first_name = 'Jo'; u.city = 'Chicago'; },
+            Bcsec::User.new('alice') ]
+        end
+        def @b.find_users(options)
+          [ Bcsec::User.new('jo').tap { |u| u.last_name = 'Mueller'; u.city = 'Evanston'; },
+            Bcsec::User.new('betty') ]
+        end
+
+        actual = @comp.find_users('jo')
+        actual.size.should == 3
+        actual.collect { |u| u.username }.should == %w(jo alice betty)
+        actual.first.full_name.should == "Jo Mueller"
+        actual.first.city.should == "Chicago"
+      end
+
+      it "rejects nil authority responses" do
+        def @a.find_users(options); [ nil ]; end
+        def @c.find_users(options); nil; end
+
+        @comp.find_users(:etc => 'alia').should == []
+      end
+
+      it "passes the arguments unchanged to the authorities" do
+        def @a.find_users(options); @options = options; []; end
+        def @a.actual_options; @options; end
+
+        @comp.find_users(:email => 'baz')
+        @a.actual_options.should == { :email => 'baz' }
+      end
+
+      it "amplifies found users" do
+        def @a.find_users(options); [ Bcsec::User.new('jo') ]; end
+        def @a.amplify!(user); user.last_name = "Miller"; user; end
+        def @b.amplify!(user); user.first_name = "Jo"; user; end
+
+        actual = @comp.find_users('jo')
+        actual.size.should == 1
+        actual.first.full_name.should == "Jo Miller"
+      end
+    end
   end
 end

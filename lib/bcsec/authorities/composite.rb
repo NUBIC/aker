@@ -217,7 +217,58 @@ module Bcsec::Authorities
       user
     end
 
+    ##
+    # Finds users matching the given criteria.  Criteria may either be
+    # a `String` or a `Hash`.  If it's a `String`, it is interpreted
+    # as a username and this method will return an array containing
+    # either a single user with that username or an empty array.  If
+    # the criteria is a `Hash`, the behavior will be
+    # authority-dependent.  However, all the attributes of
+    # {Bcsec::User} are reserved parameter names &mdash; if an
+    # authority interprets the value associated with a {Bcsec::User}
+    # attribute name, it must be interpreted as an exact-match
+    # criteria for that authority's understanding of that attribute
+    # (whatever it is).
+    #
+    # Examples:
+    #
+    #     authority.find_users("wakibbe") # => that single user, if
+    #                                     #    the username is known
+    #     authority.find_users(:first_name => 'Warren')
+    #                                     # => all the users named Warren
+    #
+    # The composite behavior is to invoke `find_users` on all the
+    # authorities which support it and merge the resulting lists.  Any
+    # users with the same username are merged using
+    # {Bcsec::User#merge!}.  Finally, all the users are {#amplify!
+    # amplified}.
+    #
+    # This method will always return an array.
+    #
+    # @param [Hash,#to_s] criteria (see above)
+    #
+    # @return [Array<Bcsec::User>] the matching users
+    def find_users(criteria)
+      poll(:find_users, criteria).
+        collect { |result, authority| result }.
+        compact.
+        inject([]) { |aggregate, users| merge_user_lists!(aggregate, users.compact) }.
+        each { |user| amplify!(user) }
+    end
+
     protected
+
+    def merge_user_lists!(target, new_users)
+      new_users.each do |u|
+        existing = target.find { |t| t.username == u.username }
+        if existing
+          existing.merge!(u)
+        else
+          target << u
+        end
+      end
+      target
+    end
 
     ##
     # Invokes the specified method with the specified arguments on all
