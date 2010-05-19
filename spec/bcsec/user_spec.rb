@@ -267,5 +267,33 @@ module Bcsec
         end
       end
     end
+
+    describe "#in_group?" do
+      before do
+        @u.default_portal = :ENU
+      end
+
+      it "is deprecated" do
+        @u.in_group?("User")
+
+        deprecation_message.should =~ /in_group\? is deprecated\.  Use group_memberships\.include\? instead\..*2.2/
+      end
+
+      it "returns true if a user is in any of the given groups" do
+        @u.group_memberships(:ENU) << GroupMembership.new(Group.new("User"))
+
+        @u.in_group?("User", "Administrator").should be_true
+      end
+
+      it "returns false if a user is not in any of the given groups" do
+        @u.in_group?("User", "Administrator").should be_false
+      end
+
+      it "returns false if a user is in the requested group in a non-default portal" do
+        @u.group_memberships(:NOTIS) << GroupMembership.new(Group.new("User"))
+
+        @u.in_group?("User").should be_false
+      end
+    end
   end
 end
