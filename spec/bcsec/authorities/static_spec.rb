@@ -79,7 +79,7 @@ module Bcsec::Authorities
       end
     end
 
-    describe "amplify!" do
+    describe "#amplify!" do
       before do
         @s.user("jo") do |u|
           u.first_name = "Josephine"
@@ -149,6 +149,47 @@ module Bcsec::Authorities
 
           actual.group_memberships(:ENU).include?("Developer").should be_true
           actual.group_memberships(:ENU).include?("User").should be_false
+        end
+      end
+    end
+
+    describe "#find_users" do
+      before do
+        @s.user('alpha') do |u|
+          u.first_name = 'A'
+          u.last_name = 'Pha'
+          u.middle_name = 'L.'
+        end
+
+        @s.user('epsilon') do |u|
+          u.first_name = 'Epsi'
+          u.last_name = 'On'
+          u.middle_name = 'L.'
+        end
+      end
+
+      describe "with a username" do
+        it "returns the sole matching user" do
+          @s.find_users("alpha").collect(&:first_name).should == %w(A)
+        end
+      end
+
+      describe "with a hash of criteria" do
+        it "matches on user attributes" do
+          @s.find_users(:middle_name => 'L.').size.should == 2
+        end
+
+        it "ignores unknown attributes" do
+          @s.find_users(:username => 'epsilon', :frob => 'yelp').size.should == 1
+        end
+
+        it "returns nothing if the criteria contains no known attributes" do
+          @s.find_users(:frob => 'hork').size.should == 0
+        end
+
+        it "combines attributes with AND" do
+          @s.find_users(:first_name => 'A', :last_name => 'Pha').size.should == 1
+          @s.find_users(:first_name => 'A', :last_name => 'On').size.should == 0
         end
       end
     end

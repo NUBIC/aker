@@ -65,6 +65,29 @@ module Bcsec::Authorities
       user.merge!(base)
     end
 
+    ##
+    # Returns the any users which match the given criteria from the
+    # set that have been loaded with {#load!}, {#valid_credentials!},
+    # and {#user}.
+    #
+    # @param [Hash,#to_s] criteria as described in
+    #   {Composite#find_users}.
+    # @return [Array<Bcsec::User>]
+    def find_users(criteria)
+      if Hash === criteria
+        props = criteria.keys.select { |k| Bcsec::User.instance_methods.include?(k.to_s) }
+        if props.empty?
+          []
+        else
+          @users.values.select do |user|
+            props.inject(true) { |result, prop| result && user.send(prop) == criteria[prop] }
+          end
+        end
+      else
+        find_users(:username => criteria.to_s)
+      end
+    end
+
     ###### SETUP METHODS
 
     ##
