@@ -334,6 +334,16 @@ module Bcsec
         end
       }.compact
     end
+
+    def use_cas
+      Deprecation.notify("use_cas is deprecated.  Use api_modes :cas_proxy; " <<
+                         "ui_mode :cas; authorities :cas instead.",
+                         "2.2")
+
+      ui_mode :cas
+      api_modes :cas_proxy
+      authorities :cas
+    end
   end
 
   ##

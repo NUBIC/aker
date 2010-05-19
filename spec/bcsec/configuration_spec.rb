@@ -108,6 +108,7 @@ describe Bcsec::Configuration do
       it "can set several API modes" do
         config_from { api_modes :basic, :api_key }.api_modes.should == [:basic, :api_key]
       end
+
     end
 
     describe "for additional authority parameters" do
@@ -288,6 +289,32 @@ describe Bcsec::Configuration do
       it "converts establish_cc_pers_connection to a parameters_for(:pers)" do
         config_from { establish_cc_pers_connection }.
           parameters_for(:pers)[:separate_connection].should be_true
+      end
+
+      describe "in use_cas" do
+        before do
+          @config = config_from do
+            cas_parameters :base_url => "https://cas.example.edu"
+            use_cas
+          end
+        end
+
+        it "issues a deprecation warning" do
+          deprecation_message.should =~ /use_cas is deprecated\.  Use api_modes :cas_proxy; ui_mode :cas; authorities :cas instead\..*2.2/
+        end
+
+        it "sets up the CAS UI mode" do
+          @config.ui_mode.should == :cas
+        end
+
+        it "sets up the CAS proxy API mode" do
+          @config.api_modes.should == [:cas_proxy]
+        end
+
+        it "sets up the CAS authority" do
+          @config.authorities.length.should == 1
+          @config.authorities.first.class.should == Bcsec::Authorities::Cas
+        end
       end
 
       it "fails when given rlogin_target" do
