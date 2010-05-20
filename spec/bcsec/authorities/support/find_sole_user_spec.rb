@@ -3,7 +3,7 @@ require File.expand_path('../../../../spec_helper', __FILE__)
 module Bcsec::Authorities::Support
   describe FindSoleUser do
     class UserFinder
-      include FindSoleUser
+      include Bcsec::Authorities::Support::FindSoleUser
 
       def initialize(expected_users)
         @expected_users = expected_users
