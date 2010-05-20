@@ -75,7 +75,10 @@ module Bcsec::Authorities
     # @return [Array<Bcsec::User>]
     def find_users(criteria)
       if Hash === criteria
-        props = criteria.keys.select { |k| Bcsec::User.instance_methods.include?(k.to_s) }
+        props = criteria.keys.select { |k|
+          Bcsec::User.instance_methods.include?(k.to_s) || # for 1.8.7
+          Bcsec::User.instance_methods.include?(k.to_sym)  # for 1.9.1
+        }
         if props.empty?
           []
         else
