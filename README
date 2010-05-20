@@ -6,6 +6,45 @@ ruby applications (particularly Rack applications).  It is designed
 to support the needs and work with the infrastructure of the
 Northwestern University Biomedical Informatics Center.
 
+Bcsec in 30 seconds
+-------------------
+
+    Bcsec.configure {
+      authorities :netid, :pers
+      ui_mode :form
+      api_mode :http_basic
+      portal :ENU
+      central '/etc/nubic/bcsec-local.yml'
+    }
+
+    u = Bcsec.authority.valid_credentials?(:user, 'wakibbe', 'ekibder')
+        # => returns a Bcsec::User object if the credentials are valid
+
+    if u.group_memberships.include?(:Admin)
+      puts "You're an admin.  Good for you."
+    end
+
+Bcsec concepts
+--------------
+
+### Authorities
+
+### Modes
+
+### Configuration
+
+Using form authentication
+-------------------------
+
+Using CAS
+---------
+
+Authenticating a RESTful API
+----------------------------
+
+Rack (and Rails) integration
+----------------------------
+
 Development environment
 -----------------------
 
