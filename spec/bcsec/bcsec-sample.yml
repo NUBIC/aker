@@ -3,3 +3,7 @@ netid:
 cc_pers:
   user: cc_pers_foo
   password: secret
+cas:
+  base_url: https://cas.example.edu
+  proxy_retrieval_url: https://cas.example.edu/retrieve_pgt
+  proxy_callback_url: https://cas.example.edu/receive_pgt

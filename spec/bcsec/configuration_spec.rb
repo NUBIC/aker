@@ -180,6 +180,12 @@ describe Bcsec::Configuration do
         @actual.parameters_for(:pers)[:user].should == "cc_pers_foo"
       end
 
+      it "acquires the cas parameters" do
+        @actual.parameters_for(:cas)[:base_url].should == "https://cas.example.edu"
+        @actual.parameters_for(:cas)[:proxy_retrieval_url].should == "https://cas.example.edu/retrieve_pgt"
+        @actual.parameters_for(:cas)[:proxy_callback_url].should == "https://cas.example.edu/receive_pgt"
+      end
+
       it "adds the username and password to the activerecord configuration block" do
         @actual.parameters_for(:pers)[:activerecord][:username].should == "cc_pers_foo"
         @actual.parameters_for(:pers)[:activerecord][:password].should == "secret"
