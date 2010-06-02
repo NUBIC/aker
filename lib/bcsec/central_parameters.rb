@@ -5,7 +5,7 @@ module Bcsec
   ##
   # Provides access to the bcsecurity central parameters file.
   # @see http://bcwiki.bioinformatics.northwestern.edu/bcwiki/index.php/Central_bcsec_configuration
-  class CentralParameters
+  class CentralParameters < Hash
     ##
     # Creates a new instance with the given overrides.
     #
@@ -13,12 +13,14 @@ module Bcsec
     #   overrides directly.  Otherwise it is interpreted as the filename
     #   for the system central parameters YAML file.
     def initialize(values = {})
+      super
+
       unless values.is_a? Hash
         values = YAML::load( File.open(values) )
       end
 
       values = nested_symbolize_keys!(deep_clone(values))
-      @map = nested_merge!(defaults, values)
+      update(nested_merge!(defaults, values))
     end
 
     ##
@@ -31,7 +33,7 @@ module Bcsec
     #
     # @param [Symbol] key the configuration section to access
     def [](key)
-      @map[key]
+      super
     end
 
     ##
