@@ -67,7 +67,11 @@ module Bcsec
     def nested_merge!(target, overrides)
       overrides.each_pair do |k, v|
         if v.respond_to?(:each_pair)
-          nested_merge!(target[k], overrides[k])
+          if target.has_key?(k)
+            nested_merge!(target[k], overrides[k])
+          else
+            target[k] = overrides[k]
+          end
         else
           target[k] = v
         end
