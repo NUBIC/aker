@@ -158,12 +158,18 @@ module Bcsec
     def central(filename)
       params = ::Bcsec::CentralParameters.new(filename)
 
-      add_parameters_for(:cas, params[:cas])
-      add_parameters_for(:netid, params[:netid])
-      add_parameters_for(:pers, params[:cc_pers].dup.tap { |pers|
+      transform_cc_pers_parameters!(params)
+
+      params.each { |k, v| add_parameters_for(k, v) }
+    end
+
+    def transform_cc_pers_parameters!(params)
+      params[:pers] = params[:cc_pers].dup.tap do |pers|
         pers[:activerecord][:username] = pers[:user]
         pers[:activerecord][:password] = pers[:password]
-      })
+      end
+
+      params.delete(:cc_pers)
     end
 
     ##

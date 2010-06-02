@@ -186,6 +186,10 @@ describe Bcsec::Configuration do
         @actual.parameters_for(:cas)[:proxy_callback_url].should == "https://cas.example.edu/receive_pgt"
       end
 
+      it "acquires all top-level parameters" do
+        @actual.parameters_for(:foo)[:bar].should == "baz"
+      end
+
       it "adds the username and password to the activerecord configuration block" do
         @actual.parameters_for(:pers)[:activerecord][:username].should == "cc_pers_foo"
         @actual.parameters_for(:pers)[:activerecord][:password].should == "secret"
