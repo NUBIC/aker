@@ -1,0 +1,13 @@
+!!!
+%html
+  %head
+    %title Fortunes
+  %body
+    %h1="Fortunes for " + @user.username
+    %ul
+      -for fortune in @fortunes
+        %li
+          =fortune.value
+          %a{:href => '/fortunes/' + fortune.id.to_s + '/edit'} Edit
+          %a{:href => '/fortunes/' + fortune.id.to_s + '/delete'} Delete
+    %a{:href => '/fortunes/new'} New fortune

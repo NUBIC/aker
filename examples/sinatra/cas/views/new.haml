@@ -1,0 +1,9 @@
+!!!
+%html
+  %head
+    %title New fortune
+  %body
+    %h1 New fortune
+    %form{:method => 'POST', :action => '/fortunes'}
+      %input{:type => 'text', :name => 'fortune', :size => 80}
+      %input{:type => 'submit'}

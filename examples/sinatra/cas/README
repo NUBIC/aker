@@ -1,0 +1,46 @@
+Running this example
+====================
+
+1.  Open a console.
+
+2.  Run
+
+        gem bundle
+
+3.  Open a console.
+
+4.  Run
+
+        rackup rubycas_server.ru
+
+5.  Open a console.
+
+6.  Run
+
+        rackup cas_proxy_callback.ru
+
+7.  Open a console.
+
+8.  Run
+
+        rackup fortune_server.ru
+
+9.  Open a console.
+
+10. Run
+
+        ruby fortune_client.rb
+
+11. Open a Web browser.
+
+12. Go to 
+      
+        http://localhost:4567
+
+13. Enter the login details
+
+        mr296 / br0wn
+
+14. Log in.
+
+15. Play around.

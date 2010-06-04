@@ -1,0 +1,11 @@
+!!!
+%html
+  %head
+    %title
+      ="Editing fortune " + @fortune.id.to_s
+  %body
+    %h1
+      ="Editing fortune " + @fortune.id.to_s
+    %form{:method => 'POST', :action => '/fortunes/' + @fortune.id.to_s + '/update'}
+      %input{:type => 'text', :name => 'fortune', :size => 80, :value => @fortune.value}
+      %input{:type => 'submit'}
