@@ -11,6 +11,8 @@ require 'capybara'
 require 'capybara/cucumber'
 require 'rack/test'
 
+require File.expand_path("../../../spec/matchers", __FILE__)
+
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
 
 Before do
@@ -36,7 +38,8 @@ end
 module Bcsec::Cucumber
   class World
     include Rack::Test::Methods
-    include Spec::Matchers
+    include ::Bcsec::Spec::Matchers
+    include ::Spec::Matchers
     include FileUtils
 
     CAS_PORT = 5409

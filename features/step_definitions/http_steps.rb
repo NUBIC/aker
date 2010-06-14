@@ -105,9 +105,7 @@ Then /^the page contains the results of the API call$/ do
 end
 
 Then /^each response should contain the results of the API call$/ do
-  @responses.all? do |response|
-    response.should =~ /The API said: I'm protected/
-  end.should be_true
+  @responses.should all_match(/The API said: I'm protected/)
 end
 
 Then /the HTTP status should be (\d{3})/ do |status|
