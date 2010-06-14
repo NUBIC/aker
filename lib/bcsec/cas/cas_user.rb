@@ -17,7 +17,7 @@ module Bcsec::Cas
     # @return [void]
     def init_cas_user(cas_attributes={})
       @cas_client = cas_attributes[:client]
-      @cas_pgt_iou = cas_attributes[:pgt_iou]
+      @cas_pgt = cas_attributes[:pgt]
     end
 
     ##
@@ -38,22 +38,7 @@ module Bcsec::Cas
     #
     # @return [String] a new ticket
     def cas_proxy_ticket(service_base_url)
-      @cas_client.request_proxy_ticket(cas_pgt, service_base_url).ticket
-    end
-
-    private
-
-    def cas_pgt
-      @cas_pgt ||=
-        begin
-          unless @cas_client.proxy_retrieval_url
-            # This is necessary because rubycas-client doesn't
-            # validate it itself, leading to an inscrutable error if
-            # it isn't present.
-            raise "Cannot retrieve a CAS proxy ticket without a proxy retrieval URL"
-          end
-          @cas_client.retrieve_proxy_granting_ticket(@cas_pgt_iou)
-        end
+      @cas_client.request_proxy_ticket(@cas_pgt, service_base_url).ticket
     end
   end
 end

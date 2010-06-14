@@ -62,9 +62,31 @@ module Bcsec::Authorities
       else
         Bcsec::User.new(st.response.user).tap do |u|
           u.extend Bcsec::Cas::CasUser
-          u.init_cas_user :client => @client, :pgt_iou => st.response.pgt_iou
+
+          pgt_iou = st.response.pgt_iou
+          pgt = retrieve_pgt(pgt_iou) if pgt_iou
+
+          u.init_cas_user :client => @client, :pgt => pgt
         end
       end
+    end
+
+    ##
+    # Retrieves a proxy-granting ticket.
+    #
+    # @private exposed for testing
+    # @param pgt_iou [String] the PGT IOU
+    # @return String a proxy-granting ticket
+    # @raises if a proxy retrieval URL isn't set
+    def retrieve_pgt(pgt_iou)
+      unless @client.proxy_retrieval_url
+        # This is necessary because rubycas-client doesn't
+        # validate it itself, leading to an inscrutable error if
+        # it isn't present.
+        raise "Cannot retrieve a CAS proxy ticket without a proxy retrieval URL"
+      end
+
+      @client.retrieve_proxy_granting_ticket(pgt_iou)
     end
   end
 end
