@@ -116,6 +116,10 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
         cas_api_consumer(api_server.base_url, "/a-resource")
     end
 
+    map '/protected' do
+      run Bcsec::Cucumber::RackEndpoints.authentication_required
+    end
+
     map '/' do
       run Bcsec::Cucumber::RackEndpoints.public
     end

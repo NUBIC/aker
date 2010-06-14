@@ -9,8 +9,13 @@ Feature: CAS proxy authentication
       | ui_mode | api_modes | authority |
       | cas     | cas_proxy | cas       |
     And I have a bcsec-protected consumer of a CAS-protected API
+    And I have logged into CAS using "mr296" / "br0wn"
 
   Scenario:
-    Given I have logged into CAS using "mr296" / "br0wn"
-     When I access an API-using resource
-     Then the page contains the results of the API call
+    When I access an API-using resource
+    Then the page contains the results of the API call
+
+  Scenario: A user can do concurrent proxied requests
+    When I do concurrent requests on an API-using resource
+
+    Then each response should contain the results of the API call
