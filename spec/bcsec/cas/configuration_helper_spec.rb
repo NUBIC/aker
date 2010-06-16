@@ -21,6 +21,11 @@ module Bcsec::Cas
         @actual.cas_login_url.should == "https://cas.example.org/login"
       end
 
+      it "preserves application mount points" do
+        @config.parameters_for(:cas)[:base_url] = "https://cas.example.org/cas/"
+        @actual.cas_login_url.should == "https://cas.example.org/cas/login"
+      end
+
       it "uses an explicit one if provided" do
         @config.parameters_for(:cas)[:login_url] = "https://cas.example.org/entry-point"
         @actual.cas_login_url.should == "https://cas.example.org/entry-point"
@@ -30,6 +35,11 @@ module Bcsec::Cas
     describe "#cas_logout_url" do
       it "is built from the base URL" do
         @actual.cas_logout_url.should == "https://cas.example.org/logout"
+      end
+
+      it "preserves application mount points" do
+        @config.parameters_for(:cas)[:base_url] = "https://cas.example.org/cas/"
+        @actual.cas_logout_url.should == "https://cas.example.org/cas/logout"
       end
 
       it "uses an explicit one if provided" do

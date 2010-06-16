@@ -17,7 +17,7 @@ module Bcsec::Cas
     #
     # @return [String]
     def cas_login_url
-      configuration.parameters_for(:cas)[:login_url] || URI.join(cas_base_url, '/login').to_s
+      configuration.parameters_for(:cas)[:login_url] || URI.join(cas_base_url, 'login').to_s
     end
 
     ##
@@ -27,7 +27,7 @@ module Bcsec::Cas
     #
     # @return [String]
     def cas_logout_url
-      configuration.parameters_for(:cas)[:logout_url] || URI.join(cas_base_url, '/logout').to_s
+      configuration.parameters_for(:cas)[:logout_url] || URI.join(cas_base_url, 'logout').to_s
     end
 
     ##
