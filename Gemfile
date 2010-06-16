@@ -64,6 +64,7 @@ only :development do
   gem 'unicode_utils' if RUBY_VERSION == '1.9.1'
 
   # cas testing
+  gem 'markaby', '0.5'    # other versions break RubyCAS-Server
   gem 'rubycas-server'
   gem 'celerity', '~> 0.7.9', :require_as => 'date' # has to be installed for culerity
 
