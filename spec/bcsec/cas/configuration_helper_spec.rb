@@ -61,6 +61,18 @@ module Bcsec::Cas
         @config.parameters_for(:cas)[:base_url] = nil
         @actual.cas_base_url.should == "https://cas2.example.org/"
       end
+
+      it "adds a terminating / to the base URL if one isn't given" do
+        @config.parameters_for(:cas)[:base_url] = "https://cas2.example.org"
+
+        @actual.cas_base_url.should == "https://cas2.example.org/"
+      end
+
+      it "does not add a terminating / to the base URL if one is given" do
+        @config.parameters_for(:cas)[:base_url] = "https://cas2.example.org/"
+
+        @actual.cas_base_url.should == "https://cas2.example.org/"
+      end
     end
 
     describe "#cas_proxy_callback_url" do

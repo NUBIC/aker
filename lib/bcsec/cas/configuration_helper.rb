@@ -34,12 +34,19 @@ module Bcsec::Cas
     # The base URL for all not-otherwise-explicitly-specified URLs on
     # the CAS server.  It may be set in the CAS parameters as either
     # `:base_url` (preferred) or `:cas_base_url` (for backwards
-    # compatibility with bcsec 1.x)
+    # compatibility with bcsec 1.x).
     #
+    # The base URL should end in a `/` (forward slash).  If it does not, a
+    # trailing forward slash will be appended.
+    #
+    # @see http://www.ietf.org/rfc/rfc1808.txt
+    #   RFC 1808, sections 4 and 5
     # @return [String, nil]
     def cas_base_url
-      configuration.parameters_for(:cas)[:base_url] ||
-        configuration.parameters_for(:cas)[:cas_base_url]
+      appending_forward_slash do
+        configuration.parameters_for(:cas)[:base_url] ||
+          configuration.parameters_for(:cas)[:cas_base_url]
+      end
     end
 
     ##
@@ -65,6 +72,14 @@ module Bcsec::Cas
     # @return [String, nil]
     def cas_proxy_retrieval_url
       configuration.parameters_for(:cas)[:proxy_retrieval_url]
+    end
+
+    private
+
+    def appending_forward_slash
+      url = yield
+
+      (url && url[-1].chr != '/') ? url + '/' : url
     end
   end
 end
