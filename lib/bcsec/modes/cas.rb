@@ -6,7 +6,7 @@ module Bcsec
     ##
     # An interactive mode that provides CAS authentication conformant to CAS 2.
     #
-    # This mode does _not_ handle noninteractive CAS proxying.  See {CasProxy}
+    # This mode does _not_ handle non-interactive CAS proxying.  See {CasProxy}
     # for that.
     #
     # @see http://www.jasig.org/cas/protocol

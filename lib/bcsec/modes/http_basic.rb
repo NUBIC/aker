@@ -4,10 +4,10 @@ require 'base64'
 module Bcsec
   module Modes
     ##
-    # A noninteractive and interactive mode that provides HTTP Basic
+    # A non-interactive and interactive mode that provides HTTP Basic
     # authentication.
     #
-    # This mode operates noninteractively when an Authorization header with a
+    # This mode operates non-interactively when an Authorization header with a
     # Basic challenge is present.  It operates interactively when it is
     # configured as an interactive authentication mode.
     #

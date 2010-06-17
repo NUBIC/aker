@@ -60,7 +60,7 @@ module Bcsec
 
       ##
       # Used to build a WWW-Authenticate header that will be returned to a
-      # client failing noninteractive authentication.
+      # client failing non-interactive authentication.
       #
       # @return [String]
       def scheme
