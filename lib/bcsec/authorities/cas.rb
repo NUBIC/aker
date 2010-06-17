@@ -43,6 +43,11 @@ module Bcsec::Authorities
     #
     # The returned user will be extended with {Bcsec::Cas::CasUser}.
     #
+    # If CAS proxying is enabled, then this method also retrieves the
+    # proxy-granting ticket for the user.
+    #
+    # @see http://www.jasig.org/cas/protocol
+    #   CAS 2 protocol specification, section 2.5.4
     # @return [Bcsec::User,:unsupported,nil] a user if the credentials
     #   are valid, `:unsupported` if the kind is anything but `:cas`
     #   or `:cas_proxy`, and nil otherwise
@@ -77,7 +82,7 @@ module Bcsec::Authorities
     # @private exposed for testing
     # @param pgt_iou [String] the PGT IOU
     # @return String a proxy-granting ticket
-    # @raises if a proxy retrieval URL isn't set
+    # @raise if a proxy retrieval URL isn't set
     def retrieve_pgt(pgt_iou)
       unless @client.proxy_retrieval_url
         # This is necessary because rubycas-client doesn't
