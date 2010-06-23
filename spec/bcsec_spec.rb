@@ -8,6 +8,11 @@ describe Bcsec do
     Bcsec.configuration = nil
   end
 
+  after do
+    Bcsec.authority = nil
+    Bcsec.configuration = nil
+  end
+
   describe "::VERSION" do
     it "exists" do
       lambda { Bcsec::VERSION }.should_not raise_error
