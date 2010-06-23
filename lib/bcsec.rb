@@ -12,6 +12,7 @@ module Bcsec
   autoload :Rack,              'bcsec/rack'
   autoload :User,              'bcsec/user'
   autoload :Modes,             'bcsec/modes'
+  autoload :Test,              'bcsec/test'
 
   class << self
     ##
