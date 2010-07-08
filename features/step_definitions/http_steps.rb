@@ -21,7 +21,7 @@ When /^I access an? (\S+) resource$/ do |resource_kind|
     end
 
   if @using_rack_test
-    get url
+    get url, {}, @env || {}
   else
     visit url
   end

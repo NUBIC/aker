@@ -102,6 +102,11 @@ module Bcsec::Rack
           env = call
           env['bcsec.interactive'].should be_false
         end
+
+        it "is interactive if the User-Agent header contains 'Mozilla'" do
+          env = call("HTTP_USER_AGENT" => "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)")
+          env['bcsec.interactive'].should be_true
+        end
       end
 
       describe "when there are no API modes" do

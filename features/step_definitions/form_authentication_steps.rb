@@ -9,8 +9,15 @@ When /^(?:when )?I enter username "([^\"]*)" and password "([^\"]*)"$/ do |usern
 end
 
 Then /^I should be sent to the login page$/ do
-  page.should have_field('username')
-  page.should have_field('password')
+  if @using_rack_test
+    follow_redirect!
+    doc = Nokogiri.HTML(last_response.body)
+    (doc/'input[name="username"]').should_not be_empty
+    (doc/'input[name="password"]').should_not be_empty
+  else
+    page.should have_field('username')
+    page.should have_field('password')
+  end
 end
 
 Then /^I should see "([^\"]*)" in the "([^\"]*)" field$/ do |text, field|
