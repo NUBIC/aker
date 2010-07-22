@@ -8,7 +8,7 @@ require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 require 'yard'
 require 'bcdatabase/oracle/tasks'
-
+require 'saikuro_treemap'
 require 'net/ssh'
 require 'net/scp'
 gem 'ci_reporter'
@@ -58,6 +58,19 @@ namespace :cucumber do
 
   desc "Run all features"
   task :all => [:ok, :wip, :wip_platform]
+end
+
+namespace :metrics do
+  desc 'generate ccn treemap'
+  task :complexity_map do
+    if RUBY_PLATFORM != 'java' && RUBY_VERSION !~ /1.9/
+      f = "reports/complexity_map.html"
+      SaikuroTreemap.generate_treemap :code_dirs => ['lib'], :output_file => f
+      puts "Generated complexity map in #{f}"
+    else
+      puts "Only works on MRI 1.8"
+    end
+  end
 end
 
 desc "Build API documentation with yard"

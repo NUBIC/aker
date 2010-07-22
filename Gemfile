@@ -46,6 +46,9 @@ only :development do
   end
   gem 'fssm'
 
+  # metrics
+  gem 'saikuro_treemap', '0.1.2'
+
   # pers testing
   gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
