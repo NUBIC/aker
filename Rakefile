@@ -1,6 +1,7 @@
 $LOAD_PATH << File.expand_path("lib", File.dirname(__FILE__))
 
-require 'vendor/gems/environment'
+require 'bundler'
+Bundler.setup
 
 require 'rake'
 require 'rake/gempackagetask'
