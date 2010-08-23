@@ -35,6 +35,7 @@ only :development do
   gem 'test-unit', '1.2.3' if RUBY_VERSION == '1.9.1'
   gem 'rcov', '~> 0.9'
   gem 'rest-client', '~> 1.4.0'
+  gem 'ZenTest'
 
   # docs
   gem 'yard', '~> 0.5'
