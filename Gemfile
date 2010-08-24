@@ -10,7 +10,7 @@ else
 end
 
 gem 'activesupport', '~> 2.3.5'
-gem 'rubytree', '~> 0.6.0'
+gem 'rubytree', '~> 0.7.0'
 
 # pers
 gem 'activerecord', '~> 2.3.5'
