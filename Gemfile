@@ -61,7 +61,7 @@ only :development do
     gem 'jdbc-sqlite3'
     gem 'activerecord-jdbcsqlite3-adapter'
   else
-    gem 'sqlite3-ruby'
+    gem 'sqlite3-ruby', '~> 1.2.0'
   end
   gem 'bcoracle', '~>1.0'
   # silence warning from oracle_enhanced on 1.9.1
