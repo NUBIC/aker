@@ -28,6 +28,16 @@ module Bcsec
           @defaults[:netid][:'ldap-servers'].should == ["registry.northwestern.edu"]
         end
       end
+
+      describe "for policy" do
+        it "includes the lockout duration" do
+          @defaults[:policy][:'lockout-duration-seconds'].should == 600
+        end
+
+        it "includes the lockout attempt count" do
+          @defaults[:policy][:'lockout-attempts'].should == 5
+        end
+      end
     end
 
     describe "creating from a YAML file" do

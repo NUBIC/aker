@@ -7,5 +7,7 @@ cc_pers:
 netid:
   ldap-servers:
     - registry.northwestern.edu
-policy: { }
+policy:
+  lockout-duration-seconds: 600
+  lockout-attempts: 5
 cas: { }
