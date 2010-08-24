@@ -56,6 +56,9 @@ module Bcsec
     # @return [Symbol]
     attr_reader :portal
 
+    # n.b.: if you add more attributes, be sure to add them to the
+    # custom serialization.
+
     ##
     # Create a new instance.
     #
@@ -99,6 +102,54 @@ module Bcsec
       candidates = self.select { |gm| gm.group.include?(group) }
       return candidates if affiliate_ids.empty?
       candidates.select { |gm| affiliate_ids.detect { |id| gm.include_affiliate?(id) } }
+    end
+
+    ##
+    # Custom serialization for this array.  Needed because we need to
+    # serialize the full tree for all referenced groups in order to be
+    # able to do {#include?} and {#find} correctly on the deserialized
+    # result.
+    #
+    # @return [Hash] suitable for passing to {#marshal_load}
+    def marshal_dump
+      {
+        :group_roots => find_group_roots,
+        :memberships => dump_gm_hashes,
+        :portal => portal
+      }
+    end
+
+    ##
+    # Custom deserialization for this array.  Reverses
+    # {#marshal_dump}.
+    #
+    # @return [void]
+    def marshal_load(dump)
+      @portal = dump[:portal]
+      roots = dump[:group_roots]
+      dump[:memberships].each do |gm_hash|
+        self << GroupMembership.new(find_group_from_roots(gm_hash[:group_name], roots)).
+          tap { |gm| gm.affiliate_ids.concat(gm_hash[:affiliate_ids]) }
+      end
+    end
+
+    private
+
+    def find_group_from_roots(group_name, roots)
+      roots.each do |root|
+        root.each do |group|
+          return group if group.name == group_name
+        end
+      end
+      raise "Could not find #{group_name} in any of the roots (#{roots.inspect})"
+    end
+
+    def find_group_roots
+      self.collect { |gm| gm.group.root }.uniq
+    end
+
+    def dump_gm_hashes
+      self.collect { |gm| { :group_name => gm.group_name, :affiliate_ids => gm.affiliate_ids } }
     end
   end
 end

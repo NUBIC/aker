@@ -5,6 +5,7 @@ module Bcsec
     describe "serialization" do
       before do
         g = Group.new("Foo")
+        g << Group.new("Bar")
         serialized = Marshal.dump(g)
         @deserialized = Marshal.restore(serialized)
       end
@@ -15,6 +16,18 @@ module Bcsec
 
       it "deserializes into an object with the right name" do
         @deserialized.name.should == "Foo"
+      end
+
+      it "deserializes children" do
+        @deserialized.should have(1).child
+      end
+
+      it "deserializes children with the right type" do
+        @deserialized.children.first.class.should == Group
+      end
+
+      it "deserializes children with the right names" do
+        @deserialized.children.first.name.should == "Bar"
       end
     end
 

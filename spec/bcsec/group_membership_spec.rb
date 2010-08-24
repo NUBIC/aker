@@ -129,6 +129,39 @@ module Bcsec
         a_notis_user.find("Admin").should == []
       end
     end
+
+    describe "serialization" do
+      before do
+        @user = a_notis_user
+      end
+
+      def marshal_and_unmarshal
+        serialized = Marshal.dump(@user)
+        Marshal.load(serialized)
+      end
+
+      it "works" do
+        lambda { marshal_and_unmarshal }.should_not raise_error
+      end
+
+      it "includes all memberships" do
+        marshal_and_unmarshal.size.should == 3
+      end
+
+      it "preserves the group relationships" do
+        # this is a membership that is indirectly included via the
+        # manager, 28 membership
+        marshal_and_unmarshal.include?("User", 28).should be_true
+      end
+
+      it "does not have relationships that did not exist in the original" do
+        marshal_and_unmarshal.include?("Admin").should be_false
+      end
+
+      it "preserves the portal" do
+        marshal_and_unmarshal.portal.should == :NOTIS
+      end
+    end
   end
 
   describe GroupMembership do

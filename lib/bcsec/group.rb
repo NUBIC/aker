@@ -35,5 +35,30 @@ module Bcsec
         end
       self.find { |g| g.name.downcase == other_name.downcase }
     end
+
+    ##
+    # Copy-pasted from parent in order to use appropriate class when
+    # deserializing children.
+    #
+    # @private
+    def marshal_load(dumped_tree_array)
+      nodes = { }
+
+      for node_hash in dumped_tree_array do
+        name        = node_hash[:name]
+        parent_name = node_hash[:parent]
+        content     = Marshal.load(node_hash[:content])
+
+        if parent_name then
+          nodes[name] = current_node = self.class.new(name, content)
+          nodes[parent_name].add current_node
+        else
+          # This is the root node, hence initialize self.
+          initialize(name, content)
+
+          nodes[name] = self    # Add self to the list of nodes
+        end
+      end
+    end
   end
 end
