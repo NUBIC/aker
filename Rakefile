@@ -87,7 +87,7 @@ namespace :yard do
   task :auto => :yard do
     require 'fssm'
     puts "Waiting for changes"
-    FSSM.monitor('.', docsrc + docfiles + %w(Rakefile)) do
+    FSSM.monitor('.', docsrc + docfiles + %w(README Rakefile)) do
       # have to run in a subshell because rake will only invoke a
       # given task once per execution
       yardoc = proc { |b, m|
