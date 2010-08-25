@@ -77,7 +77,7 @@ desc "Build API documentation with yard"
 docsrc = %w(lib/**/*.rb)
 docfiles = Dir.glob("{CHANGELOG}") # README is automatically included
 YARD::Rake::YardocTask.new("yard") do |t|
-  t.options = %w(--no-private --markup markdown --hide-void-return --list)
+  t.options = %w(--no-private --markup markdown --hide-void-return)
   t.options += ["--title", "bcsec #{Bcsec::VERSION}"]
   t.files = docsrc + ['-'] + docfiles
 end
@@ -104,18 +104,23 @@ namespace :yard do
   end
 
   desc "Create API documentation combined with bcsec-rails"
-  YARD::Rake::YardocTask.new("with-rails") do |t|
-    t.options = %w(--no-private --markup markdown --hide-void-return) +
-      %w(--db .yardoc-with-rails -o doc-with-rails) +
-      ["--title", "bcsec #{Bcsec::VERSION} & bcsec-rails"]
-    bcsec_rails_path =
-      ENV['BCSEC_RAILS_PATH'] || "../bcsec-rails"
-    raise "Please specify BCSEC_RAILS_PATH" unless File.directory?(bcsec_rails_path)
-    t.files = docsrc +
-      ["#{bcsec_rails_path}/lib/**/*.rb"] +
-      %w(-) +
-      docfiles +
-      Dir.glob("#{File.expand_path(bcsec_rails_path)}/{README,CHANGELOG,MIGRATION}-rails")
+  task "with-rails" do
+    # Need to defer determining the path to bcsec-rails until it is
+    # actually used, so we can't use YardocTask at the top level
+    YARD::Rake::YardocTask.new("with-rails-actual") do |t|
+      t.options = %w(--no-private --markup markdown --hide-void-return) +
+        %w(--db .yardoc-with-rails -o doc-with-rails) +
+        ["--title", "bcsec #{Bcsec::VERSION} & bcsec-rails"]
+      bcsec_rails_path =
+        ENV['BCSEC_RAILS_PATH'] || "../bcsec-rails"
+      raise "Please specify BCSEC_RAILS_PATH" unless File.directory?(bcsec_rails_path)
+      t.files = docsrc +
+        ["#{bcsec_rails_path}/lib/**/*.rb"] +
+        %w(-) +
+        docfiles +
+        Dir.glob("#{File.expand_path(bcsec_rails_path)}/{README,CHANGELOG,MIGRATION}-rails")
+    end
+    task('with-rails-actual').invoke
   end
 
   desc "Purge all YARD artifacts"
