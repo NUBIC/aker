@@ -74,11 +74,12 @@ namespace :metrics do
 end
 
 desc "Build API documentation with yard"
-docsrc = %w(lib/**/*.rb -) + Dir.glob("{CHANGELOG,README}")
-YARD::Rake::YardocTask.new do |t|
-  t.options = %w(--no-private --markup markdown --hide-void-return)
+docsrc = %w(lib/**/*.rb)
+docfiles = Dir.glob("{CHANGELOG}") # README is automatically included
+YARD::Rake::YardocTask.new("yard") do |t|
+  t.options = %w(--no-private --markup markdown --hide-void-return --list)
   t.options += ["--title", "bcsec #{Bcsec::VERSION}"]
-  t.files = docsrc
+  t.files = docsrc + ['-'] + docfiles
 end
 
 namespace :yard do
@@ -86,7 +87,7 @@ namespace :yard do
   task :auto => :yard do
     require 'fssm'
     puts "Waiting for changes"
-    FSSM.monitor('.', docsrc + %w(Rakefile)) do
+    FSSM.monitor('.', docsrc + docfiles + %w(Rakefile)) do
       # have to run in a subshell because rake will only invoke a
       # given task once per execution
       yardoc = proc { |b, m|
@@ -102,10 +103,27 @@ namespace :yard do
     end
   end
 
+  desc "Create API documentation combined with bcsec-rails"
+  YARD::Rake::YardocTask.new("with-rails") do |t|
+    t.options = %w(--no-private --markup markdown --hide-void-return) +
+      %w(--db .yardoc-with-rails -o doc-with-rails) +
+      ["--title", "bcsec #{Bcsec::VERSION} & bcsec-rails"]
+    bcsec_rails_path =
+      ENV['BCSEC_RAILS_PATH'] || "../bcsec-rails"
+    raise "Please specify BCSEC_RAILS_PATH" unless File.directory?(bcsec_rails_path)
+    t.files = docsrc +
+      ["#{bcsec_rails_path}/lib/**/*.rb"] +
+      %w(-) +
+      docfiles +
+      Dir.glob("#{File.expand_path(bcsec_rails_path)}/{README,CHANGELOG,MIGRATION}-rails")
+  end
+
   desc "Purge all YARD artifacts"
   task :clean do
     rm_rf 'doc'
     rm_rf '.yardoc'
+    rm_rf 'doc-with-rails'
+    rm_rf '.yardoc-with-rails'
   end
 end
 

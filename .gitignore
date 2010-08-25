@@ -4,6 +4,8 @@ spec/reports
 pkg
 doc
 .yardoc
+doc-with-rails
+.yardoc-with-rails
 mydel.sql
 reports
 bcsec-*.gem
