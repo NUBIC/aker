@@ -48,9 +48,9 @@ your own mode, see the [developer notes][mode-notes] on redmine.
 
 #### API vs. UI
 
-Bcsec uses a heuristic to determine whether to attempt to authenticate
-a particular request using the configured UI mode or API mode(s).
-Here it is:
+Bcsec uses the following heuristic to determine whether to attempt to
+authenticate a particular request using the configured UI mode or API
+mode(s):
 
 * If there are no API modes configured, requests are always handled by
   the UI mode.
@@ -75,7 +75,7 @@ uses and which can be updated using the DSL via {Bcsec.configure}.
 Since {Bcsec.configure} updates the configuration (rather than
 replacing it), it is worthwhile to consider splitting up your
 configuration into environment-specific and common parts.  For
-instance, you might have a the common configuration:
+instance, you might have the common configuration:
 
     Bcsec.configure {
       ui_mode :form
