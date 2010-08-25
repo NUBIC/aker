@@ -16,6 +16,7 @@ gem 'rubytree', '~> 0.7.0'
 gem 'activerecord', '~> 2.3.5'
 gem 'schema_qualified_tables', '~> 1.0'
 gem 'composite_primary_keys', '~> 2.3.5', :require_as => 'date' # no nil
+gem 'bcdatabase', '~> 1.0'
 
 # netid
 gem 'ruby-net-ldap', '>= 0.0.4'
@@ -53,7 +54,7 @@ only :development do
   # pers testing
   gem 'ruby-oci8', '~> 2.0' unless RUBY_PLATFORM == 'java'
   gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
-  gem 'bcdatabase', '~> 1.0'
+
   # This is to keep JRuby from complaining when bcdatabase loads highline
   gem 'ffi-ncurses' if RUBY_PLATFORM == 'java'
   gem 'database_cleaner', '~> 0.5', :require_as => 'date' # no nil
