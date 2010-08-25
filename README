@@ -6,44 +6,238 @@ ruby applications (particularly Rack applications).  It is designed
 to support the needs and work with the infrastructure of the
 Northwestern University Biomedical Informatics Center.
 
-Bcsec in 30 seconds
--------------------
-
-    Bcsec.configure {
-      authorities :netid, :pers
-      ui_mode :form
-      api_mode :http_basic
-      portal :ENU
-      central '/etc/nubic/bcsec-local.yml'
-    }
-
-    u = Bcsec.authority.valid_credentials?(:user, 'wakibbe', 'ekibder')
-        # => returns a Bcsec::User object if the credentials are valid
-
-    if u.group_memberships.include?(:Admin)
-      puts "You're an admin.  Good for you."
-    end
-
 Bcsec concepts
 --------------
 
 ### Authorities
 
+An **authority** in Bcsec is the encapsulation of a mechanism for
+providing authentication and/or authorization.  The methods which an
+authority may implement (all are optional) are described in detail in
+the documentation for the 
+{Bcsec::Authorities::Composite composite authority}.  All the included
+authorities are in the {Bcsec::Authorities} module.  See their
+documentation for more information.
+
+More than one authority can be used in a particular configuration.
+When validating credentials or performing any of the other actions
+provided by the authority interface, all the authorities will be
+consulted.  The documentation for the composite authority describes
+how the results are aggregated for each action.  
+
+A common configuration will be to combine `:pers` with some other
+authorities, since it's the only provided production-level
+implementation of Bcsec's authorization capabilities.
+
 ### Modes
 
+A Bcsec **mode** is a mechanism for receiving credentials in the context
+of a web application.  Bcsec modes come in variants that are intended
+for use in human-user-facing contexts (*UI* modes) and machine-facing
+contexts (*API* modes).  It is possible for the same mode to act in
+both capacities.
+
+An application may have zero-to-many API modes, but only one UI mode.
+API modes work within a standard [RFC2617][] HTTP Authorization
+interface, while UI modes have broad access to the Rack environment to
+prompt the user as necessary.
+
+All the included modes are in the {Bcsec::Modes} module.  See their
+documentation for more information.  If you would like to implement
+your own mode, see the [developer notes][mode-notes] on redmine.
+
+#### API vs. UI
+
+Bcsec uses a heuristic to determine whether to attempt to authenticate
+a particular request using the configured UI mode or API mode(s).
+Here it is:
+
+* If there are no API modes configured, requests are always handled by
+  the UI mode.
+* If the HTTP Accept header includes `text/html` (literally includes
+  it, not matches it), the request is handled by the UI mode.
+* If the HTTP User-Agent header includes `Mozilla`, the request is
+  handled by the UI mode.
+* Otherwise, the request is handled by the API mode(s).
+
+[RFC2617]: http://www.ietf.org/rfc/rfc2617.txt
+[mode-notes]: https://code.bioinformatics.northwestern.edu/redmine/wiki/bcsec-ruby/Bcsec_20_Modes
+
 ### Configuration
+
+The bcsec **configuration** is where you define the authorities and
+modes (and their parameters) for your application.  It's a class whose
+instances can be initialized both {Bcsec::Configuration traditionally}
+and using a {Bcsec::ConfiguratorLanguage DSL}.  There's a global
+instance ({Bcsec.configuration}) which will be sufficient for most
+uses and which can be updated using the DSL via {Bcsec.configure}.
+
+Since {Bcsec.configure} updates the configuration (rather than
+replacing it), it is worthwhile to consider splitting up your
+configuration into environment-specific and common parts.  For
+instance, you might have a the common configuration:
+
+    Bcsec.configure {
+      ui_mode :form
+      api_mode :http_basic
+      portal :ENU
+    }
+
+And then for your development environment use:
+
+    Bcsec.configure {
+      authority :pers
+      central "/etc/nubic/bcsec-local.yml"
+    }
+
+And in your tests use:
+
+    Bcsec.configure {
+      authority Bcsec::Authorities::Static.from_file("#{Rails.root}/spec/test-users.yml")
+    }
+
+But then in production use:
+
+    Bcsec.configure {
+      authorities :netid, :pers
+      central "/etc/nubic/bcsec-prod.yml"
+    }
+
 
 Using form authentication
 -------------------------
 
+Bcsec's {Bcsec::Modes::Form :form} mode provides a traditional HTML
+form for user authentication.  It works with one or more authorities
+which handle the `:user` credential kind &mdash; compatible
+authorities that ship with Bcsec are {Bcsec::Authorities::Netid
+:netid}, {Bcsec::Authorities::Pers :pers}, and
+{Bcsec::Authorities::Static :static}.
+
+`:form` is the default UI mode.  If you want to explicitly configure
+it, do like so:
+
+    Bcsec.configure {
+      authorities :static # whatever is appropriate for your app
+      ui_mode :form
+    }
+
 Using CAS
 ---------
+
+Bcsec's {Bcsec::Modes::Cas :cas} mode provides interactive user
+authentication via an external CAS 2 server.  The
+{Bcsec::Modes::CasProxy :cas_proxy} mode complements `:cas` by
+providing non-interactive authentication using CAS proxy tickets.
+Each of these modes works with an authority which can handle the
+corresponding credential kind (i.e., `:cas` needs a `:cas`-handling
+authority). The {Bcsec::Authorities::Cas :cas} authority handles
+both.  Here's an example configuration:
+
+    Bcsec.configure {
+      authority :cas
+      ui_mode :cas
+      api_mode :cas_proxy # don't include unless needed
+    }
+
+(The `:static` authority can also verify `:cas` and `:cas_proxy`
+credentials, but it is relatively awkward to set up and so is left as
+an exercise for the adventurous integrated tester.)
+
+Since the CAS server provides authentication only, you may also want
+to configure an authority to provide authorization information.
+`:pers` is a good bet.
 
 Authenticating a RESTful API
 ----------------------------
 
+As noted above, Bcsec has specific support for [RFC2617][]-style
+standard HTTP authentication.  It supports multiple simultaneous API
+authentication modes.  The most common case for multiple API modes
+will be CAS-protected APIs which also need to provide non-interactive
+API access (e.g., for cron jobs, since they are not run in the context
+of a user logged into any particular application).  Here's a sample
+configuration:
+
+    Bcsec.configure {
+      ui_mode :cas
+      api_mode :http_basic, :cas_proxy
+
+      authorities :cas, :netid, :pers
+
+      central "/etc/nubic/bcsec-local.yml"
+    }
+
+In this case, the CAS server will be used for interactive logins and
+for CAS proxy ticket validation, while HTTP Basic-authenticated
+requests will be validated using the `:netid` and `:pers` authorities.
+
 Rack (and Rails) integration
 ----------------------------
+
+Bcsec's web application integration is based on [Rack][].  This means
+it can be used with nearly any ruby web framework, including Sinatra,
+Camping, etc., in addition to Rails 2.3.5+.(*)
+
+In your Bcsec-protected Rack application, you have access to a
+`"bcsec"` key in the Rack environment.  This key will yield an
+instance of {Bcsec::Rack::Facade} which provides methods for
+determining who is logged in, checking permissions, requiring
+authentication, etc.  See its API documentation for more information.
+
+To configure Bcsec into your Rack application, use
+{Bcsec::Rack.use_in}.  See that method's API documentation for more
+information.
+
+#### Rails
+
+While Rack support is built into the main Bcsec gem, Rails support is
+in a separate gem plugin.  See {file:README-rails} in the `bcsec-rails` gem
+for more information about it.
+
+[Rack]: http://rack.rubyforge.org/
+
+(*) Rails 3 support is not provided yet.  It can probably be made to
+work, so long as you use Bcsec's Rack support directly (not the
+rails plugin) and don't use `:pers` (since `:pers` uses ActiveRecord).
+Bcsec 2.1 will have support for both Rails 2.3.x and Rails 3.0+.
+
+Bcsec outside of a Rack app
+---------------------------
+
+Bcsec's authorities are independent of its HTTP integration, so they
+may be used in any ruby script or application.  Here's an example:
+
+    #!/usr/bin/env ruby
+
+    require 'rubygems'
+    require 'bcsec'
+
+    Bcsec.configure {
+      authorities :netid, :pers
+      central "/etc/nubic/bcsec-staging.yml"
+      portal :NOTIS
+    }
+
+    u = Bcsec.authority.valid_credentials?(:user, 'wakibbe', 'ekibder')
+        # => valid_credentials? returns a Bcsec::User on success
+
+    if !u
+      $stderr.puts "Bad credentials"
+      exit(1)
+    elsif u.permit?('Admin')
+      lookedup = Bcsec.authority.find_user(ARGV[0])
+      if lookedup
+        puts "#{ARGV[0]} is the username of #{lookedup.full_name}"
+      else
+        puts "#{ARGV[0]} isn't a valid username"
+      end
+    else
+      $stderr.puts "Unauthorized"
+      exit(2)
+    end
+
+See the rest of the API documentation for more information.
 
 Development environment
 -----------------------
