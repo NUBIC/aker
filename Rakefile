@@ -169,7 +169,6 @@ namespace :deploy do
   end
 
   task :gem => [:check, :repackage] do
-    raise "Don't deploy prerelease gems.  Set to a release version first." if Bcsec::VERSION =~ /pre/
     server = "ligand"
     user = ENV["BC_USER"] or raise "Please set BC_USER=your_netid in the environment"
     target = File.basename(GEM_FILE)
@@ -190,6 +189,25 @@ namespace :deploy do
     system("git tag -a #{tagname} -m 'Bcsec #{Bcsec::VERSION}'")
     fail "Tagging failed" unless $? == 0
     system("git push origin : #{tagname}")
+  end
+
+  task :docs => [:"yard:with-rails"] do
+    server = "ligand"
+    user = ENV["BC_USER"] or raise "Please set BC_USER=your_netid in the environment"
+    server_dir = "/var/www/sites/download/docs/bcsec"
+    Net::SSH.start(server, user) do |ssh|
+      puts "-> Removing old docs"
+      one_ssh_cmd(ssh, "rm -r #{server_dir}")
+
+      puts "-> Uploading docs"
+      channel = ssh.scp.upload(
+        "doc-with-rails", server_dir, :recursive => true) do |ch, name, sent, total|
+        print '.'
+        $stdout.flush
+      end
+      print "\n"
+      channel.wait
+    end
   end
 end
 
