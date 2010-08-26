@@ -187,7 +187,8 @@ namespace :deploy do
   desc "Tag the final version of a release"
   task :tag => [:check] do
     tagname = Bcsec::VERSION
-    system("git tag -a #{tagname}")
+    system("git tag -a #{tagname} -m 'Bcsec #{Bcsec::VERSION}'")
+    fail "Tagging failed" unless $? == 0
     system("git push origin : #{tagname}")
   end
 end
