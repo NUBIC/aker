@@ -147,26 +147,7 @@ task :uninstall do
 end
 
 desc "Deploy to the internal gem server"
-task :deploy => [:repackage] do
-  raise "Don't deploy prerelease gems.  Set to a release version first." if Bcsec::VERSION =~ /pre/
-  dir = "/var/www/sites/download/gems"
-  server = "ligand"
-  group = "gemauthors"
-  user = ENV["BC_USER"] or raise "Please set BC_USER=your_netid in the environment"
-  Net::SSH.start(server, user) do |ssh|
-    puts "-> Uploading #{GEM_FILE}"
-    channel = ssh.scp.upload(GEM_FILE, "#{dir}/gems") do |ch, name, sent, total|
-      puts sent == total ? "  complete" : "  #{sent}/#{total}"
-    end
-    channel.wait
-
-    one_ssh_cmd(ssh, "gem generate_index --directory #{dir}")
-    # chmod all new files to group-writable so that other people can deploy
-    find_cmd = ["find #{dir} -user #{user}", ("-fprint /dev/stderr -print" if trace?)].compact.join(' ')
-    one_ssh_cmd(ssh, "#{find_cmd} | xargs chgrp #{group}")
-    one_ssh_cmd(ssh, "#{find_cmd} | xargs chmod g+w")
-  end
-end
+task :deploy => :"deploy:gem"
 
 def trace?
   Rake.application.options.trace
@@ -178,26 +159,36 @@ def one_ssh_cmd(ssh, cmd)
   ssh.loop
 end
 
-# Determines if the current checkout is using git-svn or just svn
-def svn?
-  Dir['**/.svn'].size > 0
-end
-
 namespace :deploy do
-  desc "Tag the final version of a release"
-  task :tag do
-    raise "Don't deploy prerelease gems.  Set to a release version first." if Bcsec::VERSION =~ /pre/
-    trunk_url = svn? ? `svn info`.match(/URL:\s+(.*?)\n/)[1] : `git svn info --url`.sub(/\/?\s*$/, '/gem')
-    fail "Could not determine trunk URL" unless trunk_url
-    fail "deploy:tag only works from the trunk" unless trunk_url =~ /trunk\/gem$/
-    tag_url = trunk_url.gsub(/trunk\/gem$/, "tags/gem/#{Bcsec::VERSION}").chomp
-    `svn ls #{tag_url} 2> /dev/null`
-    if $? == 0
-      puts "Tag #{tag_url} already exists"
-    else
-      puts "Creating #{tag_url}"
-      puts `svn cp #{trunk_url} #{tag_url} -m 'Tag #{Bcsec::VERSION} release'`
+  task :check do
+    if Bcsec::VERSION.split('.').any? { |v| v =~ /\w/ }
+      puts "#{Bcsec::VERSION} is a prerelease version.  Are you sure you want to deploy?\n" <<
+        "Press ^C to abort or enter to continue deploying."
+      STDIN.readline
     end
+  end
+
+  task :gem => [:check, :repackage] do
+    raise "Don't deploy prerelease gems.  Set to a release version first." if Bcsec::VERSION =~ /pre/
+    server = "ligand"
+    user = ENV["BC_USER"] or raise "Please set BC_USER=your_netid in the environment"
+    target = File.basename(GEM_FILE)
+    Net::SSH.start(server, user) do |ssh|
+      puts "-> Uploading #{GEM_FILE}"
+      channel = ssh.scp.upload(GEM_FILE, "/home/#{user}") do |ch, name, sent, total|
+        puts sent == total ? "  complete" : "  #{sent}/#{total}"
+      end
+      channel.wait
+
+      one_ssh_cmd(ssh, "deploy-gem #{target}")
+    end
+  end
+
+  desc "Tag the final version of a release"
+  task :tag => [:check] do
+    tagname = Bcsec::VERSION
+    system("git tag -a #{tagname}")
+    system("git push origin : #{tagname}")
   end
 end
 
