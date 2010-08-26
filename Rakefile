@@ -162,7 +162,7 @@ end
 
 namespace :deploy do
   task :check do
-    if Bcsec::VERSION.split('.').any? { |v| v =~ /\w/ }
+    if Bcsec::VERSION.split('.').any? { |v| v =~ /\D/ }
       puts "#{Bcsec::VERSION} is a prerelease version.  Are you sure you want to deploy?\n" <<
         "Press ^C to abort or enter to continue deploying."
       STDIN.readline
