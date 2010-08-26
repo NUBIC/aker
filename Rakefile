@@ -92,6 +92,7 @@ namespace :yard do
       # given task once per execution
       yardoc = proc { |b, m|
         print "Detected change in #{m} -- regenerating docs ... "
+        $stdout.flush
         out = `rake yard`
         puts out if out =~ /warn|error/
         puts "done"
