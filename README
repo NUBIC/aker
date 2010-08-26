@@ -6,6 +6,11 @@ ruby applications (particularly Rack applications).  It is designed
 to support the needs and work with the infrastructure of the
 Northwestern University Biomedical Informatics Center.
 
+Bcsec is made up of **authorities** which provide user security
+information, **modes** which integrate authentication with HTTP (via
+Rack), and a **configuration** which specifies which of these to use
+and how to set them up.
+
 Bcsec concepts
 --------------
 
@@ -14,7 +19,7 @@ Bcsec concepts
 An **authority** in Bcsec is the encapsulation of a mechanism for
 providing authentication and/or authorization.  The methods which an
 authority may implement (all are optional) are described in detail in
-the documentation for the 
+the documentation for the
 {Bcsec::Authorities::Composite composite authority}.  All the included
 authorities are in the {Bcsec::Authorities} module.  See their
 documentation for more information.
@@ -23,7 +28,7 @@ More than one authority can be used in a particular configuration.
 When validating credentials or performing any of the other actions
 provided by the authority interface, all the authorities will be
 consulted.  The documentation for the composite authority describes
-how the results are aggregated for each action.  
+how the results are aggregated for each action.
 
 A common configuration will be to combine `:pers` with some other
 authorities, since it's the only provided production-level
