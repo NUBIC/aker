@@ -112,11 +112,13 @@ describe Bcsec::Configuration do
 
     describe "for additional authority parameters" do
       it "can set parameters for arbitrary groups" do
-        config_from { foo_parameters :server => "test.local" }.parameters_for(:foo)[:server].should == "test.local"
+        config_from { foo_parameters :server => "test.local" }.
+          parameters_for(:foo)[:server].should == "test.local"
       end
 
       it "can set (and name) one parameter at a time" do
-        config_from { foo_parameter :server => "test.bar" }.parameters_for(:foo)[:server].should == "test.bar"
+        config_from { foo_parameter :server => "test.bar" }.
+          parameters_for(:foo)[:server].should == "test.bar"
       end
 
       it "combines parameters from multiple calls" do
@@ -133,11 +135,13 @@ describe Bcsec::Configuration do
       end
 
       it "can configure an authority from a string" do
-        config_from { authority "static" }.authorities.first.class.should == Bcsec::Authorities::Static
+        config_from { authority "static" }.authorities.first.class.
+          should == Bcsec::Authorities::Static
       end
 
       it "can configure an authority from a class" do
-        config_from { authority Bcsec::Authorities::Static }.authorities.first.class.should == Bcsec::Authorities::Static
+        config_from { authority Bcsec::Authorities::Static }.authorities.first.class.
+          should == Bcsec::Authorities::Static
       end
 
       it "can configure an authority from an instance" do
@@ -182,8 +186,10 @@ describe Bcsec::Configuration do
 
       it "acquires the cas parameters" do
         @actual.parameters_for(:cas)[:base_url].should == "https://cas.example.edu"
-        @actual.parameters_for(:cas)[:proxy_retrieval_url].should == "https://cas.example.edu/retrieve_pgt"
-        @actual.parameters_for(:cas)[:proxy_callback_url].should == "https://cas.example.edu/receive_pgt"
+        @actual.parameters_for(:cas)[:proxy_retrieval_url].
+          should == "https://cas.example.edu/retrieve_pgt"
+        @actual.parameters_for(:cas)[:proxy_callback_url].
+          should == "https://cas.example.edu/receive_pgt"
       end
 
       it "acquires all top-level parameters" do
@@ -309,7 +315,8 @@ describe Bcsec::Configuration do
         end
 
         it "issues a deprecation warning" do
-          deprecation_message.should =~ /use_cas is deprecated\.  Use api_modes :cas_proxy; ui_mode :cas; authorities :cas instead\..*2.2/
+          deprecation_message.should =~
+            /use_cas is deprecated\.  Use api_modes :cas_proxy; ui_mode :cas; authorities :cas instead\..*2.2/
         end
 
         it "sets up the CAS UI mode" do
