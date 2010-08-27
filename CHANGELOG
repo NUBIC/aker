@@ -4,6 +4,9 @@ Bcsec History
 2.0.1
 -----
 
+- Fixed: `#amplify!` in the :pers authority would fail when there was
+  no portal configured (#3811).
+
 2.0.0
 -----
 
