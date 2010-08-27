@@ -4,6 +4,7 @@ Bcsec History
 2.0.1
 -----
 
+- Added {Bcsec::Authorities::AutomaticAccess}.
 - Fixed: `#amplify!` in the :pers authority would fail when there was
   no portal configured (#3811).
 

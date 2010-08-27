@@ -6,7 +6,7 @@ module Bcsec
   # what an authority is is outlined in the documentation for
   # {Bcsec::Authorities::Composite Composite}.
   #
-  # Bcsec 2 ships with four authorities:
+  # Bcsec 2 ships with five authorities:
   #
   # - {Bcsec::Authorities::Netid :netid} verifies usernames and
   #   passwords using NU's central LDAP servers.
@@ -19,16 +19,21 @@ module Bcsec
   # - {Bcsec::Authorities::Static :static} provides credential
   #   verification and user authorization based on an in-memory set of
   #   users.  It can be configured in code or by loading a YAML file.
-  #   It is intended for integrated tests and application bootstrapping.
+  #   It is intended for integrated tests and application
+  #   bootstrapping.
+  # - {Bcsec::Authorities::AutomaticAccess :automatic_access} allows
+  #   any authenticated user to access your application, even when you
+  #   have a portal configured.
   #
   # @see Bcsec::Configuration#authorities=
   module Authorities
-    autoload :Cas,       'bcsec/authorities/cas'
-    autoload :Composite, 'bcsec/authorities/composite'
-    autoload :Netid,     'bcsec/authorities/netid'
-    autoload :Pers,      'bcsec/authorities/pers'
-    autoload :Static,    'bcsec/authorities/static'
+    autoload :AutomaticAccess, 'bcsec/authorities/automatic_access'
+    autoload :Cas,             'bcsec/authorities/cas'
+    autoload :Composite,       'bcsec/authorities/composite'
+    autoload :Netid,           'bcsec/authorities/netid'
+    autoload :Pers,            'bcsec/authorities/pers'
+    autoload :Static,          'bcsec/authorities/static'
 
-    autoload :Support,   'bcsec/authorities/support'
+    autoload :Support,         'bcsec/authorities/support'
   end
 end
