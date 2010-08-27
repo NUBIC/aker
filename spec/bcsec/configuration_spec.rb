@@ -131,7 +131,13 @@ describe Bcsec::Configuration do
 
     describe "for authorities" do
       it "can configure an authority from a symbol" do
-        config_from { authority :static }.authorities.first.class.should == Bcsec::Authorities::Static
+        config_from { authority :static }.authorities.first.class.
+          should == Bcsec::Authorities::Static
+      end
+
+      it "can configure an authority from an underscored symbol" do
+        config_from { portal :Foo;  authority :automatic_access }.authorities.first.class.
+          should == Bcsec::Authorities::AutomaticAccess
       end
 
       it "can configure an authority from a string" do
