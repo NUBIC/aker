@@ -55,7 +55,7 @@ PATH="ci_bin:$PATH"
 echo "Switching to ${BCSEC_RVM_RUBY}"
 set +xe
 rvm use "$BCSEC_RVM_RUBY"
-if [ $? -eq 0 ]; then
+if [ $? -ne 0 ]; then
     echo "Switch failed"
     exit 2;
 fi
