@@ -53,7 +53,11 @@ ln -s ~/.rvm/bin/${BCSEC_JRUBY} ci_bin/jruby
 PATH="ci_bin:$PATH"
 
 echo "Switching to ${BCSEC_RVM_RUBY}"
-set +x
+set +xe
 rvm use "$BCSEC_RVM_RUBY"
-set -x
+if [ $? -eq 0 ]; then
+    echo "Switch failed"
+    exit 2;
+fi
+set -xe
 ruby -v
