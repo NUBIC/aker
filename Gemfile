@@ -39,7 +39,7 @@ only :development do
   gem 'ZenTest'
 
   # docs
-  gem 'yard', '~> 0.5'
+  gem 'yard', '~> 0.5.8'
   # for yard
   if RUBY_PLATFORM == 'java'
     gem 'maruku'
