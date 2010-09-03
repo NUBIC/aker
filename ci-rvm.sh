@@ -16,7 +16,7 @@ echo ". ~/.rvm/scripts/rvm"
 . ~/.rvm/scripts/rvm
 set -x
 
-BCSEC_JRUBY='jruby-1.4.0'
+BCSEC_JRUBY='jruby-1.5.2'
 
 unset BCSEC_RVM_RUBY
 case "$BCSEC_ENV" in
