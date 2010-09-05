@@ -206,8 +206,8 @@ namespace :deploy do
         print '.'
         $stdout.flush
       end
-      print "\n"
       channel.wait
+      print "\n"
     end
   end
 end
