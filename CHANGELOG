@@ -1,6 +1,12 @@
 Bcsec History
 =============
 
+2.0.2
+-----
+
+- Fixed: hierarchical group loading in the `:pers` authority would
+  skip every other top-level group (#3882).
+
 2.0.1
 -----
 
