@@ -8,11 +8,11 @@ Feature: Access control
       | username | password  |
       | mr296    | br0wn     |
       | zaw102   | squidward |
+    And mr296 is in the Owners and Command groups for Serenity
+    And zaw102 is in the Command group for Serenity
     And I have a bcsec-protected application using
       | api_modes  | portal   |
       | http_basic | Serenity |
-    And mr296 is in the Owners and Command groups for Serenity
-    And zaw102 is in the Command group for Serenity
     And I am using the API
 
   Scenario: A user can access a group-protected resource for a group he is in

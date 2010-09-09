@@ -6,29 +6,22 @@ require "fileutils"
 $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
 
 require 'bcsec'
-
-require 'capybara'
-require 'capybara/cucumber'
-require 'rack/test'
+require 'rack'
 
 require File.expand_path("../../../spec/matchers", __FILE__)
-
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
+require File.expand_path("../mechanize_test.rb", __FILE__)
 
 Before do
   # suppress logging
+  bcsec_log = "#{tmpdir}/bcsec.log"
   Bcsec.configure {
-    logger Logger.new(StringIO.new)
+    logger Logger.new(bcsec_log)
   }
 end
 
 Before('@cas') do
-  Capybara.current_driver = :culerity
   start_cas_server
-end
-
-After('@cas') do
-  Capybara.use_default_driver
 end
 
 After do
@@ -37,12 +30,13 @@ end
 
 module Bcsec::Cucumber
   class World
-    include Rack::Test::Methods
     include ::Bcsec::Spec::Matchers
     include ::Spec::Matchers
+    include ::Bcsec::Cucumber::MechanizeTest
     include FileUtils
 
     CAS_PORT = 5409
+    APP_PORT = 5004
 
     def app
       @app or fail "No main rack app created yet"
@@ -96,6 +90,11 @@ module Bcsec::Cucumber
       new_server
     end
 
+    def start_main_rack_server(app, options={})
+      @app = app
+      start_rack_server(app, APP_PORT, options)
+    end
+
     def stop_spawned_servers
       spawned_servers.each do |server|
         begin
@@ -103,6 +102,14 @@ module Bcsec::Cucumber
         rescue => m
           $stderr.puts "Stopping server pid=#{server.pid} port=#{server.port} failed: #{m}"
         end
+      end
+    end
+
+    def app_url(url)
+      if url =~ /^http/
+        url
+      else
+        "http://localhost:#{APP_PORT}#{url}"
       end
     end
   end

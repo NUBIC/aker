@@ -29,9 +29,9 @@ gem 'warden', '~> 0.10.3'
 
 only :development do
   # general testing
-  gem 'capybara'
   gem 'cucumber', '~> 0.6.0'
   gem 'rack-test', '~> 0.5'
+  gem 'mechanize', '~> 1.0'
   gem 'rspec', '~> 1.3'
   gem 'test-unit', '1.2.3' if RUBY_VERSION == '1.9.1'
   gem 'rcov', '~> 0.9'
@@ -71,7 +71,6 @@ only :development do
   # cas testing
   gem 'markaby', '0.5'    # other versions break RubyCAS-Server
   gem 'rubycas-server'
-  gem 'celerity', '~> 0.7.9', :require_as => 'date' # has to be installed for culerity
 
   # ci & deployment
   gem 'net-ssh', '~> 2.0'

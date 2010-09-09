@@ -53,7 +53,7 @@ module Bcsec
               body << "\nBut there is special content for #{group}"
             end
 
-            [403, { "Content-Type" => "text/plain" },
+            [200, { "Content-Type" => "text/plain" },
              [body]]
           }
         end

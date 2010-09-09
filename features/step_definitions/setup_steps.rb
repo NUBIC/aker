@@ -1,3 +1,7 @@
+After do
+  Bcsec.configuration = nil
+end
+
 Given /^I have an authority that accepts these usernames and passwords:$/ do |table|
   static = Bcsec::Authorities::Static.new
   table.hashes.each do |u|
@@ -30,18 +34,10 @@ Given /^I have a CAS server that accepts these usernames and passwords:$/ do |ta
   }
 end
 
-Given /^I have bcsec configured like so$/ do |table|
-  pending
-end
-
-After do
-  Bcsec.configuration = nil
-end
-
 Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
   enhance_configuration_from_table(bcsec_params)
 
-  @app = Rack::Builder.new do
+  app = Rack::Builder.new do
     use Rack::Session::Cookie
     Bcsec::Rack.use_in(self)
 
@@ -66,7 +62,7 @@ Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
     end
   end
 
-  Capybara.app = @app
+  start_main_rack_server(app)
 end
 
 Given /^I have a bcsec\-protected RESTful API using$/ do |bcsec_params|
@@ -107,7 +103,7 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
   }
 
   api_server = @api_server
-  @app = Rack::Builder.new do
+  app = Rack::Builder.new do
     use Rack::Session::Cookie
     Bcsec::Rack.use_in(self)
 
@@ -125,5 +121,5 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
     end
   end
 
-  Capybara.app = @app
+  start_main_rack_server(app)
 end

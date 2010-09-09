@@ -1,6 +1,7 @@
 When "I am using the API" do
   header "Accept", "application/json"
-  @using_rack_test = true
+  agent.redirect_ok = false # capture redirects
+  agent.user_agent = "MyApiConsumer/#{Bcsec::VERSION}"
 end
 
 When /^I access an? (\S+) resource$/ do |resource_kind|
@@ -20,11 +21,7 @@ When /^I access an? (\S+) resource$/ do |resource_kind|
       pending "No URL defined for #{resource_kind.inspect}"
     end
 
-  if @using_rack_test
-    get url, {}, @env || {}
-  else
-    visit url
-  end
+  get url
 end
 
 When /^I do concurrent requests on an API\-using resource$/ do
@@ -38,26 +35,26 @@ When /^I do concurrent requests on an API\-using resource$/ do
   #
   # First, we get all of our CAS tickets straightened out by making a request
   # to a CAS-protected call that doesn't do CAS proxying.
-  visit "/protected"
-  page.source.should =~ /I'm protected/
+  get "/protected"
+  page.body.should =~ /I'm protected/
 
   @responses = []
 
   # Next, we capture the session state for reuse.
-  browser = Capybara.current_session.driver.browser
-  session = browser.cookies['localhost']['rack.session']
+  session = agent.cookies.find { |c| c.domain == 'localhost' && c.name == 'rack.session' }.value
+  session.should_not be_nil
 
   # Next, we make our first request.
-  visit("/consume")
-  @responses << page.source
+  get "/consume"
+  @responses << page.body
 
   # To simulate a second, concurrent request, we reset the cookie jar to the
   # way it was prior to the first request.
-  browser.add_cookie('localhost', 'rack.session', session)
+  agent.cookie_jar.jar['localhost']['/']['rack.session'].value = session
 
   # Finally, we issue the second request.
-  visit("/consume")
-  @responses << page.source
+  get "/consume"
+  @responses << page.body
 end
 
 Then /^I should be able to access that (\S+) resource$/ do |resource_kind|
@@ -71,37 +68,30 @@ Then /^I should be able to access that (\S+) resource$/ do |resource_kind|
       pending "No pattern defined for #{resource_kind.inspect}"
     end
 
-  if @using_rack_test
-    last_response.status.should == 200
-    last_response.body.should =~ pattern
-  else
-    page.source.should =~ pattern
-  end
+  page.code.should == "200"
+  page.body.should =~ pattern
 end
 
 Then /^I should see the search results$/ do
-  page.source.should == 'Format: json, results: something'
+  page.body.should == 'Format: json, results: something'
 end
 
 When /^I log out of the application$/ do
-  if @using_rack_test
-    get "/logout"
-  else
-    visit "/logout"
-  end
+  get "/logout"
 end
 
 Then /^I should see the (\S+) content for that group\-sensitive resource$/ do |which|
+  Then "the HTTP status should be 200"
   sensitive = /there is special content for Owners/
   if which =~ /owner/i
-    last_response.body.should =~ sensitive
+    page.body.should =~ sensitive
   else
-    last_response.body.should_not =~ sensitive
+    page.body.should_not =~ sensitive
   end
 end
 
 Then /^the page contains the results of the API call$/ do
-  page.source.should =~ /The API said: I'm protected/
+  page.body.should =~ /The API said: I'm protected/
 end
 
 Then /^each response should contain the results of the API call$/ do
@@ -109,21 +99,21 @@ Then /^each response should contain the results of the API call$/ do
 end
 
 Then /the HTTP status should be (\d{3})/ do |status|
-  last_response.status.should == status.to_i
+  page.code.should == status
 end
 
 Then /^the '([^']*)' header should be '([^']*)'$/ do |header, expected|
-  last_response.headers[header].should == expected
+  page.header[header].should == expected
 end
 
 Then /^the '([^']*)' header should include '([^']*)'$/ do |header, expected|
-  last_response.headers[header].should =~ Regexp.new(expected)
+  page.header[header].should =~ Regexp.new(expected)
 end
 
 Then /^access is forbidden$/ do
   Then "the HTTP status should be 403"
-  last_response.body.should =~ /may not use this page./
-  last_response.headers["Content-Type"].should == "text/html"
+  page.body.should =~ /may not use this page./
+  page.header["Content-Type"].should == "text/html"
 end
 
 # assumes a pure-HTTP mode

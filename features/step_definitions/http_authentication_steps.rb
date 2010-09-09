@@ -3,5 +3,5 @@ Given /^I am using no credentials$/ do
 end
 
 Given /I am using the basic credentials "([^\"]*)" \/ "([^\"]*)"$/ do |username, password|
-  header "Authorization", "Basic #{["#{username}:#{password}"].pack("m*")})"
+  header "Authorization", "Basic #{["#{username}:#{password}"].pack("m*")}".strip
 end
