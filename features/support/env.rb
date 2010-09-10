@@ -74,8 +74,16 @@ module Bcsec::Cucumber
       @spawned_servers ||= []
     end
 
+    def port_offset
+      case ENV['BCSEC_ENV']
+      when /1.8.7/; 1008;
+      when /1.9.1/; 2007;
+      else 0;
+      end
+    end
+
     def start_cas_server
-      @cas_server = ControllableCasServer.new(tmpdir, CAS_PORT)
+      @cas_server = ControllableCasServer.new(tmpdir, CAS_PORT + port_offset)
       self.spawned_servers << @cas_server
       @cas_server.start
       @cas_server
@@ -83,7 +91,7 @@ module Bcsec::Cucumber
 
     # @return [Bcsec::Cucumber::ControllableRackServer]
     def start_rack_server(app, port, options={})
-      opts = { :app => app, :port => port, :tmpdir => tmpdir }.merge(options)
+      opts = { :app => app, :port => port + port_offset, :tmpdir => tmpdir }.merge(options)
       new_server = Bcsec::Cucumber::ControllableRackServer.new(opts)
       self.spawned_servers << new_server
       new_server.start
@@ -109,7 +117,7 @@ module Bcsec::Cucumber
       if url =~ /^http/
         url
       else
-        "http://localhost:#{APP_PORT}#{url}"
+        "http://localhost:#{APP_PORT + port_offset}#{url}"
       end
     end
   end
