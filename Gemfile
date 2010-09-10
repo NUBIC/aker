@@ -66,7 +66,7 @@ group :development do
   gem 'database_cleaner', '~> 0.5', :require => nil
 
   platforms :ruby_18, :ruby_19 do
-    gem 'sqlite3-ruby'
+    gem 'sqlite3-ruby', '~> 1.2.0'
   end
 
   gem 'bcoracle', '~>1.0'
