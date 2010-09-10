@@ -1,3 +1,4 @@
+@no_jruby
 Feature: Access control
   In order to specify what users may see
   Bcsec-protected applications

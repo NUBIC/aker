@@ -1,3 +1,4 @@
+@no_jruby
 Feature: HTTP Basic Authentication for UI
 
   Background:

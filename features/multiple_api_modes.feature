@@ -1,3 +1,4 @@
+@no_jruby
 Feature: Multiple API modes
   In order to support disparate clients
   Bcsec-protected APIs

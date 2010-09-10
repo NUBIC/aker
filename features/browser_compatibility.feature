@@ -1,3 +1,4 @@
+@no_jruby
 Feature: Browser compatibility
   In order to get NUBIC applications to use bcsec
   The bcsec library
