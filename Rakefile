@@ -33,8 +33,8 @@ desc "Run all specs with rcov"
 Spec::Rake::SpecTask.new('spec:rcov') do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
   t.rcov = true
-  # rcov can't tell that /Library/Ruby is a system path
-  t.rcov_opts = ['--exclude', "spec/*,/Library/Ruby/*"]
+  # rcov can't tell that /Library/Ruby & .rvm are system paths
+  t.rcov_opts = ['--exclude', "spec/*,/Library/Ruby/*,#{ENV['HOME']}/.rvm"]
   t.verbose = true
 end
 
