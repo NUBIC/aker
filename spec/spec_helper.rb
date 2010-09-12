@@ -11,6 +11,7 @@ require 'bcsec'
 require File.expand_path('../database_helper', __FILE__)
 require File.expand_path('../deprecation_helper', __FILE__)
 require File.expand_path('../logger_helper', __FILE__)
+require File.expand_path("../../tool-patches/rcov-encoding-1.9.rb", __FILE__)
 
 if RUBY_PLATFORM == 'java'
   require File.expand_path('../java_helper', __FILE__)
