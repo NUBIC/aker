@@ -4,6 +4,9 @@ Bcsec History
 2.0.3
 -----
 
+- Fixed: static authority now allows different users to have the same
+  password.
+
 2.0.2
 -----
 
