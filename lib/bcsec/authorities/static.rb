@@ -41,14 +41,9 @@ module Bcsec::Authorities
     #
     # @return [Bcsec::User, nil]
     def valid_credentials?(kind, *credentials)
-      if kind == :user
-        req_username, *credentials = credentials
-      end
-      actual_username =
+      found_username =
         (all_credentials(kind).detect { |c| c[:credentials] == credentials } || {})[:username]
-      if !req_username || req_username == actual_username
-        @users[actual_username]
-      end
+      @users[found_username]
     end
 
     ##
@@ -141,6 +136,9 @@ module Bcsec::Authorities
       if String === kind
         Bcsec::Deprecation.notify("Please specify a kind in valid_credentials!", "2.2")
         return valid_credentials!(:user, kind, username, *credentials)
+      end
+      if kind == :user
+        credentials = [username, *credentials]
       end
       all_credentials(kind) << { :username => username, :credentials =>  credentials }
       @users[username] ||= Bcsec::User.new(username)

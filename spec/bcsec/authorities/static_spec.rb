@@ -35,6 +35,20 @@ module Bcsec::Authorities
         it "gives nil for an unknown user" do
           @s.valid_credentials?(:user, "joe", "50-50").should be_nil
         end
+
+        describe "with duplicate passwords" do
+          before do
+            @s.valid_credentials!(:user, "joe", "50-50")
+          end
+
+          it "authenticates the first user" do
+            @s.valid_credentials?(:user, "jo", "50-50").username.should == "jo"
+          end
+
+          it "authenticates the second user" do
+            @s.valid_credentials?(:user, "joe", "50-50").username.should == "joe"
+          end
+        end
       end
 
       describe "other kinds" do
