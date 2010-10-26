@@ -65,12 +65,15 @@ module Bcsec::Authorities
     # set that have been loaded with {#load!}, {#valid_credentials!},
     # and {#user}.
     #
-    # @param [Hash,#to_s] criteria as described in
+    # @param [Array<Hash,#to_s>] criteria as described in
     #   {Composite#find_users}.
     # @return [Array<Bcsec::User>]
-    def find_users(criteria)
-      if Hash === criteria
-        props = criteria.keys.select { |k|
+    def find_users(*criteria)
+      criteria.collect do |criteria_group|
+        unless Hash === criteria_group
+          criteria_group = { :username => criteria_group.to_s }
+        end
+        props = criteria_group.keys.select { |k|
           Bcsec::User.instance_methods.include?(k.to_s) || # for 1.8.7
           Bcsec::User.instance_methods.include?(k.to_sym)  # for 1.9.1
         }
@@ -78,12 +81,10 @@ module Bcsec::Authorities
           []
         else
           @users.values.select do |user|
-            props.inject(true) { |result, prop| result && user.send(prop) == criteria[prop] }
+            props.inject(true) { |result, prop| result && user.send(prop) == criteria_group[prop] }
           end
         end
-      else
-        find_users(:username => criteria.to_s)
-      end
+      end.flatten.uniq
     end
 
     ###### SETUP METHODS

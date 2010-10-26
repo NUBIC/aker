@@ -186,6 +186,10 @@ module Bcsec::Authorities
         it "returns the sole matching user" do
           @s.find_users("alpha").collect(&:first_name).should == %w(A)
         end
+
+        it "returns an empty list for no users" do
+          @s.find_users("gamma").should == []
+        end
       end
 
       describe "with a hash of criteria" do
@@ -204,6 +208,32 @@ module Bcsec::Authorities
         it "combines attributes with AND" do
           @s.find_users(:first_name => 'A', :last_name => 'Pha').size.should == 1
           @s.find_users(:first_name => 'A', :last_name => 'On').size.should == 0
+        end
+      end
+
+      describe "with a list" do
+        describe "of usernames" do
+          it "returns the correct users" do
+            @s.find_users("epsilon", "gamma", "alpha").
+              collect(&:first_name).sort.should == %w(A Epsi)
+          end
+        end
+
+        describe "of criteria hashes" do
+          it "returns all matching users" do
+            @s.find_users({ :first_name => 'A' }, { :last_name => 'On' }).should have(2).users
+          end
+
+          it "does not include duplicates" do
+            @s.find_users({ :first_name => 'A' }, { :last_name => 'Pha' }).should have(1).user
+          end
+        end
+
+        describe "of both" do
+          it "returns the correct matches" do
+            @s.find_users({ :last_name => 'Pha' }, 'epsilon').collect(&:username).sort.
+              should == %w(alpha epsilon)
+          end
         end
       end
     end
