@@ -265,7 +265,7 @@ module Bcsec::Authorities
     #
     # @return [Array<Bcsec::User>] the matching users
     def find_users(*criteria)
-      poll(:find_users, criteria).
+      poll(:find_users, *criteria).
         collect { |result, authority| result }.
         compact.
         inject([]) { |aggregate, users| merge_user_lists!(aggregate, users.compact) }.
@@ -294,7 +294,14 @@ module Bcsec::Authorities
       authorities.select { |a|
         a.respond_to?(method)
       }.collect { |a|
-        [a.send(method, *args), a]
+        # adapter for old find_users signature.  Remove in 2.1.
+        if method == :find_users && a.method(method).arity == 1 && args.size > 1
+          Bcsec::Deprecation.notify(
+            "Implement #{a.class}#find_users with a *splat as of 2.0.4.", "2.1")
+          [a.send(method, args.first), a]
+        else
+          [a.send(method, *args), a]
+        end
       }
     end
   end

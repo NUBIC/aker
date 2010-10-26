@@ -428,8 +428,8 @@ module Bcsec::Authorities
       end
 
       it "aggregates distinct users into a single response array" do
-        def @a.find_users(options); [ Bcsec::User.new("fred") ]; end
-        def @c.find_users(options); [ Bcsec::User.new("katherine") ]; end
+        def @a.find_users(*options); [ Bcsec::User.new("fred") ]; end
+        def @c.find_users(*options); [ Bcsec::User.new("katherine") ]; end
 
         @comp.find_users(:something => "foo").
           collect { |u| u.username }.should == %w(fred katherine)
@@ -453,22 +453,30 @@ module Bcsec::Authorities
       end
 
       it "rejects nil authority responses" do
-        def @a.find_users(options); [ nil ]; end
-        def @c.find_users(options); nil; end
+        def @a.find_users(*options); [ nil ]; end
+        def @c.find_users(*options); nil; end
 
         @comp.find_users(:etc => 'alia').should == []
       end
 
-      it "passes the arguments unchanged to the authorities" do
-        def @a.find_users(options); @options = options; []; end
+      it "splats the arguments given to the authorities" do
+        def @a.find_users(*options); @options = options; []; end
         def @a.actual_options; @options; end
 
         @comp.find_users(:email => 'baz')
-        @a.actual_options.should == { :email => 'baz' }
+        @a.actual_options.should == [{ :email => 'baz' }]
+      end
+
+      it "does not cause an error for a non-splat #find_users implementation" do
+        def @a.find_users(options); [ Bcsec::User.new('jo') ]; end
+
+        @comp.find_users({ :something => "foo" }, { :bar => "quux" }).
+          collect { |u| u.username }.should == %w(jo)
+        deprecation_message.should =~ /Implement Object\#find_users with a \*splat as of 2.0.4\./
       end
 
       it "amplifies found users" do
-        def @a.find_users(options); [ Bcsec::User.new('jo') ]; end
+        def @a.find_users(*options); [ Bcsec::User.new('jo') ]; end
         def @a.amplify!(user); user.last_name = "Miller"; user; end
         def @b.amplify!(user); user.first_name = "Jo"; user; end
 
