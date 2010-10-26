@@ -61,3 +61,9 @@ if [ $? -ne 0 ]; then
 fi
 set -xe
 ruby -v
+
+gem list -i rake
+if [ $? -ne 0 ]; then
+    echo "Installing rake since it is not available"
+    gem install rake
+fi
