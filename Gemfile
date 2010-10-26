@@ -1,23 +1,7 @@
 source :rubygems
 source 'http://download.bioinformatics.northwestern.edu/gems/'
 
-gem 'activesupport', '~> 2.3.5'
-gem 'rubytree', '~> 0.7.0'
-
-# pers
-gem 'activerecord', '~> 2.3.5'
-gem 'schema_qualified_tables', '~> 1.0'
-gem 'bcdatabase', '~> 1.0'
-gem 'composite_primary_keys', '~> 2.3.5', :require => nil
-
-# netid
-gem 'ruby-net-ldap', '>= 0.0.4'
-
-# cas
-gem 'rubycas-client', '~> 2.1.0'
-
-# modes
-gem 'warden', '~> 0.10.3'
+gemspec 'bcsec'
 
 group :development do
   # general testing
