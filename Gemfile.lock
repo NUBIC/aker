@@ -38,7 +38,6 @@ GEM
     ffi (0.6.3-java)
     ffi-ncurses (0.3.3)
       ffi (>= 0.6.3)
-    fssm (0.1.4)
     gettext (2.1.0)
       locale (>= 2.0.5)
     highline (1.6.1)
@@ -108,7 +107,7 @@ GEM
     warden (0.10.7)
       rack (>= 1.0.0)
     weakling (0.0.4-java)
-    yard (0.5.8)
+    yard (0.6.1)
 
 PLATFORMS
   java
@@ -127,7 +126,6 @@ DEPENDENCIES
   cucumber (~> 0.6.0)
   database_cleaner (~> 0.5)
   ffi-ncurses
-  fssm
   jdbc-sqlite3
   jruby-openssl
   markaby (= 0.5)
@@ -153,4 +151,4 @@ DEPENDENCIES
   test-unit (= 1.2.3)
   unicode_utils
   warden (~> 0.10.3)
-  yard (~> 0.5.8)
+  yard (~> 0.6.1)

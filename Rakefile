@@ -74,35 +74,17 @@ namespace :metrics do
   end
 end
 
-desc "Build API documentation with yard"
-docsrc = %w(lib/**/*.rb)
-docfiles = Dir.glob("{CHANGELOG}") # README is automatically included
-YARD::Rake::YardocTask.new("yard") do |t|
-  t.options = %w(--no-private --markup markdown --hide-void-return)
-  t.options += ["--title", "bcsec #{Bcsec::VERSION}"]
-  t.files = docsrc + ['-'] + docfiles
-end
+task :yard => ['yard:auto']
 
 namespace :yard do
-  desc "Rebuild API documentation after each change to the source"
-  task :auto => :yard do
-    require 'fssm'
-    puts "Waiting for changes"
-    FSSM.monitor('.', docsrc + docfiles + %w(README Rakefile)) do
-      # have to run in a subshell because rake will only invoke a
-      # given task once per execution
-      yardoc = proc { |b, m|
-        print "Detected change in #{m} -- regenerating docs ... "
-        $stdout.flush
-        out = `rake yard`
-        puts out if out =~ /warn|error/
-        puts "done"
-      }
+  desc "Run a server which will rebuild documentation as the source changes"
+  task :auto do
+    system("bundle exec yard server --reload")
+  end
 
-      create &yardoc
-      update &yardoc
-      delete &yardoc
-    end
+  desc "Build API documentation with yard"
+  YARD::Rake::YardocTask.new("once") do |t|
+    t.options = ["--title", "bcsec #{Bcsec::VERSION}"]
   end
 
   desc "Create API documentation combined with bcsec-rails"
@@ -110,16 +92,14 @@ namespace :yard do
     # Need to defer determining the path to bcsec-rails until it is
     # actually used, so we can't use YardocTask at the top level
     YARD::Rake::YardocTask.new("with-rails-actual") do |t|
-      t.options = %w(--no-private --markup markdown --hide-void-return) +
-        %w(--db .yardoc-with-rails -o doc-with-rails) +
+      t.options = %w(--db .yardoc-with-rails -o doc-with-rails) +
         ["--title", "bcsec #{Bcsec::VERSION} & bcsec-rails"]
       bcsec_rails_path =
         ENV['BCSEC_RAILS_PATH'] || "../bcsec-rails"
       raise "Please specify BCSEC_RAILS_PATH" unless File.directory?(bcsec_rails_path)
-      t.files = docsrc +
-        ["#{bcsec_rails_path}/lib/**/*.rb"] +
+      t.files =
+        ["lib/**/*.rb", "#{bcsec_rails_path}/lib/**/*.rb"] +
         %w(-) +
-        docfiles +
         Dir.glob("#{File.expand_path(bcsec_rails_path)}/{README,CHANGELOG,MIGRATION}-rails")
     end
     task('with-rails-actual').invoke

@@ -35,7 +35,7 @@ group :development do
   gem 'ZenTest'
 
   # docs
-  gem 'yard', '~> 0.5.8'
+  gem 'yard', '~> 0.6.1'
   # for yard
   platforms :jruby do
     gem 'maruku'
@@ -44,8 +44,6 @@ group :development do
   platforms :ruby_18, :ruby_19 do
     gem 'rdiscount'
   end
-
-  gem 'fssm'
 
   # metrics
   gem 'saikuro_treemap', '0.1.2'
