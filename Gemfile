@@ -1,7 +1,7 @@
 source :rubygems
 source 'http://download.bioinformatics.northwestern.edu/gems/'
 
-gemspec 'bcsec'
+gemspec
 
 group :development do
   # general testing
