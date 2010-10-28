@@ -178,10 +178,16 @@ module Bcsec::Authorities
       (doc["groups"] || {}).each do |portal, top_level_groups|
         @groups[portal.to_sym] = top_level_groups.collect { |group_data| build_group(group_data) }
       end
-
       (doc["users"] || {}).each do |username, config|
         valid_credentials!(:user, username, config["password"]) if config["password"]
         user(username) do |u|
+        	attr_keys = config.keys
+        	( attr_keys-["password", "portals"] ).each do |k|
+        		setter = "#{k}="
+						if u.respond_to?(setter)
+							u.send(setter, config[k])
+						end
+					end
           (config["portals"] || []).each do |portal_data|
             portal, group_data =
               if String === portal_data
