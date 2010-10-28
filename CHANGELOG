@@ -4,6 +4,10 @@ Bcsec History
 2.0.4
 -----
 
+- Added: {Bcsec::Authorities::Static#load!} will now load arbitrary
+  {Bcsec::User} attributes from the YAML file, not just the username,
+  password, and authorization information.
+
 2.0.3
 -----
 

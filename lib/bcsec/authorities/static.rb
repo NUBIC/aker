@@ -153,6 +153,8 @@ module Bcsec::Authorities
     #     users:
     #       wakibbe:               # username
     #         password: ekibder    # password for :user auth (optional)
+    #         first_name: Warren   # any attributes from Bcsec::User may
+    #         last_name: Kibbe     #   be set here
     #         portals:             # portal & group auth info (optional)
     #           - SQLSubmit        # A groupless portal
     #           - ENU:             # A portal with simple groups
