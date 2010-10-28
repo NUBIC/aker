@@ -1,0 +1,15 @@
+desc 'Launch everything for the CAS example'
+task :launch do
+  processes = []
+
+  processes << fork { sh "bundle exec rackup rubycas_server.ru" }
+  processes << fork { sh "bundle exec rackup fortune_server.ru" }
+  processes << fork { ruby "-rubygems cas_proxy_callback.rb" }
+  processes << fork { ruby "-rubygems fortune_client.rb" }
+
+  trap('INT') { processes.each { |pid| Process.kill('TERM', pid) } }
+
+  Process.waitall
+end
+
+task :default => :launch

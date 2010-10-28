@@ -20,6 +20,11 @@ Bundler.setup
 require 'bcsec'
 
 #
+# We're also going to need Rack.
+#
+require 'rack'
+
+#
 # The CAS proxy callback must be accessed over HTTPS, so we need to start an
 # HTTPS server.
 #
@@ -37,14 +42,24 @@ pstore_path = File.join(File.dirname(__FILE__), %w(var cas_proxy_callback.pstore
 #
 # Now we start the callback.
 #
-Rack::Handler::WEBrick.run(
-  Bcsec::Cas::RackProxyCallback.application(:store => pstore_path),
-  {
-    :Port => 9698,
-    :SSLEnable => true,
-    :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
-    :SSLCertificate => OpenSSL::X509::Certificate.new(File.read(certificate_file)),
-    :SSLPrivateKey => OpenSSL::PKey::RSA.new(File.read(private_key_file)),
-    :SSLCertName => [ [ 'CN', WEBrick::Utils::getservername ] ],
-    :Logger => WEBrick::Log::new($stderr, WEBrick::Log::DEBUG)
-  })
+conf = {
+  :app => Bcsec::Cas::RackProxyCallback.application(:store => pstore_path),
+  :server => 'webrick',
+  :Port => 9698,
+  :SSLEnable => true,
+  :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE,
+  :SSLCertificate => OpenSSL::X509::Certificate.new(File.read(certificate_file)),
+  :SSLPrivateKey => OpenSSL::PKey::RSA.new(File.read(private_key_file)),
+  :SSLCertName => [ [ 'CN', WEBrick::Utils::getservername ] ],
+  :Logger => WEBrick::Log::new($stderr, WEBrick::Log::DEBUG)
+}
+
+server = Rack::Server.new(conf)
+
+# A hack to set the Rack app until c73b474525bace3f059a130b15413abd4d917086 @
+# http://github.com/rack/rack.git is released.  Rack::Server's documentation
+# states that passing :app as a constructor option should work, but prior to
+# c73b474, it didn't.
+server.instance_variable_set(:@app, conf[:app])
+
+server.start

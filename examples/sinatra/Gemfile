@@ -10,5 +10,6 @@ gem 'haml'
 
 # Libraries for the CAS example
 gem 'markaby', '0.5'   # there are newer markabies, but v0.5 is known to work
+gem 'rack', '~> 1.2.1' # Rack ~> 1.2.1 fixes a signal handling error
 gem 'rubycas-server'
 gem 'sqlite3-ruby'     # for RubyCAS-Server

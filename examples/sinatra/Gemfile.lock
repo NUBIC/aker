@@ -71,6 +71,7 @@ DEPENDENCIES
   haml
   json
   markaby (= 0.5)
+  rack (~> 1.2.1)
   rest-client (~> 1)
   ruby-net-ldap (>= 0.0.4)
   rubycas-client (~> 2.1.0)
