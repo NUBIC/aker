@@ -1,6 +1,6 @@
-require '../load'
+require 'bundler'
+Bundler.setup
 
-require 'rubygems'
 require 'sinatra'
 require 'simple'
 

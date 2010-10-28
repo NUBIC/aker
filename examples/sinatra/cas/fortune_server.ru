@@ -1,14 +1,16 @@
 #\ -p 9696
 
+require 'bundler'
+Bundler.setup
+
 #
 # This rackup file provides bcsec and Rack configuration for the fortune
 # server.
 #
-# First, we load bcsec, our bundled gem environment, and the server code.
+# First, we load bcsec and the server code.
 #
-require File.join(File.dirname(__FILE__), %w(.. .. load))
-require File.join(File.dirname(__FILE__), 'bootstrap')
-require File.join(File.dirname(__FILE__), 'fortune_server')
+require 'bcsec'
+require 'fortune_server'
 
 #
 # Next, we configure Bcsec, set up session middleware (which bcsec uses to

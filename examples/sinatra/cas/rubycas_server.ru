@@ -1,10 +1,11 @@
 #\ -p 9697
-#
-# We start off by loading up bcsec and setting up the bundler environment.
-#
+require 'bundler'
+Bundler.setup
 
-require File.join(File.dirname(__FILE__), %w(.. .. load))
-require File.join(File.dirname(__FILE__), 'bootstrap')
+#
+# We start off by loading up bcsec.
+#
+require 'bcsec'
 
 #
 # Next, some housekeeping.

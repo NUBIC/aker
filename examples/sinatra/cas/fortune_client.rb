@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), %w(.. .. load))
-require File.join(File.dirname(__FILE__), 'bootstrap')
+require 'bundler'
+Bundler.setup
 
 require 'sinatra'
 require 'json'

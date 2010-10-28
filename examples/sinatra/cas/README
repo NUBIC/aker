@@ -5,42 +5,36 @@ Running this example
 
 2.  Run
 
-        gem bundle
+        rackup rubycas_server.ru
 
 3.  Open a console.
 
 4.  Run
 
-        rackup rubycas_server.ru
+        rackup cas_proxy_callback.ru
 
 5.  Open a console.
 
 6.  Run
 
-        rackup cas_proxy_callback.ru
+        rackup fortune_server.ru
 
 7.  Open a console.
 
 8.  Run
 
-        rackup fortune_server.ru
+        ruby -rubygems fortune_client.rb
 
-9.  Open a console.
+9.  Open a Web browser.
 
-10. Run
+10. Go to
 
-        ruby fortune_client.rb
-
-11. Open a Web browser.
-
-12. Go to 
-      
         http://localhost:4567
 
-13. Enter the login details
+11. Enter the login details
 
         mr296 / br0wn
 
-14. Log in.
+12. Log in.
 
-15. Play around.
+13. Play around.

@@ -1,7 +1,6 @@
-disable_system_gems
+source :rubygems
 
-# Bcsec libraries
-eval File.read(File.join(File.dirname(__FILE__), %w(.. .. .. Gemfile)))
+gemspec :path => File.join(File.dirname(__FILE__), %w(.. ..))
 
 # Libraries for demo apps
 gem 'rest-client', '~> 1'
@@ -9,6 +8,7 @@ gem 'sinatra'
 gem 'json'
 gem 'haml'
 
-# Libraries for RubyCAS-Server
+# Libraries for the CAS example
 gem 'markaby', '0.5'   # there are newer markabies, but v0.5 is known to work
 gem 'rubycas-server'
+gem 'sqlite3-ruby'     # for RubyCAS-Server

@@ -1,3 +1,6 @@
+require 'bundler'
+Bundler.setup
+
 #
 # A CAS proxy callback is a webapps used by CAS servers and CAS clients.  A CAS
 # server deposits a proxy ticket in a proxy callback; a CAS client retrieves the
@@ -14,7 +17,7 @@
 # Anyway.  We'll be using bcsec's CAS proxy callback, so we need to load up
 # bcsec.
 #
-require File.join(File.dirname(__FILE__), %w(.. .. load))
+require 'bcsec'
 
 #
 # The CAS proxy callback must be accessed over HTTPS, so we need to start an
