@@ -181,13 +181,14 @@ module Bcsec::Authorities
       (doc["users"] || {}).each do |username, config|
         valid_credentials!(:user, username, config["password"]) if config["password"]
         user(username) do |u|
-        	attr_keys = config.keys
-        	( attr_keys-["password", "portals"] ).each do |k|
-        		setter = "#{k}="
-						if u.respond_to?(setter)
-							u.send(setter, config[k])
-						end
-					end
+          attr_keys = config.keys
+          (attr_keys - ["password", "portals"]).each do |k|
+            setter = "#{k}="
+            if u.respond_to?(setter)
+              u.send(setter, config[k])
+            end
+          end
+
           (config["portals"] || []).each do |portal_data|
             portal, group_data =
               if String === portal_data

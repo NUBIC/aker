@@ -272,58 +272,58 @@ module Bcsec::Authorities
           end
 
           describe "other user attributes" do
-						it "includes personnel_id" do
-							@jo.personnel_id.should == 1
-						end
+            it "includes personnel_id" do
+              @jo.personnel_id.should == 1
+            end
 
-						it "includes first_name" do
-							@jo.first_name.should == "Jo"
-						end
+            it "includes first_name" do
+              @jo.first_name.should == "Jo"
+            end
 
-						it "includes middle_name" do
-							@jo.middle_name.should == "Middle"
-						end
+            it "includes middle_name" do
+              @jo.middle_name.should == "Middle"
+            end
 
-						it "includes last_name" do
-							@jo.last_name.should == "Last"
-						end
+            it "includes last_name" do
+              @jo.last_name.should == "Last"
+            end
 
-						it "includes title" do
-							@jo.title.should == "Queen"
-						end
-						
-						it "includes business_phone" do
-							@jo.business_phone.should == "(706)634-5789"
-						end
+            it "includes title" do
+              @jo.title.should == "Queen"
+            end
 
-						it "includes fax" do
-							@jo.fax.should == "(706) 867-5309"
-						end
-						
-						it "includes email" do
-							@jo.email.should == "jo@test.com"
-						end
+            it "includes business_phone" do
+              @jo.business_phone.should == "(706)634-5789"
+            end
 
-						it "includes address" do
-							@jo.address.should == "123 Fake St"
-						end
+            it "includes fax" do
+              @jo.fax.should == "(706) 867-5309"
+            end
 
-						it "includes city" do
-							@jo.city.should == "Chicago"
-						end
+            it "includes email" do
+              @jo.email.should == "jo@test.com"
+            end
 
-						it "includes state" do
-							@jo.state.should == "Illinois"
-						end
+            it "includes address" do
+              @jo.address.should == "123 Fake St"
+            end
 
-						it "includes country" do
-							@jo.country.should == "USA"
-						end
+            it "includes city" do
+              @jo.city.should == "Chicago"
+            end
 
-						it "includes nu_employee_id" do
-							@jo.nu_employee_id.should == 1
-						end
-					end
+            it "includes state" do
+              @jo.state.should == "Illinois"
+            end
+
+            it "includes country" do
+              @jo.country.should == "USA"
+            end
+
+            it "includes nu_employee_id" do
+              @jo.nu_employee_id.should == 1
+            end
+          end
 
           describe "portals" do
             it "includes groupless portals" do
