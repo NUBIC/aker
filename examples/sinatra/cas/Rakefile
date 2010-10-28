@@ -7,7 +7,7 @@ task :launch do
   processes << fork { ruby "-rubygems cas_proxy_callback.rb" }
   processes << fork { ruby "-rubygems fortune_client.rb" }
 
-  trap('INT') { processes.each { |pid| Process.kill('TERM', pid) } }
+  trap('INT') { Process.kill('TERM', *processes) }
 
   Process.waitall
 end
