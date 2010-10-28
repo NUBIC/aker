@@ -10,7 +10,7 @@ Bundler.setup
 # First, we load bcsec and the server code.
 #
 require 'bcsec'
-require 'fortune_server'
+require File.join(File.dirname(__FILE__), 'fortune_server')
 
 #
 # Next, we configure Bcsec, set up session middleware (which bcsec uses to
