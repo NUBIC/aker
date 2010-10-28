@@ -1,6 +1,6 @@
 source :rubygems
 
-gemspec :path => File.join(File.dirname(__FILE__), %w(.. ..))
+gem 'bcsec', :path => '../..'
 
 # Libraries for demo apps
 gem 'rest-client', '~> 1'
