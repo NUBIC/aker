@@ -62,6 +62,9 @@ GEM
     jruby-openssl (0.7.1)
       bouncy-castle-java
     json_pure (1.4.6)
+    ladle (0.2.0)
+      open4 (~> 1.0.0)
+    ladle (0.2.0-java)
     locale (2.0.5)
     markaby (0.5)
       builder (>= 2.0.0)
@@ -76,6 +79,7 @@ GEM
     nokogiri (1.4.3.1)
     nokogiri (1.4.3.1-java)
       weakling (>= 0.0.3)
+    open4 (1.0.1)
     picnic (0.8.1.201005141550)
       activesupport
       markaby
@@ -143,6 +147,7 @@ DEPENDENCIES
   ffi-ncurses
   jdbc-sqlite3
   jruby-openssl
+  ladle (~> 0.2)
   markaby (= 0.5)
   maruku
   mechanize (~> 1.0)

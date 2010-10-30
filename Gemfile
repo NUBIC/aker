@@ -57,6 +57,9 @@ group :development do
     gem 'unicode_utils'
   end
 
+  # netid testing
+  gem 'ladle', '~> 0.2'
+
   # cas testing
   gem 'markaby', '0.5'    # other versions break RubyCAS-Server
   gem 'rubycas-server'
