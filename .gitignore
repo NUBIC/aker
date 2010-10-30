@@ -19,3 +19,5 @@ ci_bin
 *~
 
 .bundle
+
+support/nu-schema/target
