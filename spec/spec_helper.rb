@@ -22,3 +22,14 @@ Spec::Runner.configure do |config|
   Bcsec::Spec::DeprecationMode.use_in(config)
   config.include Bcsec::Spec::LoggerHelper
 end
+
+def port_offset
+  case ENV["BCSEC_ENV"]
+  when /jruby/
+    108
+  when /1.9.1/
+    207
+  else
+    0
+  end
+end
