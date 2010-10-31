@@ -4,6 +4,11 @@ Bcsec History
 2.0.4
 -----
 
+- Changed: the #find_users method on the authorities interface now
+  accepts one or more separate criteria.  The separate criteria are
+  joined using a logical OR.  All the built-in authorities have been
+  updated to support this; custom authorities may need to be updated
+  as well.  (#4027)
 - Added: {Bcsec::Authorities::Static#load!} will now load arbitrary
   {Bcsec::User} attributes from the YAML file, not just the username,
   password, and authorization information.
