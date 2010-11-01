@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'composite_primary_keys', '~> 2.3.5'
 
   # netid
-  s.add_dependency 'ruby-net-ldap', '>= 0.0.4'
+  s.add_dependency 'net-ldap', '~> 0.1.1'
 
   # cas
   s.add_dependency 'rubycas-client', '~> 2.1.0'

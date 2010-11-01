@@ -12,6 +12,9 @@ Bcsec History
 - Added: {Bcsec::Authorities::Static#load!} will now load arbitrary
   {Bcsec::User} attributes from the YAML file, not just the username,
   password, and authorization information. (#4297)
+- Changed: Depend on net-ldap 0.1.1 instead of ruby-net-ldap 0.0.4.
+  This new version of the net/ldap library is backwards compatible,
+  interface-wise, but it trades 1.8.6- support for 1.9+ support.
 
 2.0.3
 -----
