@@ -19,5 +19,6 @@ ci_bin
 *~
 
 .bundle
+Gemfile.lock
 
 support/nu-schema/target
