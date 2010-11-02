@@ -47,7 +47,9 @@ group :development do
 
   # database_cleaner 0.6 doesn't work due to
   # http://github.com/bmabey/database_cleaner/issues/23
-  gem 'database_cleaner', '~> 0.5.2', :require => nil
+  # 0.5.2 doesn't work on JRuby due to a variation on
+  # http://github.com/bmabey/database_cleaner/issues/11
+  gem 'database_cleaner', '= 0.5', :require => nil
 
   platforms :ruby_18, :ruby_19 do
     gem 'sqlite3-ruby', '~> 1.2.0'
