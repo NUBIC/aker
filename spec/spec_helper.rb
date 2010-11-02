@@ -1,8 +1,7 @@
 require 'bundler'
 Bundler.setup
 
-require "spec"
-require 'spec/test/unit'
+require 'rspec'
 
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 
@@ -17,7 +16,7 @@ if RUBY_PLATFORM == 'java'
   require File.expand_path('../java_helper', __FILE__)
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   Bcsec::Spec::DatabaseData.use_in(config)
   Bcsec::Spec::DeprecationMode.use_in(config)
   config.include Bcsec::Spec::LoggerHelper

@@ -8,7 +8,7 @@ group :development do
   gem 'cucumber', '~> 0.6.0'
   gem 'rack-test', '~> 0.5'
   gem 'mechanize', '~> 1.0'
-  gem 'rspec', '~> 1.3'
+  gem 'rspec', '~> 2.0.1'
 
   platforms :ruby_19 do
     gem 'test-unit', '1.2.3'

@@ -5,7 +5,7 @@ Bundler.setup
 
 require 'rake'
 require 'rake/gempackagetask'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 require 'yard'
 require 'bcdatabase/oracle/tasks'
@@ -24,14 +24,14 @@ Rake::GemPackageTask.new(gemspec).define
 GEM_FILE = "pkg/#{gemspec.file_name}"
 
 desc "Run all specs"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
+RSpec::Core::RakeTask.new('spec') do |t|
+  t.pattern = 'spec/**/*_spec.rb'
   t.verbose = true
 end
 
 desc "Run all specs with rcov"
-Spec::Rake::SpecTask.new('spec:rcov') do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
+RSpec::Core::RakeTask.new('spec:rcov') do |t|
+  t.pattern = 'spec/**/*_spec.rb'
   t.rcov = true
   # rcov can't tell that /Library/Ruby & .rvm are system paths
   t.rcov_opts = ['--exclude', "spec/*,/Library/Ruby/*,#{ENV['HOME']}/.rvm"]
