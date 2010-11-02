@@ -45,7 +45,9 @@ group :development do
     gem 'activerecord-jdbcsqlite3-adapter'
   end
 
-  gem 'database_cleaner', '~> 0.5', :require => nil
+  # database_cleaner 0.6 doesn't work due to
+  # http://github.com/bmabey/database_cleaner/issues/23
+  gem 'database_cleaner', '~> 0.5.2', :require => nil
 
   platforms :ruby_18, :ruby_19 do
     gem 'sqlite3-ruby', '~> 1.2.0'
