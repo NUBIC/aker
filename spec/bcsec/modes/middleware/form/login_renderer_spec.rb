@@ -5,7 +5,7 @@ module Bcsec::Modes::Middleware::Form
   describe LoginRenderer do
     include Rack::Test::Methods
 
-    before(:all) do
+    before do
       assets = mock
 
       @app = Rack::Builder.new do
