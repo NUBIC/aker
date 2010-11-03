@@ -1,7 +1,7 @@
 require 'bundler'
 Bundler.setup
 
-require "spec"
+require "rspec"
 require "fileutils"
 
 $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
@@ -32,7 +32,7 @@ end
 module Bcsec::Cucumber
   class World
     include ::Bcsec::Spec::Matchers
-    include ::Spec::Matchers
+    include ::RSpec::Matchers
     include ::Bcsec::Cucumber::MechanizeTest
     include FileUtils
 
