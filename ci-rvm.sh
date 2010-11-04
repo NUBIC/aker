@@ -16,15 +16,15 @@ echo ". ~/.rvm/scripts/rvm"
 . ~/.rvm/scripts/rvm
 set -x
 
-BCSEC_JRUBY='jruby-1.5.2'
+BCSEC_JRUBY='jruby-1.5.3'
 
 unset BCSEC_RVM_RUBY
 case "$BCSEC_ENV" in
 'ci_1.8.7')
 BCSEC_RVM_RUBY='ree-1.8.7-2010.02';
 ;;
-'ci_1.9.1')
-BCSEC_RVM_RUBY='ruby-1.9.1-p378';
+'ci_1.9')
+BCSEC_RVM_RUBY='ruby-1.9.2-p0';
 ;;
 'ci_jruby')
 BCSEC_RVM_RUBY=$BCSEC_JRUBY;
