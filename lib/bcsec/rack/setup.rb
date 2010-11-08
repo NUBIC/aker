@@ -39,9 +39,12 @@ module Bcsec::Rack
     ##
     # Implements the rack middleware behavior.
     #
-    # This class exposes three environment variables to downstream
+    # This class exposes four environment variables to downstream
     # middleware and the app:
     #
+    #  * `"bcsec"`: an instance of {Bcsec::Rack::Facade} permitting
+    #    authentication and authorization queries about the current
+    #    user (if any).
     #  * `"bcsec.configuration"`: the {Bcsec::Configuration configuration}
     #     for this application.
     #  * `"bcsec.authority"`: the {Bcsec::Authorities authority} for
