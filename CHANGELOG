@@ -6,6 +6,11 @@ Bcsec History
 
 - Updated tested platforms to JRuby 1.5.3 and Ruby 1.9.2.  (MRI 1.8.7
   in the specific form of REE 2010.02 remains the same.)
+- Integrated bcaudit to enable column-level auditing on the {Pers}
+  models (#3836).  Bcaudit is now automatically included in the rack
+  middleware installed by bcsec.  Applications which use both bcsec
+  and bcaudit should not separately configure bcaudit as either a
+  rails plugin or middleware.
 
 2.0.4
 -----

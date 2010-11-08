@@ -111,6 +111,7 @@ module Bcsec
 
           @bcsec_index = @builder.uses.map { |u| u.first }.index(Bcsec::Rack::Setup)
           @logout_index = @builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
+          @bcaudit_index = @builder.uses.map { |u| u.first }.index(Bcaudit::Middleware)
         end
 
         it "prepends middleware for UI modes first" do
@@ -125,18 +126,22 @@ module Bcsec
           @logout_index.should == @bcsec_index + 1
         end
 
+        it "attaches the bcaudit middleware after the logout middleware" do
+          @bcaudit_index.should == @logout_index + 1
+        end
+
         it "mounts the logout middleware to /logout" do
           _, args, _ = @builder.uses[@logout_index]
 
           args.should == ["/logout"]
         end
 
-        it "appends middleware for UI modes directly after the logout middleware" do
-          @builder.uses[@logout_index + 1].first.should == :ui_ware_after
+        it "appends middleware for UI modes directly after the bcaudit middleware" do
+          @builder.uses[@bcaudit_index + 1].first.should == :ui_ware_after
         end
 
         it "appends middleware for API modes after appended UI middleware" do
-          @builder.uses[@logout_index + 2].first.should == :api_ware_after
+          @builder.uses[@bcaudit_index + 2].first.should == :api_ware_after
         end
 
         it "uses middleware for the passed-in configuration instead of the global configuration if present" do
