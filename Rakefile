@@ -10,8 +10,7 @@ require 'cucumber/rake/task'
 require 'yard'
 require 'bcdatabase/oracle/tasks'
 require 'saikuro_treemap'
-require 'net/ssh'
-require 'net/scp'
+require 'nubic/gem_tasks'
 gem 'ci_reporter'
 require 'ci/reporter/rake/rspec'
 
@@ -128,9 +127,6 @@ task :uninstall do
   puts `gem uninstall #{gemspec.name} --version '=#{gemspec.version}'`
 end
 
-desc "Deploy to the internal gem server"
-task :deploy => :"deploy:gem"
-
 def trace?
   Rake.application.options.trace
 end
@@ -141,27 +137,19 @@ def one_ssh_cmd(ssh, cmd)
   ssh.loop
 end
 
+Nubic::GemTasks::DeployGemTask.new(gemspec.file_name, 'deploy:gem')
+
+desc 'Shortcut for deploy:gem'
+task :deploy => 'deploy:gem'
+
+task 'deploy:gem' => 'deploy:check'
+
 namespace :deploy do
   task :check do
     if Bcsec::VERSION.split('.').any? { |v| v =~ /\D/ }
       puts "#{Bcsec::VERSION} is a prerelease version.  Are you sure you want to deploy?\n" <<
         "Press ^C to abort or enter to continue deploying."
       STDIN.readline
-    end
-  end
-
-  task :gem => [:check, :repackage] do
-    server = "ligand"
-    user = ENV["BC_USER"] or raise "Please set BC_USER=your_netid in the environment"
-    target = File.basename(GEM_FILE)
-    Net::SSH.start(server, user) do |ssh|
-      puts "-> Uploading #{GEM_FILE}"
-      channel = ssh.scp.upload(GEM_FILE, "/home/#{user}") do |ch, name, sent, total|
-        puts sent == total ? "  complete" : "  #{sent}/#{total}"
-      end
-      channel.wait
-
-      one_ssh_cmd(ssh, "deploy-gem #{target}")
     end
   end
 
