@@ -142,7 +142,7 @@ Nubic::GemTasks::DeployGemTask.new(gemspec.file_name, 'deploy:gem')
 desc 'Shortcut for deploy:gem'
 task :deploy => 'deploy:gem'
 
-task 'deploy:gem' => 'deploy:check'
+task 'deploy:gem' => ['deploy:check', 'repackage']
 
 namespace :deploy do
   task :check do
