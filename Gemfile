@@ -69,6 +69,8 @@ group :development do
   gem 'rubycas-server'
 
   # ci & deployment
+  gem 'net-ssh', '~> 2.0'
+  gem 'net-scp', '~> 1.0'
   gem 'nubic-gem-tasks', '~> 1.0'
   gem 'nokogiri'
   gem 'rake', '>= 0.8.7'
