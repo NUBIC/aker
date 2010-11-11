@@ -31,6 +31,8 @@ BCSEC_RVM_RUBY=$BCSEC_JRUBY;
 ;;
 esac
 
+GEMSET=bcsec
+
 if [ -z "$BCSEC_RVM_RUBY" ]; then
     echo "Could not map env (BCSEC_ENV=\"${BCSEC_ENV}\") to an RVM version.";
     shopt -q login_shell
@@ -52,9 +54,9 @@ fi
 ln -s ~/.rvm/bin/${BCSEC_JRUBY} ci_bin/jruby
 PATH="ci_bin:$PATH"
 
-echo "Switching to ${BCSEC_RVM_RUBY}"
+echo "Switching to ${BCSEC_RVM_RUBY}@${GEMSET}"
 set +xe
-rvm use "$BCSEC_RVM_RUBY"
+rvm use "${BCSEC_RVM_RUBY}@${GEMSET}"
 if [ $? -ne 0 ]; then
     echo "Switch failed"
     exit 2;
