@@ -16,8 +16,6 @@ echo ". ~/.rvm/scripts/rvm"
 . ~/.rvm/scripts/rvm
 set -x
 
-BCSEC_JRUBY='jruby-1.5.3'
-
 unset BCSEC_RVM_RUBY
 case "$BCSEC_ENV" in
 'ci_1.8.7')
@@ -27,7 +25,7 @@ BCSEC_RVM_RUBY='ree-1.8.7-2010.02';
 BCSEC_RVM_RUBY='ruby-1.9.2-p0';
 ;;
 'ci_jruby')
-BCSEC_RVM_RUBY=$BCSEC_JRUBY;
+BCSEC_RVM_RUBY='jruby-1.5.3';
 ;;
 esac
 
@@ -45,14 +43,6 @@ if [ -z "$BCSEC_RVM_RUBY" ]; then
         exit 1;
     fi
 fi
-
-echo "Adding jruby to the PATH for culerity"
-mkdir -p ci_bin
-if [ -f ci_bin/jruby ]; then
-  rm ci_bin/jruby
-fi
-ln -s ~/.rvm/bin/${BCSEC_JRUBY} ci_bin/jruby
-PATH="ci_bin:$PATH"
 
 echo "Switching to ${BCSEC_RVM_RUBY}@${GEMSET}"
 set +xe
