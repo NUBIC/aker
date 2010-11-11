@@ -9,8 +9,7 @@ Bcsec History
 - Integrated bcaudit to enable column-level auditing on the {Pers}
   models (#3836).  Bcaudit is now automatically included in the rack
   middleware installed by bcsec.  Applications which use both bcsec
-  and bcaudit should not separately configure bcaudit as either a
-  rails plugin or middleware.
+  and bcaudit should not separately configure in bcaudit's middleware.
 
 2.0.4
 -----
