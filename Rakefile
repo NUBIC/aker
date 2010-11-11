@@ -139,7 +139,7 @@ def one_ssh_cmd(ssh, cmd)
   ssh.loop
 end
 
-Nubic::GemTasks::DeployGemTask.new(gemspec.file_name, 'deploy:gem')
+Nubic::GemTasks::DeployGemTask.new(GEM_FILE)
 
 desc 'Shortcut for deploy:gem'
 task :deploy => 'deploy:gem'
