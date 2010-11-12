@@ -78,7 +78,7 @@ module Bcsec::Cucumber
     def port_offset
       case ENV['BCSEC_ENV']
       when /1.8.7/; 1008;
-      when /1.9.1/; 2007;
+      when /1.9/;   2007;
       else 0;
       end
     end

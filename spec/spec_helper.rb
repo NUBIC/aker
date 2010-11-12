@@ -31,7 +31,7 @@ def port_offset
   case ENV["BCSEC_ENV"]
   when /jruby/
     108
-  when /1.9.1/
+  when /1.9/
     207
   else
     0
