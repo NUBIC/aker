@@ -18,6 +18,8 @@ require 'ci/reporter/rake/rspec'
 
 require 'bcsec'
 
+Dir["tasks/*.rake"].each { |f| import f }
+
 gemspec = eval(File.read('bcsec.gemspec'), binding, 'bcsec.gemspec')
 
 Rake::GemPackageTask.new(gemspec).define
@@ -181,26 +183,6 @@ namespace :deploy do
       print "\n"
     end
   end
-end
-
-if ENV['ORACLE_HOME']
-  Bcdatabase::Oracle.create_users_task(["cc_pers_test"])
-  desc "Import the cc_pers_test dump (requires imp)"
-  Bcdatabase::Oracle.import_task(
-    "test:db:import",
-    :local_oracle,
-    :local_oracle,
-    :cc_pers_test,
-    :filename => "db/exports/cc_pers_test.dmp"
-    )
-  Bcdatabase::Oracle.wipe_task(
-    "test:db:wipe",
-    :local_oracle,
-    :cc_pers_test
-    )
-  task "test:db:import" => "test:db:wipe"
-else
-  $stderr.puts "Not defining bcoracle tasks because ORACLE_HOME is not set."
 end
 
 namespace :ci do

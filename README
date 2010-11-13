@@ -261,7 +261,7 @@ need `imp`).  Here are the steps to testing nirvana:
    user.  The password will be "cc_pers_test".
 2. Set up a bcdatabase configuration called cc_pers_test for the
    local_oracle group.
-3. Use `rake test:db:import` to fill in the cc_pers_test schema.
+3. Use `rake db:test:import` to fill in the cc_pers_test schema.
 
 You can run the tests on any machine that has access to your testing
 oracle instance and on which you can install ruby-oci8 or jruby.

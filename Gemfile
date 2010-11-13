@@ -55,7 +55,7 @@ group :development do
     gem 'sqlite3-ruby', '~> 1.2.0'
   end
 
-  gem 'bcoracle', '~> 1.0', '>= 1.0.2'
+  gem 'bcoracle', '~> 1.1'
 
   platforms :ruby_19 do
     gem 'unicode_utils'
