@@ -4,6 +4,9 @@ Bcsec History
 2.0.6
 -----
 
+- Fixed: Pers authority no longer throws missing-audit-info exceptions
+  during authentication.
+
 2.0.5
 -----
 

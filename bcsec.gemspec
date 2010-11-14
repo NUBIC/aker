@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'schema_qualified_tables', '~> 1.0'
   s.add_dependency 'bcdatabase', '~> 1.0'
   s.add_dependency 'composite_primary_keys', '~> 2.3.5'
-  s.add_dependency 'bcaudit', '~> 0.0', '>= 0.0.2'
+  s.add_dependency 'bcaudit', '~> 0.0', '>= 0.0.3'
 
   # netid
   s.add_dependency 'net-ldap', '~> 0.1.1'

@@ -1,4 +1,5 @@
 require 'bcsec/rack'
+require 'bcaudit'
 
 module Bcsec::Rack
   ##
@@ -61,10 +62,12 @@ module Bcsec::Rack
       env['bcsec.interactive'] = interactive?(env)
 
       warden = env['warden']
-      if env['bcsec.interactive'] || configuration.api_modes.empty?
-        warden.authenticate(configuration.ui_mode)
-      else
-        warden.authenticate(*configuration.api_modes)
+      with_temporary_audit_info(env) do
+        if env['bcsec.interactive'] || configuration.api_modes.empty?
+          warden.authenticate(configuration.ui_mode)
+        else
+          warden.authenticate(*configuration.api_modes)
+        end
       end
 
       env['bcsec'] = Facade.new(configuration, warden.user)
@@ -97,6 +100,12 @@ module Bcsec::Rack
       else
         Bcsec.authority
       end
+    end
+
+    def with_temporary_audit_info(env)
+      Bcaudit::Middleware.set_audit_info_from(env)
+      yield
+      Bcaudit::AuditInfo.clear
     end
   end
 end

@@ -8,10 +8,12 @@ $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
 
 require 'bcsec'
 require 'rack'
+require 'bcaudit'
 
 require File.expand_path("../../../spec/matchers", __FILE__)
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
 require File.expand_path("../mechanize_test.rb", __FILE__)
+require File.expand_path("../../../spec/database_helper.rb", __FILE__)
 
 Before do
   # suppress logging
@@ -25,8 +27,22 @@ Before('@cas') do
   start_cas_server
 end
 
+Before('@pers') do
+  unless @pers_set_up
+    require 'pers'
+    Bcsec::Spec::DatabaseConfiguration.connect_if_necessary
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.clean_with :truncation
+    @pers_set_up = true
+  end
+end
+
 After do
   stop_spawned_servers
+end
+
+After('@pers') do
+  DatabaseCleaner.clean
 end
 
 module Bcsec::Cucumber
@@ -120,6 +136,12 @@ module Bcsec::Cucumber
       else
         "http://localhost:#{APP_PORT + port_offset}#{url}"
       end
+    end
+
+    def with_audit_info
+      Bcaudit::AuditInfo.current_user = Bcsec::User.new(42, "feature-setup")
+      yield
+      Bcaudit::AuditInfo.clear
     end
   end
 end
