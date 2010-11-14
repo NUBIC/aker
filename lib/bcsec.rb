@@ -1,6 +1,4 @@
 module Bcsec
-  VERSION = File.read(File.expand_path('../../VERSION', __FILE__)).strip
-
   autoload :Authorities,       'bcsec/authorities'
   autoload :Cas,               'bcsec/cas'
   autoload :CentralParameters, 'bcsec/central_parameters'
@@ -13,6 +11,7 @@ module Bcsec
   autoload :User,              'bcsec/user'
   autoload :Modes,             'bcsec/modes'
   autoload :Test,              'bcsec/test'
+  autoload :VERSION,           'bcsec/version'
 
   class << self
     ##
