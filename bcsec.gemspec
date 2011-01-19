@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.files = Dir.glob("{CHANGELOG,README,VERSION,{assets,lib,spec}/**/*}")
   s.authors = ["Rhett Sutphin", "David Yip"]
   s.email = "r-sutphin@northwestern.edu"
-  s.homepage = "https://code.bioinformatics.northwestern.edu/redmine/projects/bcsec-ruby"
+  s.homepage = "https://code.bioinformatics.northwestern.edu/redmine/projects/show/bcsec-ruby"
 
   # general
   s.add_dependency 'activesupport', '~> 2.3.5'
