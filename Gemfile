@@ -36,7 +36,6 @@ group :development do
   platforms :ruby_18, :ruby_19 do
     gem 'ruby-oci8', '~> 2.0'
   end
-  gem 'activerecord-oracle_enhanced-adapter', '~> 1.2'
 
   platforms :jruby do
     # This is to keep JRuby from complaining when bcdatabase loads highline

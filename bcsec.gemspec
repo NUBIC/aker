@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'bcdatabase', '~> 1.0'
   s.add_dependency 'composite_primary_keys', '~> 2.3.5'
   s.add_dependency 'bcaudit', '~> 0.0', '>= 0.0.3'
+  s.add_dependency 'activerecord-oracle_enhanced-adapter', '~> 1.2'
 
   # netid
   s.add_dependency 'net-ldap', '~> 0.1.1'
