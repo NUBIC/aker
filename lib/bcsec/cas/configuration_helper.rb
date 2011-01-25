@@ -42,11 +42,19 @@ module Bcsec::Cas
     # @see http://www.ietf.org/rfc/rfc1808.txt
     #   RFC 1808, sections 4 and 5
     # @return [String, nil]
-    def cas_base_url
+    def cas_url
       appending_forward_slash do
         configuration.parameters_for(:cas)[:base_url] ||
           configuration.parameters_for(:cas)[:cas_base_url]
       end
+    end
+
+    ##
+    # @deprecated Use {#cas_url} instead.
+    def cas_base_url
+      Bcsec::Deprecation.notify('cas_base_url is deprecated.  Use cas_url instead.', '2.2')
+
+      cas_url
     end
 
     ##
@@ -56,8 +64,16 @@ module Bcsec::Cas
     # `:proxy_callback_url`.
     #
     # @return [String, nil]
-    def cas_proxy_callback_url
+    def proxy_callback_url
       configuration.parameters_for(:cas)[:proxy_callback_url]
+    end
+
+    ##
+    # @deprecated Use {#proxy_callback_url} instead.
+    def cas_proxy_callback_url
+      Bcsec::Deprecation.notify('cas_proxy_callback_url is deprecated.  Use proxy_callback_url instead.', '2.2')
+
+      proxy_callback_url
     end
 
     ##
@@ -67,11 +83,19 @@ module Bcsec::Cas
     # `:proxy_retrieval_url`.
     #
     # (Note that this is not part of the CAS protocol &mdash; it is
-    # rubycas-client specific.)
+    # client-specific.)
     #
     # @return [String, nil]
-    def cas_proxy_retrieval_url
+    def proxy_retrieval_url
       configuration.parameters_for(:cas)[:proxy_retrieval_url]
+    end
+
+    ##
+    # @deprecated Use {#proxy_retrieval_url} instead.
+    def cas_proxy_retrieval_url
+      Bcsec::Deprecation.notify('cas_proxy_retrieval_url is deprecated.  Use proxy_retrieval_url instead.', '2.2')
+
+      proxy_retrieval_url
     end
 
     private
