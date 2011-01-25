@@ -60,7 +60,7 @@ module Bcsec::Cas
     #
     # @return [String] a new ticket
     def cas_proxy_ticket(service_base_url)
-      issue_proxy_ticket(pgt, service_base_url).to_s
+      issue_proxy_ticket(pgt, service_base_url).ticket
     end
   end
 end
