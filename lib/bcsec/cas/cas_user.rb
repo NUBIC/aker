@@ -1,5 +1,6 @@
 require 'bcsec/cas'
-require 'casclient'
+
+require 'castanet'
 
 module Bcsec::Cas
   ##
@@ -8,17 +9,41 @@ module Bcsec::Cas
   #
   # @see Bcsec::Authorities::Cas
   module CasUser
+    include Castanet::Client
+
     ##
-    # The method that the CAS authority uses to inject the necessary
-    # parameters into the user after extending it.
+    # The base URL of the CAS server.
     #
-    # @private not part of the public API, but must be visible to the
-    #   CAS authority.
-    # @return [void]
-    def init_cas_user(cas_attributes={})
-      @cas_client = cas_attributes[:client]
-      @cas_pgt = cas_attributes[:pgt]
-    end
+    # This is typically set by {Bcsec::Authorities::Cas#valid_credentials?}.
+    #
+    # @see Bcsec::Cas::ConfigurationHelper#cas_url
+    # @return [String]
+    attr_accessor :cas_url
+
+    ##
+    # The proxy callback URL used by the CAS server.
+    #
+    # This is typically set by {Bcsec::Authorities::Cas#valid_credentials?}.
+    #
+    # @see Bcsec::Cas::ConfigurationHelper#proxy_callback_url
+    # @return [String, nil]
+    attr_accessor :proxy_callback_url
+
+    ##
+    # The proxy retrieval URL from which Bcsec will retrieve PGTs.
+    #
+    # This is typically set by {Bcsec::Authorities::Cas#valid_credentials?}.
+    #
+    # @see Bcsec::Cas::ConfigurationHelper#proxy_retrieval_url
+    # @return [String, nil]
+    attr_accessor :proxy_retrieval_url
+
+    ##
+    # The proxy granting ticket associated with the {Bcsec::User}, or nil if no
+    # PGT exists.
+    #
+    # @return [String, nil]
+    attr_accessor :pgt
 
     ##
     # Returns a proxy ticket so that an application may authenticate
@@ -38,7 +63,7 @@ module Bcsec::Cas
     #
     # @return [String] a new ticket
     def cas_proxy_ticket(service_base_url)
-      @cas_client.request_proxy_ticket(@cas_pgt, service_base_url).ticket
+      issue_proxy_ticket(pgt, service_base_url).to_s
     end
   end
 end
