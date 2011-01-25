@@ -3,6 +3,9 @@ source 'http://download.bioinformatics.northwestern.edu/gems/'
 
 gemspec
 
+# until Castanet public release occurs
+gem 'castanet', :git => 'git://gitorious.org/castanet/castanet.git'
+
 group :development do
   # general testing
   gem 'cucumber', '~> 0.6.0'
