@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'net-ldap', '~> 0.1.1'
 
   # cas
-  s.add_dependency 'rubycas-client', '~> 2.1.0'
+  s.add_dependency 'castanet', '~> 0.0'
 
   # modes
   s.add_dependency 'warden', '~> 0.10.3'
