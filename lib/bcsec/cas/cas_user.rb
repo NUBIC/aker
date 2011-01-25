@@ -50,9 +50,6 @@ module Bcsec::Cas
     # to another CAS-using service on behalf of this user.  Each
     # invocation will request and return a fresh ticket.
     #
-    # Internal detail:  the CAS proxy-granting ticket will not be
-    # requested until the first time this method is invoked.
-    #
     # @param [String] service_base_url the URL by which CAS knows the
     #   service that this proxy will be used for.  For bcsec-protected
     #   applications, this will always be the base URL for the whole
