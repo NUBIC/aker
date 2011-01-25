@@ -61,7 +61,7 @@ module Bcsec::Authorities
         u.proxy_callback_url = proxy_callback_url
         u.proxy_retrieval_url = proxy_retrieval_url
 
-        if kind == :cas && ticket.pgt_iou
+        if ticket.pgt_iou
           ticket.retrieve_pgt!
 
           u.pgt = ticket.pgt
