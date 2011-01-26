@@ -17,16 +17,15 @@ Gem::Specification.new do |s|
   s.homepage = "https://code.bioinformatics.northwestern.edu/redmine/projects/show/bcsec-ruby"
 
   # general
-  s.add_dependency 'activesupport', '~> 2.3.5'
   s.add_dependency 'rubytree', '~> 0.7.0'
 
   # pers
-  s.add_dependency 'activerecord', '~> 2.3.5'
+  s.add_dependency 'activerecord', '~> 3.0'
   s.add_dependency 'schema_qualified_tables', '~> 1.0'
   s.add_dependency 'bcdatabase', '~> 1.0'
-  s.add_dependency 'composite_primary_keys', '~> 2.3.5'
-  s.add_dependency 'bcaudit', '~> 0.0', '>= 0.0.3'
-  s.add_dependency 'activerecord-oracle_enhanced-adapter', '~> 1.2'
+  s.add_dependency 'composite_primary_keys'
+  s.add_dependency 'bcaudit', '~> 0.0', '= 0.0.4.pre'
+  s.add_dependency 'activerecord-oracle_enhanced-adapter', '~> 1.3.0'
 
   # netid
   s.add_dependency 'net-ldap', '~> 0.1.1'
