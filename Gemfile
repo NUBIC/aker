@@ -6,6 +6,12 @@ gemspec
 # until Castanet public release occurs
 gem 'castanet', :git => 'git://gitorious.org/castanet/castanet.git'
 
+# until bcdatabase 1.0.3 is released
+gem 'bcdatabase', :git => 'https://github.com/rsutphin/bcdatabase.git'
+
+# until bcaudit 0.0.4 is released
+gem 'bcaudit', :git => 'git+ssh://code.bioinformatics.northwestern.edu/git/bcaudit.git'
+
 group :development do
   # general testing
   gem 'cucumber', '~> 0.6.0'
