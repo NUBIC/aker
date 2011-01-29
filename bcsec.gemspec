@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rubytree', '~> 0.7.0'
 
   # pers
-  s.add_dependency 'activerecord', '~> 3.0'
+  s.add_dependency 'activerecord', '>= 2.3.0'
   s.add_dependency 'schema_qualified_tables', '~> 1.0'
   s.add_dependency 'bcdatabase', '~> 1.0'
   s.add_dependency 'composite_primary_keys'
