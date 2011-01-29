@@ -3,7 +3,6 @@ source 'http://download.bioinformatics.northwestern.edu/gems/'
 
 gemspec
 
-
 # until Castanet public release occurs
 gem 'castanet', :git => 'git://gitorious.org/castanet/castanet.git'
 
@@ -69,6 +68,7 @@ group :development do
 
   # cas testing
   gem 'markaby', '0.5'    # other versions break RubyCAS-Server
+  gem 'picnic', :git => 'git+ssh://code.bioinformatics.northwestern.edu/git/picnic.git', :branch => 'activesupport3'
   gem 'rubycas-server'
 
   # ci & deployment
