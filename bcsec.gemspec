@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'schema_qualified_tables', '~> 1.0'
   s.add_dependency 'bcdatabase', '~> 1.0'
   s.add_dependency 'composite_primary_keys'
-  s.add_dependency 'bcaudit', '~> 0.0', '= 0.0.4.pre'
+  s.add_dependency 'bcaudit', '~> 0.0'
   s.add_dependency 'activerecord-oracle_enhanced-adapter', '~> 1.3.0'
 
   # netid
