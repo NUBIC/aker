@@ -1,4 +1,4 @@
-BUNDLER_VERSION="= 1.0.9"
+BUNDLER_VERSION="= 1.0.10"
 
 # For ruby-oci8 (at least on OS X Intel 10.5)
 unless ENV["RC_ARCHS"]
