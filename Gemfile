@@ -3,6 +3,11 @@ source 'http://download.bioinformatics.northwestern.edu/gems/'
 
 gemspec
 
+# for testing against different releases of ActiveRecord
+if ENV['ACTIVERECORD_VERSION']
+  gem 'activerecord', ENV['ACTIVERECORD_VERSION']
+end
+
 # until bcdatabase 1.0.3 is released
 gem 'bcdatabase', :git => 'https://github.com/rsutphin/bcdatabase.git'
 
