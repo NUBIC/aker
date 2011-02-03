@@ -3,9 +3,6 @@ source 'http://download.bioinformatics.northwestern.edu/gems/'
 
 gemspec
 
-# until Castanet public release occurs
-gem 'castanet', :git => 'git://gitorious.org/castanet/castanet.git'
-
 # until bcdatabase 1.0.3 is released
 gem 'bcdatabase', :git => 'https://github.com/rsutphin/bcdatabase.git'
 

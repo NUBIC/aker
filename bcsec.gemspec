@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'net-ldap', '~> 0.1.1'
 
   # cas
-  s.add_dependency 'castanet', '0.0.1.pre'
+  s.add_dependency 'castanet', '0.0.1'
 
   # modes
   s.add_dependency 'warden', '~> 0.10.3'
