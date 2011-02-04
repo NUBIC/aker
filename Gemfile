@@ -6,8 +6,8 @@ gemspec
 # for testing against different releases of ActiveRecord
 if ENV['ACTIVERECORD_VERSION']
   version = case ENV['ACTIVERECORD_VERSION']
-            when '2.3' then '~> 2.3.0'
-            when '3.0' then '~> 3.0'
+            when 'ar_2.3' then '~> 2.3.0'
+            when 'ar_3.0' then '~> 3.0'
             else raise "Unknown ActiveRecord version #{ENV['ACTIVERECORD_VERSION']}"
             end
 

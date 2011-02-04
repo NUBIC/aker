@@ -4,7 +4,7 @@
 #
 # Use it by sourcing it:
 #
-#  . ci-rvm.sh
+#  . ci-env.sh
 #
 # Assumes that the create-on-use settings are set in your ~/.rvmrc:
 #
@@ -29,7 +29,7 @@ BCSEC_RVM_RUBY='jruby-1.5.3';
 ;;
 esac
 
-GEMSET=bcsec
+GEMSET="bcsec-${ACTIVERECORD_VERSION}"
 
 if [ -z "$BCSEC_RVM_RUBY" ]; then
     echo "Could not map env (BCSEC_ENV=\"${BCSEC_ENV}\") to an RVM version.";
