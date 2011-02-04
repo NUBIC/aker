@@ -6,8 +6,6 @@ module Bcsec::Authorities
   ##
   # An authority which verifies CAS tickets with an actual CAS server.
   #
-  # @see http://github.com/gunark/rubycas-client
-  #      RubyCAS-Client at Github
   # @see Bcsec::Cas::CasUser
   class Cas
     include Bcsec::Cas::ConfigurationHelper
