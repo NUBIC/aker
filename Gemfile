@@ -14,9 +14,6 @@ if ENV['ACTIVERECORD_VERSION']
   gem 'activerecord', version
 end
 
-# until bcdatabase 1.0.3 is released
-gem 'bcdatabase', :git => 'https://github.com/rsutphin/bcdatabase.git'
-
 group :development do
   # general testing
   gem 'cucumber', '~> 0.6.0'
