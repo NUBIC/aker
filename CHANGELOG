@@ -4,7 +4,13 @@ Bcsec History
 2.1.0
 -----
 
-- ActiveRecord / ActiveSupport 3 compatibility.
+- ActiveRecord / ActiveSupport 3 compatibility. (#2804)
+- Fixed: include all child affiliates in group memberships loaded from
+  the `:pers` authority. (#4861)
+- Worked-around: weird problem with `#save!` of invalid pers model 
+  instances in JRuby. (#4831)
+- Added: all registry-provided attributes are exposed on users found
+  or verified using the `:netid` authority. (#4869)
 
 2.0.6
 -----
