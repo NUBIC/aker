@@ -6,7 +6,7 @@ module Bcsec::Authorities
   ##
   # An authority which verifies CAS tickets with an actual CAS server.
   #
-  # @see Bcsec::Cas::CasUser
+  # @see Bcsec::Cas::UserExt
   class Cas
     include Bcsec::Cas::ConfigurationHelper
     include Castanet::Client
@@ -53,7 +53,7 @@ module Bcsec::Authorities
       return nil unless ticket.ok?
 
       Bcsec::User.new(ticket.username).tap do |u|
-        u.extend Bcsec::Cas::CasUser
+        u.extend Bcsec::Cas::UserExt
 
         u.cas_url = cas_url
         u.proxy_callback_url = proxy_callback_url

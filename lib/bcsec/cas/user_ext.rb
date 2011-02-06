@@ -8,7 +8,7 @@ module Bcsec::Cas
   # credentials.
   #
   # @see Bcsec::Authorities::Cas
-  module CasUser
+  module UserExt
     include Castanet::Client
 
     ##

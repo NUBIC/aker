@@ -1,11 +1,11 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
 module Bcsec::Cas
-  describe CasUser do
+  describe UserExt do
     let(:user) { Bcsec::User.new("jo") }
 
     before do
-      user.extend(CasUser)
+      user.extend(UserExt)
     end
 
     describe "#cas_proxy_ticket" do
@@ -17,7 +17,8 @@ module Bcsec::Cas
       end
 
       it "allows you to request proxy tickets" do
-        user.should_receive(:issue_proxy_ticket).with(pgt, service).once.and_return(stub(:ticket => "PT-ABC"))
+        user.should_receive(:issue_proxy_ticket).with(pgt, service).
+          once.and_return(stub(:ticket => "PT-ABC"))
 
         user.cas_proxy_ticket("https://example.org/service-a").should == "PT-ABC"
       end
