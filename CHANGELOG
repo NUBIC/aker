@@ -1,8 +1,10 @@
 Bcsec History
 =============
 
-2.0.7
+2.1.0
 -----
+
+- ActiveRecord / ActiveSupport 3 compatibility.
 
 2.0.6
 -----
