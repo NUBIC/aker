@@ -24,6 +24,11 @@ When /^I access an? (\S+) resource$/ do |resource_kind|
   get url
 end
 
+When /^I access an? (\S+) resource without supplying credentials$/ do |resource_kind|
+  Given "I am using no credentials"
+  When "I access a #{resource_kind} resource"
+end
+
 When /^I do concurrent requests on an API\-using resource$/ do
   # Because truly concurrent requests
   #

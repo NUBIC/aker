@@ -29,3 +29,12 @@ Feature: HTTP Basic Authentication for API
      When I access a protected resource
      Then the HTTP status should be 401
       And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'
+
+  @wip
+  Scenario: Credentials presented via HTTP Basic are not cached
+    Given I am using the basic credentials "mr296" / "br0wn"
+      And I am using the API
+      And I access a protected resource
+     When I access a protected resource without supplying credentials
+     Then the HTTP status should be 401
+      And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'
