@@ -112,6 +112,11 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
         cas_api_consumer(api_server.base_url, "/a-resource")
     end
 
+    map '/replaying' do
+      run Bcsec::Cucumber::RackEndpoints.
+        cas_api_replayer(api_server.base_url, "/a-resource")
+    end
+
     map '/protected' do
       run Bcsec::Cucumber::RackEndpoints.authentication_required
     end

@@ -62,13 +62,49 @@ module Bcsec
           Proc.new { |env|
             env['bcsec'].authentication_required!
 
-            pt = env['warden'].user.cas_proxy_ticket(api_base_url[0,api_base_url.size-1])
-            content = RestClient.get(URI.join(api_base_url, resource_relative_url).to_s,
-                                     :Authorization => "CasProxy #{pt}")
+            content = with_proxy_ticket(api_base_url, env) do |pt|
+              RestClient.get(URI.join(api_base_url, resource_relative_url).to_s,
+                             :Authorization => "CasProxy #{pt}")
+            end
 
             [200, { "Content-Type" => "text/plain" },
              ["The API said: #{content}"]]
           }
+        end
+
+        ##
+        # When the user is authenticated, this endpoint uses CAS proxy
+        # authentication in the same manner as {#cas_api_consumer} -- however,
+        # it also memoizes that response for later replay.
+        #
+        # When the user is _not_ authenticated, this endpoint uses the cookies
+        # from the previously memoized response (and blows up if there isn't one
+        # -- so it's a pretty stupid malicious endpoint) and tries to make an
+        # API request with those cookies.
+        def cas_api_replayer(api_base_url, resource_relative_url)
+          api_endpoint = URI.join(api_base_url, resource_relative_url).to_s
+          memoized_response = nil
+
+          Proc.new { |env|
+            content = if env['bcsec'].authenticated?
+                        resp = with_proxy_ticket(api_base_url, env) do |pt|
+                          RestClient.get(api_endpoint, :Authorization => "CasProxy #{pt}")
+                        end
+
+                        memoized_response = resp
+                      else
+                        RestClient.get(api_endpoint, { :cookie => memoized_response.headers[:set_cookie] })
+                      end
+
+            [200, { "Content-Type" => "text/plain" },
+             ["The API said: #{content}"]]
+          }
+        end
+
+        private
+
+        def with_proxy_ticket(service_url, env)
+          yield env['warden'].user.cas_proxy_ticket(service_url[0,service_url.size-1])
         end
       end
     end

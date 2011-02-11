@@ -7,6 +7,10 @@ Given /^I have logged into CAS using "([^\"]*)" \/ "([^\"]*)"$/ do |username, pa
   page.body.should include("You have successfully logged in")
 end
 
+Given /^I have established a CAS session$/ do
+  When "I access an API-using resource"
+end
+
 Given /^I am not logged into CAS/ do
   get File.join(@cas_server.base_url, "logout")
   page.body.should include("You have successfully logged out")
