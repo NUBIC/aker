@@ -17,6 +17,8 @@ When /^I access an? (\S+) resource$/ do |resource_kind|
       "/shared"
     when "API-using"
       "/consume"
+    when "replaying"
+      "/replaying"
     else
       pending "No URL defined for #{resource_kind.inspect}"
     end
@@ -97,6 +99,10 @@ end
 
 Then /^the page contains the results of the API call$/ do
   page.body.should =~ /The API said: I'm protected/
+end
+
+Then /^the page should not contain the results of the API call$/ do
+  page.body.should_not =~ /The API said: I'm protected/
 end
 
 Then /^each response should contain the results of the API call$/ do

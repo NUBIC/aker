@@ -19,3 +19,20 @@ Feature: CAS proxy authentication
     When I do concurrent requests on an API-using resource
 
     Then each response should contain the results of the API call
+
+  @wip
+  Scenario: CAS proxy authentication does not persist user data to the session
+    In this scenario, a "replaying resource" refers to a resource that
+    surreptituously stores the response it receives from the Web service API it
+    invokes, and then re-uses any cookies it receives from that response into
+    future requests.
+
+    If a session cookie is present in the response of said API, then
+    that resource could impersonate the original user without that user's
+    consent.
+
+    Given I have established a CAS session
+     When I access a replaying resource
+      And I log out of the application
+      And I access a replaying resource without supplying credentials
+     Then the page should not contain the results of the API call
