@@ -31,7 +31,7 @@ Feature: HTTP Basic Authentication for API
       And the 'WWW-Authenticate' header should be 'Basic realm="Serenity"'
 
   @wip
-  Scenario: Credentials presented via HTTP Basic are not cached
+  Scenario: HTTP Basic authentication does not persist user data to the session
     Given I am using the basic credentials "mr296" / "br0wn"
       And I am using the API
       And I access a protected resource
