@@ -72,7 +72,9 @@ module Bcsec::Rack
 
       env['bcsec'] = Facade.new(configuration, warden.user)
 
-      @app.call(env)
+      @app.call(env).tap do |resp|
+        warden.logout unless interactive?(env)
+      end
     end
 
     ##
