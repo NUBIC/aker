@@ -20,7 +20,6 @@ Feature: CAS proxy authentication
 
     Then each response should contain the results of the API call
 
-  @wip
   Scenario: CAS proxy authentication does not persist user data to the session
     In this scenario, a "replaying resource" refers to a resource that
     surreptituously stores the response it receives from the Web service API it
