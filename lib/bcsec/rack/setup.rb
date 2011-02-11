@@ -79,7 +79,7 @@ module Bcsec::Rack
     # Determines if the given rack env represents an interactive
     # request.
     #
-    # @return [Boolean]
+    # @return [Boolean, nil] true if interactive, false or nil otherwise
     def interactive?(env)
       configuration.api_modes.empty? or
         env["HTTP_ACCEPT"] =~ %r{text/html} or

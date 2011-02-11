@@ -48,6 +48,37 @@ module Bcsec
       end
 
       ##
+      # Whether the request is interactive or not.  Internally it is extracted
+      # from the `bcsec.interactive` Rack environment variable.
+      #
+      # @see Bcsec::Rack::Setup#call
+      # @see Bcsec::Rack::Setup#interactive?
+      # @return [Boolean]
+      def interactive?
+        env['bcsec.interactive']
+      end
+
+      ##
+      # Used by Warden to determine whether or not it should store user
+      # information in the session.  In Bcsec, this is computed as the result
+      # of {#interactive?}.
+      #
+      # N.B. The `!!` is present because Warden requires that this method return
+      # `false` (not `false` or `nil`) for session serialization to be disabled.
+      #
+      # @see
+      #   http://rubydoc.info/gems/warden/1.0.3/Warden/Strategies/Base#store%3F-instance_method
+      #   Warden::Strategies::Base#store documentation
+      # @see
+      #   https://github.com/hassox/warden/blob/v1.0.3/lib/warden/proxy.rb#L158
+      #   Warden's expectations for this method
+      #
+      # @return [Boolean]
+      def store?
+        !!interactive?
+      end
+
+      ##
       # Authenticates a user.
       #
       # {#authenticate!} expects `kind` and `credentials` to be
