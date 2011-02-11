@@ -34,5 +34,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'castanet', '0.0.1'
 
   # modes
-  s.add_dependency 'warden', '~> 0.10.3'
+  s.add_dependency 'warden', '~> 1.0'
 end
