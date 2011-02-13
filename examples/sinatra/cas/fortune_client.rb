@@ -4,6 +4,7 @@ Bundler.setup
 require 'sinatra'
 require 'json'
 require 'haml'
+require 'bcsec'
 
 ##
 # This client is half of a very rough, ad-hoc client-server implementation of
