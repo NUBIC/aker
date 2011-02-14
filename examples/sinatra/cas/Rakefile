@@ -14,4 +14,9 @@ task :launch do
   Process.waitall
 end
 
+desc 'Reset CAS server state'
+task :clean do
+  rm_rf Dir['var/*']
+end
+
 task :default => :launch
