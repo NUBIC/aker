@@ -31,7 +31,7 @@ require File.expand_path("../permit_insecure_cas.rb", __FILE__)
 #
 Bcsec.configure do
   authority :cas
-  cas_parameters :base_url => 'http://localhost:9697'
+  cas_parameters :base_url => ENV['CAS_BASE']
   api_modes :cas_proxy
 end
 

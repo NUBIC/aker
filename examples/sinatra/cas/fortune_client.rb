@@ -31,7 +31,7 @@ require 'bcsec'
 # is not private, however, so we kludge things up a bit in the name of keeping
 # the client in a single file.
 Bcsec.configure do
-  cas_parameters :base_url => 'http://localhost:9697',
+  cas_parameters :base_url => ENV['CAS_BASE'],
                  :proxy_retrieval_url => 'https://localhost:9698/retrieve_pgt',
                  :proxy_callback_url => 'https://localhost:9698/receive_pgt'
 

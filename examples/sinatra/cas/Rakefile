@@ -3,7 +3,12 @@ task :launch do
   processes = []
 
   Dir.chdir('..') do
-    processes << fork { sh "bundle exec rackup cas/rubycas_server.ru" }
+    unless ENV['CAS_BASE']
+      processes << fork { sh "bundle exec rackup cas/rubycas_server.ru" }
+      ENV['CAS_BASE'] = 'http://localhost:9697'
+    else
+      $stderr.puts "Using existing CAS server #{ENV['CAS_BASE']}"
+    end
     processes << fork { sh "bundle exec rackup cas/fortune_server.ru" }
     processes << fork { ruby "-rubygems cas/cas_proxy_callback.rb" }
     processes << fork { ruby "-rubygems cas/fortune_client.rb" }
