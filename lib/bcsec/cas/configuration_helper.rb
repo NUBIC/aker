@@ -52,7 +52,7 @@ module Bcsec::Cas
     ##
     # @deprecated Use {#cas_url} instead.
     def cas_base_url
-      Bcsec::Deprecation.notify('cas_base_url is deprecated.  Use cas_url instead.', '2.2')
+      Bcsec::Deprecation.notify('cas_base_url is deprecated.  Use cas_url instead.', '2.3')
 
       cas_url
     end
