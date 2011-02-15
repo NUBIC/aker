@@ -24,4 +24,14 @@ task :clean do
   rm_rf Dir['var/*']
 end
 
+desc "Recreates the java keystore containing the certificate for this example"
+task :keystore => "cas_example.jks"
+
+file "cas_example.jks" => ["cas_proxy_callback.crt"] do |t|
+  rm_f t.name
+  cert = t.prerequisites.first
+  sh "keytool -import -file '#{cert}' " <<
+    "-keystore '#{t.name}' -storepass changeit -noprompt"
+end
+
 task :default => :launch
