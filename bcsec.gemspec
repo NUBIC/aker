@@ -24,14 +24,14 @@ Gem::Specification.new do |s|
   s.add_dependency 'schema_qualified_tables', '~> 1.0'
   s.add_dependency 'bcdatabase', '~> 1.0'
   s.add_dependency 'composite_primary_keys'
-  s.add_dependency 'bcaudit', '~> 0.0'
+  s.add_dependency 'bcaudit', '~> 0.1'
   s.add_dependency 'activerecord-oracle_enhanced-adapter', '~> 1.3.0'
 
   # netid
   s.add_dependency 'net-ldap', '~> 0.1.1'
 
   # cas
-  s.add_dependency 'castanet', '0.0.1'
+  s.add_dependency 'castanet', '~> 0.0.2'
 
   # modes
   s.add_dependency 'warden', '~> 1.0'
