@@ -31,8 +31,8 @@ require 'rack'
 require 'webrick'
 require 'webrick/https'
 
-certificate_file = File.join(File.dirname(__FILE__), 'cas_proxy_callback.crt')
-private_key_file = File.join(File.dirname(__FILE__), 'cas_proxy_callback.key')
+certificate_file = File.join(File.dirname(__FILE__), 'localhost.crt')
+private_key_file = File.join(File.dirname(__FILE__), 'localhost.key')
 
 #
 # The CAS proxy callback uses a Ruby pstore to hold proxy tickets.
