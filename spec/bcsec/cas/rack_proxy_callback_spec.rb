@@ -70,8 +70,8 @@ module Bcsec::Cas
             get("/receive_pgt")
         end
 
-        it "is a bad request" do
-          @response.status.should == 400
+        it "is OK, because the JA-SIG CAS server expects it to be" do
+          @response.status.should == 200
         end
 
         it "gives a worthwile error message" do

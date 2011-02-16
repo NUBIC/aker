@@ -131,7 +131,6 @@ module Bcsec::Cas
       pgt_iou = req.params["pgtIou"]
 
       unless pgt && pgt_iou
-        resp.status = 400
         missing = [("pgtId" unless pgt), ("pgtIou" unless pgt_iou)].compact
         missing_msg =
           if missing.size == 1
@@ -139,6 +138,16 @@ module Bcsec::Cas
           else
             "Both #{missing.join(' and ')} are required query parameters."
           end
+        resp.status =
+          if missing.size == 2
+            #
+            # This oddity is required by the JA-SIG CAS Server.
+            #
+            200
+          else
+            400
+          end
+
         resp.body = ["#{missing_msg}\nSee section 2.5.4 of the CAS protocol specification."]
       else
         store_iou(pgt_iou, pgt)
