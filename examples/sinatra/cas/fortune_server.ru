@@ -13,6 +13,12 @@ require 'bcsec'
 require File.join(File.dirname(__FILE__), 'fortune_server')
 
 #
+# The CAS server we use in this example runs without SSL, so configure
+# Castanet to allow that.
+#
+require File.expand_path("../permit_insecure_cas.rb", __FILE__)
+
+#
 # Next, we configure Bcsec, set up session middleware (which bcsec uses to
 # store user data), and then insert bcsec's Rack middleware into the Rack
 # middleware stack.  Session middleware must be inserted before bcsec's

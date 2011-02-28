@@ -39,6 +39,12 @@ Bcsec.configure do
   authority :cas
 end
 
+#
+# The CAS server we use in this example runs without SSL, so configure
+# Castanet to allow that.
+#
+require File.expand_path("../permit_insecure_cas.rb", __FILE__)
+
 use Rack::Session::Cookie
 
 Bcsec::Rack.use_in(Sinatra::Application)
