@@ -135,3 +135,9 @@ get '/fortunes/:id/delete' do
 
   redirect '/fortunes'
 end
+
+get '/pt' do
+  pt = @user.cas_proxy_ticket(Fortune.service_uri)
+
+  "Got proxy ticket #{pt}, but not going to use it."
+end
