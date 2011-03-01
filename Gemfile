@@ -14,6 +14,10 @@ if ENV['ACTIVERECORD_VERSION']
   gem 'activerecord', version
 end
 
+group :resolver_hacks do
+  gem 'builder', '~> 2.1.2' if ENV['ACTIVERECORD_VERSION'] == 'ar_3.0'
+end
+
 group :development do
   # general testing
   gem 'cucumber', '~> 0.6.0'
