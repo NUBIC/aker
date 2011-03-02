@@ -15,6 +15,7 @@ PATH
 
 GEM
   remote: http://rubygems.org/
+  remote: http://download.bioinformatics.northwestern.edu/gems/
   specs:
     activerecord (2.3.11)
       activesupport (= 2.3.11)

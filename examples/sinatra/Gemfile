@@ -1,4 +1,5 @@
 source :rubygems
+source 'http://download.bioinformatics.northwestern.edu/gems/'
 
 gem 'bcsec', :path => '../..'
 
