@@ -182,7 +182,7 @@ Rack (and Rails) integration
 
 Bcsec's web application integration is based on [Rack][].  This means
 it can be used with nearly any ruby web framework, including Sinatra,
-Camping, etc., in addition to Rails 2.3.5+.(*)
+Camping, etc., in addition to Rails.
 
 In your Bcsec-protected Rack application, you have access to a
 `"bcsec"` key in the Rack environment.  This key will yield an
@@ -201,11 +201,6 @@ in a separate gem plugin.  See {file:README-rails} in the `bcsec-rails` gem
 for more information about it.
 
 [Rack]: http://rack.rubyforge.org/
-
-(*) Rails 3 support is not provided yet.  It can probably be made to
-work, so long as you use Bcsec's Rack support directly (not the
-rails plugin) and don't use `:pers` (since `:pers` uses ActiveRecord).
-Bcsec 2.1 will have support for both Rails 2.3.x and Rails 3.0+.
 
 Bcsec outside of a Rack app
 ---------------------------
