@@ -40,10 +40,11 @@ module Bcsec
       #
       # > `Authorization: CasProxy PT-1272928074r13CBB9ACA794867F3E`
       #
+      # @see http://www.jasig.org/cas/protocol CAS 2.0 protocol, section 3.7
       # @return [Array<String>] the proxy ticket or an empty array
       def credentials
         key = 'HTTP_AUTHORIZATION'
-        matches = env[key].match(/CasProxy\s+([SP]T-\S+)/) if env.has_key?(key)
+        matches = env[key].match(/CasProxy\s+([SP]T-[0-9A-Za-z\-]+)/) if env.has_key?(key)
 
         if matches && matches[1]
           [matches[1], service_url]

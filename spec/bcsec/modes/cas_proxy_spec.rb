@@ -51,6 +51,12 @@ module Bcsec::Modes
           @mode.credentials.should == []
         end
 
+        it "ignores tickets that contain characters not in [^0-9A-Za-z-]" do
+          @env["HTTP_AUTHORIZATION"] = "CasProxy ST-@@&%#"
+
+          @mode.credentials.should == []
+        end
+
         it "returns an empty array if no proxy ticket is present" do
           @mode.credentials.should == []
         end
