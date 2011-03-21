@@ -32,8 +32,8 @@ require 'bcsec'
 # the client in a single file.
 Bcsec.configure do
   cas_parameters :base_url => ENV['CAS_BASE'],
-                 :proxy_retrieval_url => 'https://localhost:9698/retrieve_pgt',
-                 :proxy_callback_url => 'https://localhost:9698/receive_pgt'
+                 :proxy_retrieval_url => "#{ENV['CAS_CALLBACK']}/retrieve_pgt",
+                 :proxy_callback_url => "#{ENV['CAS_CALLBACK']}/receive_pgt"
 
   ui_mode :cas
   authority :cas
