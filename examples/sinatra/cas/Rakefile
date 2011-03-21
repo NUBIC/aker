@@ -12,7 +12,7 @@ task :launch do
     processes << fork { sh "bundle exec rackup cas/fortune_server.ru" }
     unless ENV['CAS_CALLBACK']
       processes << fork { ruby "-rubygems cas/cas_proxy_callback.rb" }
-      ENV['CAS_CALLBACK'] = 'http://localhost:9698'
+      ENV['CAS_CALLBACK'] = 'https://localhost:9698'
     else
       $stderr.puts "Using existing proxy callback #{ENV['CAS_CALLBACK']}"
     end
