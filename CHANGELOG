@@ -1,6 +1,9 @@
 Bcsec History
 =============
 
+2.1.2
+-----
+
 2.1.1
 -----
 - Fixed: removed several potential SQL injection sites in the Pers
