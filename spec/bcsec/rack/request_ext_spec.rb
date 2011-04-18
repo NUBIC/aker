@@ -3,10 +3,10 @@ require File.expand_path('../../../spec_helper', __FILE__)
 require 'rack'
 
 module Bcsec::Rack
-  describe RequestExtensions do
+  describe RequestExt do
     let(:request_class) do
       Class.new(Rack::Request) do
-        include RequestExtensions
+        include RequestExt
       end
     end
 

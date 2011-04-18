@@ -5,7 +5,7 @@ module Bcsec::Rack
   # Extensions for `Rack::Request`.
   #
   # To use these, `include` them into `Rack::Request`.
-  module RequestExtensions
+  module RequestExt
     ##
     # Returns the value of the `bcsec.interactive` Rack environment variable.
     #
