@@ -3,14 +3,14 @@ require 'nokogiri'
 
 module Bcsec::Modes::Support
   describe LoginFormAssetProvider do
-    before do
-      @provider = LoginFormAssetProvider.new
+    let(:vessel) do
+      Object.new.tap { |o| o.extend(LoginFormAssetProvider) }
     end
 
     describe "#login_html" do
       before do
         env = { 'SCRIPT_NAME' => '/foo' }
-        @doc = Nokogiri.HTML(@provider.login_html(env))
+        @doc = Nokogiri.HTML(vessel.login_html(env))
       end
 
       it "includes SCRIPT_NAME in the postback URL" do
@@ -22,31 +22,31 @@ module Bcsec::Modes::Support
       end
 
       it "can render a 'login failed' message" do
-        @doc = Nokogiri.HTML(@provider.login_html({}, { :login_failed => true }))
+        @doc = Nokogiri.HTML(vessel.login_html({}, { :login_failed => true }))
 
         (@doc/'.error').first.inner_html.should == 'Login failed'
       end
 
       it "can render a 'logged out' message" do
-        @doc = Nokogiri.HTML(@provider.login_html({}, { :logged_out => true }))
+        @doc = Nokogiri.HTML(vessel.login_html({}, { :logged_out => true }))
 
         (@doc/'h1').first.inner_html.should == 'Logged out'
       end
 
       it "can render text in the username text field" do
-        @doc = Nokogiri.HTML(@provider.login_html({}, { :username => "user" }))
+        @doc = Nokogiri.HTML(vessel.login_html({}, { :username => "user" }))
 
         (@doc/'input[name="username"]').first['value'].should == 'user'
       end
 
       it "can store a URL to go to after login succeeds" do
-        @doc = Nokogiri.HTML(@provider.login_html({}, { :url => 'http://www.example.edu' }))
+        @doc = Nokogiri.HTML(vessel.login_html({}, { :url => 'http://www.example.edu' }))
 
         (@doc/'input[name="url"]').first['value'].should == 'http://www.example.edu'
       end
 
       it "escapes HTML in usernames" do
-        html = @provider.login_html({}, { :username => "user<a/>" })
+        html = vessel.login_html({}, { :username => "user<a/>" })
 
         # Annoyingly, Nokogiri.HTML automatically unescapes escaped entities in
         # attribute values.
@@ -60,7 +60,7 @@ module Bcsec::Modes::Support
         expected_css = File.read(File.join(File.dirname(__FILE__),
                                            %w(.. .. .. .. assets bcsec modes middleware form login.css)))
 
-        @provider.login_css.should == expected_css
+        vessel.login_css.should == expected_css
       end
     end
   end

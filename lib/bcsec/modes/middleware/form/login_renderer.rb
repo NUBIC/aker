@@ -13,7 +13,7 @@ module Bcsec
         #
         # @author David Yip
         class LoginRenderer
-          include Support::LoginFormRenderer
+          include Support::LoginFormAssetProvider
 
           ##
           # The path at which the middleware will watch for login requests.
@@ -23,13 +23,12 @@ module Bcsec
           ##
           # Instantiates the middleware.
           #
-          # @param app [Rack app] The Rack application on which this middleware should be layered.
-          # @param assets [#login_html, #login_css] a login asset provider
+          # @param app [Rack app] The Rack application on which this middleware
+          #   should be layered.
           # @param login_path [String] the login path
-          def initialize(app, login_path, assets)
+          def initialize(app, login_path)
             @app = app
             self.login_path = login_path
-            self.assets = assets
           end
 
           ##
@@ -63,7 +62,7 @@ module Bcsec
           def provide_login_html(env)
             request = ::Rack::Request.new(env)
 
-            ::Rack::Response.new(super(env, :url => request['url'])).finish
+            ::Rack::Response.new(login_html(env, :url => request['url'])).finish
           end
 
           ##
@@ -71,7 +70,7 @@ module Bcsec
           #
           # @return a finished Rack response
           def provide_login_css
-            ::Rack::Response.new(super) do |resp|
+            ::Rack::Response.new(login_css) do |resp|
               resp['Content-Type'] = 'text/css'
             end.finish
           end

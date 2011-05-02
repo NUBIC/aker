@@ -7,7 +7,7 @@ module Bcsec::Modes::Support
   # Provides HTML and CSS for login forms.
   #
   # @author David Yip
-  class LoginFormAssetProvider
+  module LoginFormAssetProvider
     include Rack::Utils
 
     ##

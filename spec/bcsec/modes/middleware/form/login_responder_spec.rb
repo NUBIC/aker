@@ -5,25 +5,15 @@ module Bcsec::Modes::Middleware::Form
   describe LoginResponder do
     include Rack::Test::Methods
 
-    before do
-      assets = mock
-      login_path = "/login"
-
-      @app = Rack::Builder.new do
-        use Bcsec::Modes::Middleware::Form::LoginResponder, login_path, assets
+    let(:app) do
+      Rack::Builder.new do
+        use Bcsec::Modes::Middleware::Form::LoginResponder, '/login'
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
-
-      @assets = assets
-      @login_path = login_path
-    end
-
-    def app
-      @app
     end
 
     it "does not intercept GETs to the login path" do
-      get @login_path
+      get '/login'
 
       last_response.should be_ok
       last_response.body.should == "Hello"
@@ -37,12 +27,15 @@ module Bcsec::Modes::Middleware::Form
     end
 
     describe "#call" do
-      before do
-        @warden = mock
-        @env = {
+      let(:env) do
+        {
           "warden" => @warden,
           "REQUEST_METHOD" => "POST"
         }
+      end
+
+      before do
+        @warden = mock
       end
 
       describe "when authentication failed" do
@@ -51,30 +44,10 @@ module Bcsec::Modes::Middleware::Form
         end
 
         it "renders a 'login failed' message" do
-          @assets.should_receive(:login_html).
-            with(hash_including(@env), hash_including({ :login_failed => true })).
-            and_return("Login failed")
-
-          post @login_path, {}, @env
+          post '/login', {}, env
 
           last_response.status.should == 401
-          last_response.body.should == "Login failed"
-        end
-
-        it "passes the supplied username to the login form renderer" do
-          @assets.should_receive(:login_html).
-            with(hash_including(@env), hash_including({ :username => "username" })).
-            and_return("Login failed")
-
-          post @login_path, {"username" => "username"}, @env
-        end
-
-        it "passes the requested resource to the login form renderer" do
-          @assets.should_receive(:login_html).
-            with(hash_including(@env), hash_including({ :url => "/protected" })).
-            and_return("Login failed")
-
-          post @login_path, { :url => "/protected" }, @env
+          last_response.body.should include("Login failed")
         end
       end
 
@@ -82,7 +55,7 @@ module Bcsec::Modes::Middleware::Form
         it "redirects to a given URL" do
           @warden.should_receive(:authenticated?).and_return(true)
 
-          post @login_path, { :url => "/protected" }, @env
+          post '/login', { :url => "/protected" }, env
 
           last_response.should be_redirect
           last_response.location.should == "/protected"
@@ -90,9 +63,9 @@ module Bcsec::Modes::Middleware::Form
 
         it "redirects to the application's root if no URL was given" do
           @warden.should_receive(:authenticated?).and_return(true)
-          @env['SCRIPT_NAME'] = "/foo"
+          env['SCRIPT_NAME'] = "/foo"
 
-          post @login_path, {}, @env
+          post '/login', {}, env
 
           last_response.should be_redirect
           last_response.location.should == "/foo/"
@@ -101,7 +74,7 @@ module Bcsec::Modes::Middleware::Form
         it "redirects to the application's root if the URL given is a blank string" do
           @warden.should_receive(:authenticated?).and_return(true)
 
-          post @login_path, { :url => "" }, @env
+          post '/login', { :url => "" }, env
 
           last_response.should be_redirect
           last_response.location.should == "/"

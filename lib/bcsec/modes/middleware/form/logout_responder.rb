@@ -2,31 +2,24 @@ require 'bcsec'
 
 module Bcsec::Modes::Middleware::Form
   class LogoutResponder
-    include Bcsec::Modes::Support::LoginFormRenderer
+    include Bcsec::Modes::Support::LoginFormAssetProvider
 
-    def initialize(app, assets)
+    def initialize(app)
       @app = app
-
-      self.assets = assets
     end
 
+    ##
+    # When given `GET /logout`, builds a Rack response containing the login form
+    # with a "you have been logged out" notification.  Otherwise, passes the
+    # response on.
+    #
+    # @return a finished Rack response
     def call(env)
       if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == '/logout'
-        provide_logout_html(env)
+        ::Rack::Response.new(login_html(env, :logged_out => true)).finish
       else
         @app.call(env)
       end
-    end
-
-    private
-
-    ##
-    # Builds a Rack response containing the login form with a "you have been
-    # logged out" notification.
-    #
-    # @return a finished Rack response
-    def provide_logout_html(env)
-      ::Rack::Response.new(assets.login_html(env, :logged_out => true)).finish
     end
   end
 end
