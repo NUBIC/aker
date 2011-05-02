@@ -27,19 +27,19 @@ module Bcsec
     end
 
     describe ".use_in" do
-      before do
-        @builder = MockBuilder.new
+      let(:builder) { MockBuilder.new }
 
+      before do
         Bcsec.configuration = Bcsec::Configuration.new
 
-        Bcsec::Rack.use_in(@builder)
+        Bcsec::Rack.use_in(builder)
       end
 
       it "fails with a useful message if there's no configuration" do
-        @builder.reset!
+        builder.reset!
         Bcsec.configuration = nil
 
-        lambda { Bcsec::Rack.use_in(@builder) }.
+        lambda { Bcsec::Rack.use_in(builder) }.
           should raise_error(/Please set one or the other before calling use_in./)
       end
 
@@ -63,7 +63,7 @@ module Bcsec
 
       describe "configuring warden" do
         it "uses a manager" do
-          @builder.should be_using(Warden::Manager)
+          builder.should be_using(Warden::Manager)
         end
 
         it "gives the manager the failure app" do
@@ -71,7 +71,7 @@ module Bcsec
             attr_accessor :failure_app
           end.new
 
-          _, _, actual_block = @builder.find_use_of(Warden::Manager)
+          _, _, actual_block = builder.find_use_of(Warden::Manager)
           actual_block.call(mock_manager)
 
           mock_manager.failure_app.class.should == Bcsec::Rack::Failure
@@ -79,47 +79,53 @@ module Bcsec
       end
 
       describe "modifying the Rack stack" do
-        before do
-          @builder.reset!
-
-          @test_ui = Class.new(Warden::Strategies::Base) do
+        let(:ui_mode) do
+          Class.new(Warden::Strategies::Base) do
             def authenticate!; end
             def self.prepend_middleware(builder); builder.use :ui_ware_before; end
             def self.append_middleware(builder); builder.use :ui_ware_after; end
           end
+        end
 
-          @test_api_1 = Class.new(Warden::Strategies::Base) do
+        let(:api_mode_a) do
+          Class.new(Warden::Strategies::Base) do
             def authenticate!; end
             def self.prepend_middleware(builder); builder.use :api_ware_before; end
             def self.append_middleware(builder); builder.use :api_ware_after; end
           end
+        end
 
-          @test_api_2 = Class.new(Warden::Strategies::Base) do
+        let(:api_mode_b) do
+          Class.new(Warden::Strategies::Base) do
             def authenticate!; end
           end
+        end
 
-          Warden::Strategies.add(:test_ui, @test_ui)
-          Warden::Strategies.add(:test_api_1, @test_api_1)
-          Warden::Strategies.add(:test_api_2, @test_api_2)
+        before do
+          builder.reset!
+
+          Warden::Strategies.add(:ui_mode, ui_mode)
+          Warden::Strategies.add(:api_mode_a, api_mode_a)
+          Warden::Strategies.add(:api_mode_b, api_mode_b)
 
           Bcsec.configure do
-            ui_mode :test_ui
-            api_modes :test_api_1, :test_api_2
+            ui_mode :ui_mode
+            api_modes :api_mode_a, :api_mode_b
           end
 
-          Bcsec::Rack.use_in(@builder)
+          Bcsec::Rack.use_in(builder)
 
-          @bcsec_index = @builder.uses.map { |u| u.first }.index(Bcsec::Rack::Setup)
-          @logout_index = @builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
-          @bcaudit_index = @builder.uses.map { |u| u.first }.index(Bcaudit::Middleware)
+          @bcsec_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Setup)
+          @logout_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
+          @bcaudit_index = builder.uses.map { |u| u.first }.index(Bcaudit::Middleware)
         end
 
         it "prepends middleware for UI modes first" do
-          @builder.uses[0].first.should == :ui_ware_before
+          builder.uses[0].first.should == :ui_ware_before
         end
 
         it "prepends middleware for API modes after UI modes" do
-          @builder.uses[1].first.should == :api_ware_before
+          builder.uses[1].first.should == :api_ware_before
         end
 
         it "attaches the logout middleware directly after Bcsec::Rack::Setup" do
@@ -131,22 +137,22 @@ module Bcsec
         end
 
         it "mounts the logout middleware to /logout" do
-          _, args, _ = @builder.uses[@logout_index]
+          _, args, _ = builder.uses[@logout_index]
 
           args.should == ["/logout"]
         end
 
         it "appends middleware for UI modes directly after the bcaudit middleware" do
-          @builder.uses[@bcaudit_index + 1].first.should == :ui_ware_after
+          builder.uses[@bcaudit_index + 1].first.should == :ui_ware_after
         end
 
         it "appends middleware for API modes after appended UI middleware" do
-          @builder.uses[@bcaudit_index + 2].first.should == :api_ware_after
+          builder.uses[@bcaudit_index + 2].first.should == :api_ware_after
         end
 
         it "uses middleware for the passed-in configuration instead of the global configuration if present" do
           config = Bcsec::Configuration.new {
-            ui_mode :test_ui
+            ui_mode :ui_mode
           }
 
           builder = MockBuilder.new
@@ -158,7 +164,7 @@ module Bcsec
       end
 
       it "attaches the bcsec middleware" do
-        @builder.should be_using(Bcsec::Rack::Setup)
+        builder.should be_using(Bcsec::Rack::Setup)
       end
 
       it "passes on the configuration to the setup middleware if provided" do
