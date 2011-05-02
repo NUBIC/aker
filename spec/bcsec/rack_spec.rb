@@ -19,8 +19,8 @@ module Bcsec
         @uses ||= []
       end
 
-      def using?(klass)
-        self.uses.detect { |cls, params, block| cls == klass }
+      def using?(klass, *params)
+        self.uses.detect { |cls, prms, block| cls == klass && params == prms }
       end
 
       alias :find_use_of :using?
@@ -28,9 +28,10 @@ module Bcsec
 
     describe ".use_in" do
       let(:builder) { MockBuilder.new }
+      let(:configuration) { Bcsec::Configuration.new }
 
       before do
-        Bcsec.configuration = Bcsec::Configuration.new
+        Bcsec.configuration = configuration
 
         Bcsec::Rack.use_in(builder)
       end
@@ -82,16 +83,16 @@ module Bcsec
         let(:ui_mode) do
           Class.new(Warden::Strategies::Base) do
             def authenticate!; end
-            def self.prepend_middleware(builder); builder.use :ui_ware_before; end
-            def self.append_middleware(builder); builder.use :ui_ware_after; end
+            def self.prepend_middleware(builder, conf); builder.use :ui_ware_before, conf; end
+            def self.append_middleware(builder, conf); builder.use :ui_ware_after, conf; end
           end
         end
 
         let(:api_mode_a) do
           Class.new(Warden::Strategies::Base) do
             def authenticate!; end
-            def self.prepend_middleware(builder); builder.use :api_ware_before; end
-            def self.append_middleware(builder); builder.use :api_ware_after; end
+            def self.prepend_middleware(builder, conf); builder.use :api_ware_before, conf; end
+            def self.append_middleware(builder, conf); builder.use :api_ware_after, conf; end
           end
         end
 
@@ -128,6 +129,14 @@ module Bcsec
           builder.uses[1].first.should == :api_ware_before
         end
 
+        it "passes a configuration object to prepended UI middleware" do
+          builder.should be_using(:ui_ware_before, configuration)
+        end
+
+        it "passes a configuration object to prepended API middleware" do
+          builder.should be_using(:api_ware_before, configuration)
+        end
+
         it "attaches the logout middleware directly after Bcsec::Rack::Setup" do
           @logout_index.should == @bcsec_index + 1
         end
@@ -150,6 +159,14 @@ module Bcsec
           builder.uses[@bcaudit_index + 2].first.should == :api_ware_after
         end
 
+        it "passes a configuration object to appended UI middleware" do
+          builder.should be_using(:ui_ware_after, configuration)
+        end
+
+        it "passes a configuration object to appended API middleware" do
+          builder.should be_using(:api_ware_after, configuration)
+        end
+
         it "uses middleware for the passed-in configuration instead of the global configuration if present" do
           config = Bcsec::Configuration.new {
             ui_mode :ui_mode
@@ -164,14 +181,16 @@ module Bcsec
       end
 
       it "attaches the bcsec middleware" do
-        builder.should be_using(Bcsec::Rack::Setup)
+        builder.should be_using(Bcsec::Rack::Setup, configuration)
       end
 
       it "passes on the configuration to the setup middleware if provided" do
         b = MockBuilder.new
         config = Bcsec::Configuration.new { portal :hello }
+
         Bcsec::Rack.use_in(b, config)
-        b.find_use_of(Bcsec::Rack::Setup)[1].first.portal.should == :hello
+
+        b.should be_using(Bcsec::Rack::Setup, config)
       end
     end
   end

@@ -66,9 +66,9 @@ module Bcsec::Rack
     ##
     # @return [void]
     def with_mode_middlewares(builder, conf)
-      mode_classes(conf).each { |m| m.prepend_middleware(builder) if m.respond_to?(:prepend_middleware) }
+      mode_classes(conf).each { |m| m.prepend_middleware(builder, conf) if m.respond_to?(:prepend_middleware) }
       yield
-      mode_classes(conf).each { |m| m.append_middleware(builder) if m.respond_to?(:append_middleware) }
+      mode_classes(conf).each { |m| m.append_middleware(builder, conf) if m.respond_to?(:append_middleware) }
     end
 
     def mode_classes(configuration)
