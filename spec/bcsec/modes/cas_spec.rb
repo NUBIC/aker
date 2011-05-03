@@ -119,21 +119,6 @@ module Bcsec::Modes
       end
     end
 
-    describe "#on_logout" do
-      before do
-        @env["bcsec.configuration"] = Bcsec::Configuration.new do
-          cas_parameters :logout_url => "https://cas.example.edu/logout"
-        end
-      end
-
-      it "redirects to the CAS server's logout action" do
-        response = @mode.on_logout
-
-        response.should be_redirect
-        response.location.should == "https://cas.example.edu/logout"
-      end
-    end
-
     describe "#service_url" do
       def actual_url
         @mode.send(:service_url)

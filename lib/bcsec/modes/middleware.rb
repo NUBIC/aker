@@ -1,9 +1,6 @@
 require 'bcsec'
 
-module Bcsec
-  module Modes
-    module Middleware
-      autoload :Form, 'bcsec/modes/middleware/form'
-    end
-  end
+module Bcsec::Modes::Middleware
+  autoload :Cas,  'bcsec/modes/middleware/cas'
+  autoload :Form, 'bcsec/modes/middleware/form'
 end

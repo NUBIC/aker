@@ -145,6 +145,10 @@ module Bcsec
           @bcaudit_index.should == @logout_index + 1
         end
 
+        it "attaches the default logout responder at the end of the chain" do
+          @builder.uses.map { |u| u.first }.last.should == Bcsec::Rack::DefaultLogoutResponse
+        end
+
         it "mounts the logout middleware to /logout" do
           _, args, _ = builder.uses[@logout_index]
 
