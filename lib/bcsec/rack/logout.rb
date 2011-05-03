@@ -42,53 +42,22 @@ module Bcsec
       end
 
       ##
-      # Responds to `GET /logout`.
+      # When given `GET /logout`, invokes Warden's logout procedure (which
+      # resets the session), and passes control down to the rest of the
+      # application.
       #
-      # Logout invokes Warden's logout procedure (which resets the session) and
-      # gets the logout response from the active mode.  If the mode does not
-      # provide a logout response, a default response with body "You have been
-      # logged out." and status code 200 will be returned.
+      # If the application does not provide a handler for `/logout`, then
+      # the handler defined by {DefaultLogoutResponse} will be invoked.
       #
+      # @see Bcsec::Rack.use_in
       # @param env [Hash] a Rack environment
       # @return [Array] a finished Rack response
       def call(env)
         if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path
           env['warden'].logout
-          logout_response(env).finish
-        else
-          @app.call(env)
         end
-      end
 
-      private
-
-      ##
-      # If the request is interactive and the configured UI mode responds to
-      # `on_logout`, then this method returns the value of `on_logout`.
-      # Otherwise, it provides a default logout response.
-      #
-      # @param env [Hash] a Rack environment
-      # @return [Rack::Response]
-      def logout_response(env)
-        if interactive?(env)
-          mode = Warden::Strategies[configuration(env).ui_mode].new(env)
-
-          mode.respond_to?(:on_logout) ? mode.on_logout : default_response
-        else
-          default_response
-        end
-      end
-
-      def default_response
-        ::Rack::Response.new('You have been logged out.', 200)
-      end
-
-      def configuration(env)
-        env['bcsec.configuration']
-      end
-
-      def interactive?(env)
-        env['bcsec.interactive']
+        @app.call(env)
       end
     end
   end

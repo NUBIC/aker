@@ -5,11 +5,12 @@ require 'bcaudit'
 ##
 # Integration of Bcsec with {http://rack.rubyforge.org/ Rack}.
 module Bcsec::Rack
-  autoload :Facade,     'bcsec/rack/facade'
-  autoload :Failure,    'bcsec/rack/failure'
-  autoload :Logout,     'bcsec/rack/logout'
-  autoload :RequestExt, 'bcsec/rack/request_ext'
-  autoload :Setup,      'bcsec/rack/setup'
+  autoload :DefaultLogoutResponder,  'bcsec/rack/default_logout_responder'
+  autoload :Facade,                  'bcsec/rack/facade'
+  autoload :Failure,                 'bcsec/rack/failure'
+  autoload :Logout,                  'bcsec/rack/logout'
+  autoload :RequestExt,              'bcsec/rack/request_ext'
+  autoload :Setup,                   'bcsec/rack/setup'
 
   class << self
     ##
@@ -48,6 +49,8 @@ module Bcsec::Rack
         builder.use Logout, '/logout'
         builder.use Bcaudit::Middleware
       end
+
+      builder.use DefaultLogoutResponder, '/logout'
     end
 
     private
