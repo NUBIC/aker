@@ -146,7 +146,7 @@ module Bcsec
         end
 
         it "attaches the default logout responder at the end of the chain" do
-          @builder.uses.map { |u| u.first }.last.should == Bcsec::Rack::DefaultLogoutResponse
+          builder.uses.map { |u| u.first }.last.should == Bcsec::Rack::DefaultLogoutResponder
         end
 
         it "mounts the logout middleware to /logout" do
