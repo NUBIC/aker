@@ -45,8 +45,8 @@ module Bcsec::Rack
         builder.use Warden::Manager do |manager|
           manager.failure_app = Bcsec::Rack::Failure.new
         end
-        builder.use Setup, effective_configuration
         builder.use Logout, '/logout'
+        builder.use Setup, effective_configuration
         builder.use Bcaudit::Middleware
       end
 

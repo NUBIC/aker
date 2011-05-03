@@ -53,6 +53,7 @@ module Bcsec
       # position in the Rack middleware stack.
       def self.append_middleware(builder)
         builder.use(Middleware::Form::LoginResponder, login_path, assets)
+        builder.use(Middleware::Form::LogoutResponder, assets)
       end
 
       ##
@@ -108,17 +109,6 @@ module Bcsec
         ::Rack::Response.new do |resp|
           resp.redirect(login_url + '?url=' + escape(attempted_path))
         end
-      end
-
-      ##
-      # Builds a Rack response containing the login form with a "you have been
-      # logged out" notification.
-      #
-      # @return [Rack::Response]
-      def on_logout
-        body = provide_login_html(env, :logged_out => true)
-
-        ::Rack::Response.new(body, 200)
       end
     end
   end
