@@ -14,6 +14,13 @@ if ENV['ACTIVERECORD_VERSION']
   gem 'activerecord', version
 end
 
+# Work around JRUBY-5581 on arel 2.0.10
+if RUBY_PLATFORM == 'java' && JRUBY_VERSION < '1.6.2'
+  platform :jruby do
+    gem 'arel', '2.0.9'
+  end
+end
+
 group :resolver_hacks do
   gem 'builder', '~> 2.1.2' if ENV['ACTIVERECORD_VERSION'] == 'ar_3.0'
 end
