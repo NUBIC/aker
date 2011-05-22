@@ -4,7 +4,7 @@ require 'bundler'
 Bundler.setup
 
 require 'rake'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 require 'yard'
@@ -22,7 +22,7 @@ Dir["tasks/*.rake"].each { |f| import f }
 
 gemspec = eval(File.read('bcsec.gemspec'), binding, 'bcsec.gemspec')
 
-Rake::GemPackageTask.new(gemspec).define
+Gem::PackageTask.new(gemspec).define
 
 GEM_FILE = "pkg/#{gemspec.file_name}"
 

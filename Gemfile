@@ -27,7 +27,7 @@ end
 
 group :development do
   # general testing
-  gem 'cucumber', '~> 0.6.0'
+  gem 'cucumber', '~> 0.10.0'
   gem 'rack-test', '~> 0.5'
   gem 'mechanize', '~> 1.0'
   gem 'rspec', '~> 2.5.0'
@@ -95,7 +95,7 @@ group :development do
   gem 'net-scp', '~> 1.0'
   gem 'nubic-gem-tasks', '~> 1.0'
   gem 'nokogiri'
-  gem 'rake', '>= 0.8.7'
+  gem 'rake', '>= 0.9.0'
   gem 'ci_reporter', '~> 1.6'
 
   platforms :jruby do
