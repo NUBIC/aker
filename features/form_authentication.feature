@@ -73,3 +73,28 @@ Feature: Form authentication
 
     Then I should be sent to the login page
     And I should see "Logged out" on the page
+
+  @wip
+  Scenario: Enforcing session timeouts
+    Given the application has a session timeout of 2 seconds
+    And I go to the login form
+    And I enter username "mr296" and password "br0wn"
+
+    When I access a protected resource
+    And I wait 4 seconds
+    And I access a protected resource
+
+    Then I should be sent to the login page
+
+  Scenario: Requests made within a session extend the session length
+    Given the application has a session timeout of 4 seconds
+    And I go to the login form
+    And I enter username "mr296" and password "br0wn"
+
+    When I access a protected resource
+    And I wait 3 seconds
+    And I access a protected resource
+    And I wait 3 seconds
+    And I access a protected resource
+
+    Then I should be able to access that protected resource

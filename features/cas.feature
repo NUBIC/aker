@@ -49,3 +49,13 @@ Feature: CAS UI authentication
     When I log out of the application
 
     Then I should be on the CAS logout page
+
+  @wip
+  Scenario: Enforcing session timeouts
+    Given the application has a session timeout of 2 seconds
+
+    When I access a protected resource
+    And I wait 4 seconds
+    And I access a protected resource
+
+    Then I should be on the CAS logout page

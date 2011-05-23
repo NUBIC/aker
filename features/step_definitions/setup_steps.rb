@@ -128,3 +128,10 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
 
   start_main_rack_server(app)
 end
+
+Given /^the application has a session timeout of (\d+) seconds$/ do |timeout|
+  Bcsec.configuration.add_parameters_for(:policy, %s(session-timeout) => timeout)
+
+  stop_spawned_servers
+  start_main_rack_server(app)
+end

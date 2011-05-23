@@ -128,6 +128,8 @@ module Bcsec::Cucumber
           $stderr.puts "Stopping server pid=#{server.pid} port=#{server.port} failed: #{m}"
         end
       end
+
+      spawned_servers.clear
     end
 
     def app_url(url)
