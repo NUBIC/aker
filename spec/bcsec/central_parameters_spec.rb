@@ -37,6 +37,10 @@ module Bcsec
         it "includes the lockout attempt count" do
           @defaults[:policy][:'lockout-attempts'].should == 5
         end
+
+        it "includes the session timeout" do
+          @defaults[:policy][:'session-timeout'].should == 30.minutes
+        end
       end
     end
 
