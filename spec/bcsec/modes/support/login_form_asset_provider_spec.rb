@@ -50,7 +50,7 @@ module Bcsec::Modes::Support
 
         # Annoyingly, Nokogiri.HTML automatically unescapes escaped entities in
         # attribute values.
-        html.should include("user&lt;a/&gt;")
+        html.should include("user&lt;a&#x2F;&gt;");
         html.should_not include("user<a/>")
       end
     end
