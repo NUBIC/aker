@@ -10,6 +10,7 @@ module Bcsec::Rack
   autoload :Failure,                 'bcsec/rack/failure'
   autoload :Logout,                  'bcsec/rack/logout'
   autoload :RequestExt,              'bcsec/rack/request_ext'
+  autoload :SessionTimer,            'bcsec/rack/session_timer'
   autoload :Setup,                   'bcsec/rack/setup'
 
   class << self
@@ -47,6 +48,7 @@ module Bcsec::Rack
         end
         builder.use Setup, effective_configuration
         builder.use Logout, '/logout'
+        builder.use SessionTimer
         builder.use Bcaudit::Middleware
       end
 

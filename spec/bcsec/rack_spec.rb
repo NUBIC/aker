@@ -119,6 +119,7 @@ module Bcsec
           @bcsec_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Setup)
           @logout_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
           @bcaudit_index = builder.uses.map { |u| u.first }.index(Bcaudit::Middleware)
+          @session_timer_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::SessionTimer)
         end
 
         it "prepends middleware for UI modes first" do
@@ -137,12 +138,16 @@ module Bcsec
           builder.should be_using(:api_ware_before, configuration)
         end
 
-        it "attaches the logout middleware directly after Bcsec::Rack::Setup" do
+        it "attaches the logout middleware after Bcsec::Rack::Setup" do
           @logout_index.should == @bcsec_index + 1
         end
 
-        it "attaches the bcaudit middleware after the logout middleware" do
-          @bcaudit_index.should == @logout_index + 1
+        it "attaches the session timer middleware after the logout middleware" do
+          @session_timer_index.should == @logout_index + 1
+        end
+
+        it "attaches the bcaudit middleware after the session timer middleware" do
+          @bcaudit_index.should == @session_timer_index + 1
         end
 
         it "attaches the default logout responder at the end of the chain" do
