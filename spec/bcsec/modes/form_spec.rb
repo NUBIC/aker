@@ -8,9 +8,6 @@ module Bcsec::Modes
       @env = ::Rack::MockRequest.env_for("/")
       @scope = mock
       @mode = Form.new(@env, @scope)
-
-      # Rack::Request manipulations modify the environment in-place
-      @request = ::Rack::Request.new(@env)
     end
 
     it_should_behave_like "a bcsec mode"
@@ -29,8 +26,7 @@ module Bcsec::Modes
 
     describe "#credentials" do
       it "contains username and password" do
-        @request["username"] = "foo"
-        @request["password"] = "bar"
+        set_params("username" => "foo", "password" => "bar")
 
         @mode.credentials.should == ["foo", "bar"]
       end
@@ -42,8 +38,7 @@ module Bcsec::Modes
 
     describe "#valid?" do
       it "returns true if a username and password are present" do
-        @request["username"] = "foo"
-        @request["password"] = "bar"
+        set_params("username" => "foo", "password" => "bar")
 
         @mode.should be_valid
       end
@@ -55,8 +50,8 @@ module Bcsec::Modes
 
     describe "#authenticate!" do
       before do
-        @request["username"] = "foo"
-        @request["password"] = "bar"
+        set_params("username" => "foo", "password" => "bar")
+
         @authority = mock
         @mode.stub!(:authority => @authority)
       end
@@ -106,6 +101,10 @@ module Bcsec::Modes
 
         URI.parse(response.location).query.should == "url=" + escape("http://www.example.edu")
       end
+    end
+
+    def set_params(params)
+      @env.update(::Rack::MockRequest.env_for("/", :params => params))
     end
   end
 end
