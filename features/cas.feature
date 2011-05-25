@@ -51,8 +51,9 @@ Feature: CAS UI authentication
     Then I should be on the CAS logout page
 
   @wip
-  Scenario: Enforcing session timeouts
-    Given the application has a session timeout of 2 seconds
+  Scenario: Session timeouts are enforced
+    Given I have logged into CAS using "mr296" / "br0wn"
+    And the application has a session timeout of 2 seconds
 
     When I access a protected resource
     And I wait 4 seconds
