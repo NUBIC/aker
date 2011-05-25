@@ -50,7 +50,6 @@ Feature: CAS UI authentication
 
     Then I should be on the CAS logout page
 
-  @wip
   Scenario: Session timeouts are enforced
     Given I have logged into CAS using "mr296" / "br0wn"
     And the application has a session timeout of 2 seconds
@@ -61,7 +60,6 @@ Feature: CAS UI authentication
 
     Then I should be on the CAS logout page
 
-  @wip
   Scenario: Requests made within a session extend the session length
     Given I have logged into CAS using "mr296" / "br0wn"
     And the application has a session timeout of 5 seconds
