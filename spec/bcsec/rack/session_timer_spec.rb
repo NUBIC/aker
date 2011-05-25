@@ -110,8 +110,8 @@ module Bcsec::Rack
           it 'logs the user out' do
             resp = timer.call(env)
 
-            resp.should be_redirect
-            resp.location.should == '/logout'
+            resp[0].should == 302
+            resp[1].should include('Location' => '/logout')
           end
         end
       end
