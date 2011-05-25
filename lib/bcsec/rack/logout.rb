@@ -47,7 +47,7 @@ module Bcsec
       # application.
       #
       # If the application does not provide a handler for `/logout`, then
-      # the handler defined by {DefaultLogoutResponse} will be invoked.
+      # the handler defined by {DefaultLogoutResponder} will be invoked.
       #
       # @see Bcsec::Rack.use_in
       # @param env [Hash] a Rack environment
