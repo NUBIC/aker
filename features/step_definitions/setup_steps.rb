@@ -132,6 +132,5 @@ end
 Given /^the application has a session timeout of (\d+) seconds$/ do |timeout|
   Bcsec.configuration.add_parameters_for(:policy, %s(session-timeout) => timeout)
 
-  stop_spawned_servers
-  start_main_rack_server(app)
+  restart_spawned_servers
 end
