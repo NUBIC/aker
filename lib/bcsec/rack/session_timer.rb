@@ -76,7 +76,7 @@ module Bcsec::Rack
       if now < previous_timeout + window_size
         @app.call(env)
       else
-        Rack::Response.new { |r| r.redirect('/logout') }
+        Rack::Response.new { |r| r.redirect('/logout') }.finish
       end
     end
 
