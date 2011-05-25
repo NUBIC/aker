@@ -5,6 +5,13 @@ module Bcsec::Rack
   # Middleware that permits a Web application to enforce a session inactivity
   # limit.
   #
+  # The session inactivity limit is determined by the `session-timeout`
+  # parameter in Bcsec's `policy` parameter group.  It defaults to 1800 seconds
+  # (30 minutes), and can be overridden by a {Bcsec::ConfiguratorLanguage Bcsec
+  # configuration block} or {Bcsec::CentralParameters central parameters file}.
+  # To disable session timeout, set `session-timeout` to `nil` or `0`.
+  #
+  #
   # Algorithm
   # =========
   #
@@ -41,24 +48,20 @@ module Bcsec::Rack
   # session manager to be present in the `rack.session` Rack environment
   # variable.
   #
-  # Therefore, if you're using Rack middleware to provide session management,
-  # you'll need to have the session management middleware run before
-  # SessionTimer.  Most Bcsec configurations will do this, so it's not generally
-  # something that you'll need to worry about.
-  #
   # SessionTimer also expects `GET /logout` to do all necessary work to log out
-  # a user.  Installing {Bcsec::Rack::Logout} before SessionTimer is one way to
-  # satisfy this expectation.
+  # a user.
+  #
+  # {Bcsec::Rack.use_in} sets up a middleware stack that satisfies these
+  # requirements.
   class SessionTimer
     def initialize(app)
       @app = app
     end
 
     ##
-    # Determines whether the incoming request arrived within the
-    # {#timeout_window timeout window}.  If it did, then the request is passed
-    # onto the rest of the Rack stack; otherwise, the user is redirected to `GET
-    # /logout`.
+    # Determines whether the incoming request arrived within the timeout
+    # window.  If it did, then the request is passed onto the rest of the Rack
+    # stack; otherwise, the user is redirected to `GET /logout`.
     #
     def call(env)
       now              = Time.now.to_i
@@ -86,12 +89,6 @@ module Bcsec::Rack
       env['bcsec.configuration']
     end
 
-    ##
-    # Session timeout length in seconds from Bcsec's `policy` parameter group.
-    #
-    # If no session timeout is set, this returns zero.
-    #
-    # @return [Numeric]
     def window_size(env)
       configuration(env).parameters_for(:policy)[%s(session-timeout)].to_i
     end
