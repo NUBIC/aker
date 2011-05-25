@@ -75,7 +75,6 @@ module Bcsec::Rack
 
       window = (previous_timeout...previous_timeout + window_size)
 
-      $stderr.puts "testing #{now} against #{window.inspect}"
 
       if window.include?(now)
         @app.call(env)
