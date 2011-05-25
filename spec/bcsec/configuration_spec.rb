@@ -338,18 +338,6 @@ describe Bcsec::Configuration do
           @config.authorities.first.class.should == Bcsec::Authorities::Cas
         end
       end
-
-      it "fails when given rlogin_target" do
-        config_from { rlogin_target :foo }
-        deprecation_message.should =~
-          /rlogin is no longer supported\..*2.0/
-      end
-
-      it "fails when given rlogin_handler" do
-        config_from { rlogin_handler :foo }
-        deprecation_message.should =~
-          /rlogin is no longer supported\..*2.0/
-      end
     end
   end
 

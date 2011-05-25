@@ -482,67 +482,6 @@ module Bcsec::Authorities
           @s.user("suzy").may_access?(:ENU).should be_true
         end
       end
-
-      it "fails on in_group!" do
-        @s.in_group!("suzy", "foo", "bar")
-        deprecation_message.should =~
-          /in_group! is deprecated.  Directly add groups for a particular portal via #user or use #load!./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on load_credentials!" do
-        @s.load_credentials!("dc")
-        deprecation_message.should =~
-          /load_credentials! is deprecated.  Convert your YAML to the format supported by #load! and use it instead./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on #all_groups" do
-        @s.all_groups
-        deprecation_message.should =~ /all_groups is no longer part of the auth API./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on #add_groups" do
-        @s.add_groups
-        deprecation_message.should =~
-          /Since all_groups is no longer part of the auth API, you don't need to mock its contents with add_groups./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on #add_group" do
-        @s.add_group
-        deprecation_message.should =~
-          /Since all_groups is no longer part of the auth API, you don't need to mock its contents with add_groups./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on #portals" do
-        @s.portals
-        deprecation_message.should =~ /The portal list is not directly exposed./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on #users=" do
-        @s.users = []
-        deprecation_message.should =~
-          /The user list is not directly settable.  Use #user or #load!./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on #users" do
-        @s.users
-        deprecation_message.should =~
-          /The user list is not directly readable.  Use #user to read one user at a time./
-        deprecation_message.should =~ /2\.0/
-      end
-
-      it "fails on #group_memberships" do
-        @s.group_memberships
-        deprecation_message.should =~
-          /group_memberships are not directly mutable.  Use #user for one or #load! for many./
-        deprecation_message.should =~ /2\.0/
-      end
     end
   end
 end

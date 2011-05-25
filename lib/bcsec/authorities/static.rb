@@ -289,49 +289,6 @@ module Bcsec::Authorities
                                 "2.2")
       user(username).portals << portal.to_sym
     end
-
-    def in_group!(username, *groups)
-      Bcsec::Deprecation.notify("in_group! is deprecated.  Directly add groups " <<
-                                "for a particular portal via #user or use #load!.",
-                                "2.0")
-    end
-
-    def load_credentials!(io)
-      Bcsec::Deprecation.notify("load_credentials! is deprecated.  Convert your YAML " <<
-                                "to the format supported by #load! and use it instead.",
-                                "2.0")
-    end
-
-    def all_groups
-      Bcsec::Deprecation.notify("all_groups is no longer part of the auth API.", "2.0")
-    end
-
-    def add_groups(*groups)
-      Bcsec::Deprecation.notify("Since all_groups is no longer part of the auth API, " <<
-                                "you don't need to mock its contents with add_groups.", "2.0")
-    end
-    alias :add_group :add_groups
-
-    def portals
-      Bcsec::Deprecation.notify("The portal list is not directly exposed.", "2.0")
-    end
-
-    def users=(list)
-      Bcsec::Deprecation.notify("The user list is not directly settable.  Use #user or #load!.",
-                                "2.0")
-    end
-
-    def users
-      Bcsec::Deprecation.notify("The user list is not directly readable.  " <<
-                                "Use #user to read one user at a time.",
-                                "2.0")
-    end
-
-    def group_memberships
-      Bcsec::Deprecation.notify("group_memberships are not directly mutable.  " <<
-                                "Use #user for one or #load! for many.",
-                                "2.0")
-    end
   end
 
   Static.send(:include, StaticDeprecatedMethods)

@@ -329,11 +329,6 @@ module Bcsec
       pers_parameters :separate_connection => true
     end
 
-    def rlogin_target(*args)
-      Deprecation.notify("rlogin is no longer supported.", "2.0")
-    end
-    alias rlogin_handler rlogin_target
-
     private
 
     def replace_deprecated_authenticators(args)
