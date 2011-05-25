@@ -87,7 +87,7 @@ Feature: Form authentication
     Then I should be sent to the login page
 
   Scenario: Requests made within a session extend the session length
-    Given the application has a session timeout of 4 seconds
+    Given the application has a session timeout of 5 seconds
     And I go to the login form
     And I enter username "mr296" and password "br0wn"
 
