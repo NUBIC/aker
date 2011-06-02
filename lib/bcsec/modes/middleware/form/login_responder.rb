@@ -21,13 +21,21 @@ module Bcsec
           attr_accessor :login_path
 
           ##
+          # Bcsec configuration data.  This is usually set by the form mode.
+          #
+          # @return [Configuration]
+          attr_accessor :configuration
+
+          ##
           # Instantiates the middleware.
           #
           # @param app [Rack app] the Rack application on which this middleware
           #                       should be layered
           # @param login_path [String] the login path
-          def initialize(app, login_path)
+          # @param configuration [Configuration] Bcsec configuration
+          def initialize(app, login_path, configuration)
             @app = app
+            self.configuration = configuration
             self.login_path = login_path
           end
 
@@ -57,22 +65,30 @@ module Bcsec
               unauthenticated(request)
             else
               redirect_to_target(request)
-            end.finish
+            end
           end
 
           def unauthenticated(request)
+            if using_custom_login_page?
+              return @app.call(request.env.merge('bcsec.login_failed' => true))
+            end
+
             body = login_html(request.env,
                               :login_failed => true,
                               :username => request['username'],
                               :url => request['url'])
 
-            ::Rack::Response.new(body, 401)
+            ::Rack::Response.new(body, 401).finish
           end
 
           def redirect_to_target(request)
             target = !(request['url'].blank?) ? request['url'] : request.env['SCRIPT_NAME'] + '/'
 
-            ::Rack::Response.new { |resp| resp.redirect(target) }
+            ::Rack::Response.new { |resp| resp.redirect(target) }.finish
+          end
+
+          def using_custom_login_page?
+            configuration.parameters_for(:form)[:use_custom_login_page]
           end
         end
       end
