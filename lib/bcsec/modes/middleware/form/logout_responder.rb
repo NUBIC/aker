@@ -3,6 +3,7 @@ require 'bcsec'
 module Bcsec::Modes::Middleware::Form
   class LogoutResponder
     include Bcsec::Modes::Support::LoginFormAssetProvider
+    include ConfigurationHelper
 
     ##
     # Bcsec configuration data.  This is usually set by the form mode.
@@ -30,16 +31,6 @@ module Bcsec::Modes::Middleware::Form
       else
         @app.call(env)
       end
-    end
-
-    private
-
-    ##
-    # Whether a custom logout page is in use.
-    #
-    # @return [Boolean]
-    def using_custom_logout_page?
-      configuration.parameters_for(:form)[:use_custom_logout_page]
     end
   end
 end

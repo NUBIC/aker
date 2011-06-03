@@ -10,7 +10,8 @@ module Bcsec::Modes::Middleware::Form
   #
   # @author David Yip
   class LoginRenderer
-    include Support::LoginFormAssetProvider
+    include Bcsec::Modes::Support::LoginFormAssetProvider
+    include ConfigurationHelper
 
     ##
     # The path at which the middleware will watch for login requests.
@@ -83,14 +84,6 @@ module Bcsec::Modes::Middleware::Form
       ::Rack::Response.new(login_css) do |resp|
         resp['Content-Type'] = 'text/css'
       end.finish
-    end
-
-    ##
-    # Whether a custom login page will be provided by the application.
-    #
-    # @return [Boolean]
-    def using_custom_login_page?
-      configuration.parameters_for(:form)[:use_custom_login_page]
     end
   end
 end

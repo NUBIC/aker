@@ -10,7 +10,8 @@ module Bcsec::Modes::Middleware::Form
   #
   # @author David Yip
   class LoginResponder
-    include Support::LoginFormAssetProvider
+    include Bcsec::Modes::Support::LoginFormAssetProvider
+    include ConfigurationHelper
 
     ##
     # The path at which the middleware will watch for login requests.
@@ -82,10 +83,6 @@ module Bcsec::Modes::Middleware::Form
       target = !(request['url'].blank?) ? request['url'] : request.env['SCRIPT_NAME'] + '/'
 
       ::Rack::Response.new { |resp| resp.redirect(target) }.finish
-    end
-
-    def using_custom_login_page?
-      configuration.parameters_for(:form)[:use_custom_login_page]
     end
   end
 end
