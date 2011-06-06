@@ -5,6 +5,7 @@ require 'bcaudit'
 ##
 # Integration of Bcsec with {http://rack.rubyforge.org/ Rack}.
 module Bcsec::Rack
+  autoload :Authenticate,            'bcsec/rack/authenticate'
   autoload :DefaultLogoutResponder,  'bcsec/rack/default_logout_responder'
   autoload :Facade,                  'bcsec/rack/facade'
   autoload :Failure,                 'bcsec/rack/failure'
@@ -42,11 +43,13 @@ module Bcsec::Rack
           "Please set one or the other before calling use_in."
       end
 
+      builder.use Setup, effective_configuration
+
       with_mode_middlewares(builder, effective_configuration) do
         builder.use Warden::Manager do |manager|
           manager.failure_app = Bcsec::Rack::Failure.new
         end
-        builder.use Setup, effective_configuration
+        builder.use Authenticate
         builder.use Logout, '/logout'
         builder.use SessionTimer
         builder.use Bcaudit::Middleware

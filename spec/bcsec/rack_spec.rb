@@ -116,18 +116,22 @@ module Bcsec
 
           Bcsec::Rack.use_in(builder)
 
-          @bcsec_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Setup)
+          @authenticate_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Authenticate)
           @logout_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
           @bcaudit_index = builder.uses.map { |u| u.first }.index(Bcaudit::Middleware)
           @session_timer_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::SessionTimer)
         end
 
-        it "prepends middleware for UI modes first" do
-          builder.uses[0].first.should == :ui_ware_before
+        it "uses the Setup middleware first" do
+          builder.uses[0].first.should == Bcsec::Rack::Setup
+        end
+
+        it "prepends middleware for UI modes after the Setup middleware" do
+          builder.uses[1].first.should == :ui_ware_before
         end
 
         it "prepends middleware for API modes after UI modes" do
-          builder.uses[1].first.should == :api_ware_before
+          builder.uses[2].first.should == :api_ware_before
         end
 
         it "passes a configuration object to prepended UI middleware" do
@@ -138,8 +142,8 @@ module Bcsec
           builder.should be_using(:api_ware_before, configuration)
         end
 
-        it "attaches the logout middleware after Bcsec::Rack::Setup" do
-          @logout_index.should == @bcsec_index + 1
+        it "attaches the logout middleware after Bcsec::Rack::Authenticate" do
+          @logout_index.should == @authenticate_index + 1
         end
 
         it "attaches the session timer middleware after the logout middleware" do
@@ -184,8 +188,9 @@ module Bcsec
           builder = MockBuilder.new
           Bcsec::Rack.use_in(builder, config)
 
-          builder.uses[0].first.should == :ui_ware_before
-          builder.uses[1].first.should_not == :api_ware_before
+          builder.uses[0].first.should == Bcsec::Rack::Setup
+          builder.uses[1].first.should == :ui_ware_before
+          builder.uses[2].first.should_not == :api_ware_before
         end
       end
 

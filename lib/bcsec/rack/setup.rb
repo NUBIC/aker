@@ -1,5 +1,4 @@
 require 'bcsec/rack'
-require 'bcaudit'
 
 module Bcsec::Rack
   ##
@@ -22,19 +21,13 @@ module Bcsec::Rack
     #
     # @param [#call] app the application this middleware is being
     #   wrapped around.
-    # @param [Bcsec::Configuration,nil] configuration the configuration to use for
-    #   this instance.  If nil, the global configuration
-    #   ({Bcsec.configuration}) will be used instead.
-    # @param [Object,nil] authority the authority to use for this instance.  If
-    #   nil, it will be derived from the local configuration.  If
-    #   there's no local configuration either, the global authority
-    #   ({Bcsec.authority}) will be used.
+    # @param [Bcsec::Configuration] configuration the configuration to use for
+    #   this instance.
     #
     # @see Bcsec::Rack.use_in
-    def initialize(app, configuration=nil, authority=nil)
+    def initialize(app, configuration)
       @app = app
       @configuration = configuration
-      @authority = authority
     end
 
     ##
@@ -57,20 +50,9 @@ module Bcsec::Rack
     # @param [Hash] env the rack env
     # @return [Array] the standard rack return
     def call(env)
-      env['bcsec.configuration'] = configuration
-      env['bcsec.authority'] = authority
+      env['bcsec.configuration'] = @configuration
+      env['bcsec.authority'] = @configuration.composite_authority
       env['bcsec.interactive'] = interactive?(env)
-
-      warden = env['warden']
-      with_temporary_audit_info(env) do
-        if env['bcsec.interactive'] || configuration.api_modes.empty?
-          warden.authenticate(configuration.ui_mode)
-        else
-          warden.authenticate(*configuration.api_modes)
-        end
-      end
-
-      env['bcsec'] = Facade.new(configuration, warden.user)
 
       @app.call(env)
     end
@@ -81,31 +63,9 @@ module Bcsec::Rack
     #
     # @return [Boolean, nil] true if interactive, false or nil otherwise
     def interactive?(env)
-      configuration.api_modes.empty? or
+      @configuration.api_modes.empty? or
         env["HTTP_ACCEPT"] =~ %r{text/html} or
         env["HTTP_USER_AGENT"] =~ %r{Mozilla}
-    end
-
-    private
-
-    def configuration
-      @configuration || Bcsec.configuration
-    end
-
-    def authority
-      if @authority
-        @authority
-      elsif @configuration # deliberately not using the accessor
-        configuration.composite_authority
-      else
-        Bcsec.authority
-      end
-    end
-
-    def with_temporary_audit_info(env)
-      Bcaudit::Middleware.set_audit_info_from(env)
-      yield
-      Bcaudit::AuditInfo.clear
     end
   end
 end
