@@ -4,6 +4,8 @@ module Bcsec::Rack
   ##
   # Provides a default response for `GET /logout`.
   class DefaultLogoutResponder
+    include ConfigurationHelper
+
     ##
     # The path at which the middleware will watch for logout requests.
     #
@@ -26,6 +28,8 @@ module Bcsec::Rack
     #
     # @param env [Hash] a Rack environment
     def call(env)
+      return @app.call(env) if using_custom_logout_page?(env)
+
       if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path
         ::Rack::Response.new('You have been logged out.', 200).finish
       else

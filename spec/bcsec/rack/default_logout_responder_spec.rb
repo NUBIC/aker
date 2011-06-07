@@ -6,8 +6,6 @@ module Bcsec::Rack
   describe DefaultLogoutResponder do
     include Rack::Test::Methods
 
-    let(:path) { '/logout' }
-
     let(:app) do
       p = path
 
@@ -17,24 +15,44 @@ module Bcsec::Rack
       end
     end
 
+    let(:configuration) { Bcsec::Configuration.new }
+
+    let(:env) do
+      { 'bcsec.configuration' => configuration }
+    end
+
+    let(:path) { '/logout' }
+
     describe '#call' do
       it 'responds to GET /logout' do
-        get path
+        get path, {}, env
 
         last_response.status.should == 200
         last_response.body.should == "You have been logged out."
       end
 
       it 'does not respond to other methods' do
-        post path
+        post path, {}, env
 
         last_response.status.should == 404
       end
 
       it 'does not respond to other paths' do
-        get '/'
+        get '/', {}, env
 
         last_response.status.should == 404
+      end
+
+      context "if :use_custom_logout_page is true" do
+        before do
+          configuration.add_parameters_for(:rack, :use_custom_logout_page => true)
+        end
+
+        it "passes GET /logout to the application" do
+          get "/logout", {}, env
+
+          last_response.status.should == 404
+        end
       end
     end
   end
