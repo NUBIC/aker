@@ -4,6 +4,8 @@ Bcsec History
 2.2.0
 -----
 - Bcsec now has a 30 minute session timeout.  (#5156)
+- It is now possible to customize the login and logout pages when using the
+  `form` mode.  (#5469)
 
 2.1.1
 -----
