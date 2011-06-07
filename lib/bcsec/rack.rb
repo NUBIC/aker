@@ -8,6 +8,7 @@ module Bcsec::Rack
   autoload :Authenticate,            'bcsec/rack/authenticate'
   autoload :ConfigurationHelper,     'bcsec/rack/configuration_helper'
   autoload :DefaultLogoutResponder,  'bcsec/rack/default_logout_responder'
+  autoload :EnvironmentHelper,       'bcsec/rack/environment_helper'
   autoload :Facade,                  'bcsec/rack/facade'
   autoload :Failure,                 'bcsec/rack/failure'
   autoload :Logout,                  'bcsec/rack/logout'

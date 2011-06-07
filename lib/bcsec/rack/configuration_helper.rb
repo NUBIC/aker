@@ -5,13 +5,7 @@ module Bcsec::Rack
   # Methods used by Rack middleware for reading configuration data out of the
   # Rack environment.
   module ConfigurationHelper
-    ##
-    # Returns the {Configuration} instance for the current request.
-    #
-    # @return [Bcsec::Configuration]
-    def configuration(env)
-      env['bcsec.configuration']
-    end
+    include EnvironmentHelper
 
     ##
     # Whether a custom login page will be provided by the application.

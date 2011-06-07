@@ -54,7 +54,7 @@ module Bcsec::Rack
   # {Bcsec::Rack.use_in} sets up a middleware stack that satisfies these
   # requirements.
   class SessionTimer
-    include ConfigurationHelper
+    include EnvironmentHelper
 
     def initialize(app)
       @app = app
