@@ -48,7 +48,7 @@ module Bcsec::Modes::Middleware::Form
 
     context "when :use_custom_login_page is true" do
       before do
-        configuration.add_parameters_for(:form, :use_custom_login_page => true)
+        configuration.add_parameters_for(:rack, :use_custom_login_page => true)
       end
 
       it "passes GET /login to the application" do

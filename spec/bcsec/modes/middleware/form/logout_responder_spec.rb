@@ -49,7 +49,7 @@ module Bcsec::Modes::Middleware::Form
 
       context "if :use_custom_logout_page is true" do
         before do
-          configuration.add_parameters_for(:form, :use_custom_logout_page => true)
+          configuration.add_parameters_for(:rack, :use_custom_logout_page => true)
         end
 
         it "passes GET /logout to the application" do

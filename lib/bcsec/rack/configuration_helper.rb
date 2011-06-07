@@ -12,7 +12,7 @@ module Bcsec::Rack
     #
     # @return [Boolean]
     def using_custom_login_page?(env)
-      configuration(env).parameters_for(:form)[:use_custom_login_page]
+      configuration(env).parameters_for(:rack)[:use_custom_login_page]
     end
 
     ##
@@ -20,7 +20,7 @@ module Bcsec::Rack
     #
     # @return [Boolean]
     def using_custom_logout_page?(env)
-      configuration(env).parameters_for(:form)[:use_custom_logout_page]
+      configuration(env).parameters_for(:rack)[:use_custom_logout_page]
     end
   end
 end
