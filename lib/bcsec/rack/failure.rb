@@ -9,6 +9,8 @@ module Bcsec::Rack
   # @see http://wiki.github.com/hassox/warden/failures
   #      Warden failures documentation
   class Failure
+    include ConfigurationHelper
+
     ##
     # Receives the rack environment in case of a failure and renders a
     # response based on the interactiveness of the request and the
@@ -45,10 +47,6 @@ module Bcsec::Rack
 
     def interactive?(env)
       env['bcsec.interactive']
-    end
-
-    def configuration(env)
-      env['bcsec.configuration']
     end
 
     def login_required?(env)

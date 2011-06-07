@@ -54,6 +54,8 @@ module Bcsec::Rack
   # {Bcsec::Rack.use_in} sets up a middleware stack that satisfies these
   # requirements.
   class SessionTimer
+    include ConfigurationHelper
+
     def initialize(app)
       @app = app
     end
@@ -84,10 +86,6 @@ module Bcsec::Rack
     end
 
     private
-
-    def configuration(env)
-      env['bcsec.configuration']
-    end
 
     def window_size(env)
       configuration(env).parameters_for(:policy)[%s(session-timeout)].to_i

@@ -3,6 +3,8 @@ require 'bcsec'
 
 module Bcsec::Rack
   class Authenticate
+    include ConfigurationHelper
+
     def initialize(app)
       @app = app
     end
@@ -37,10 +39,6 @@ module Bcsec::Rack
       Bcaudit::Middleware.set_audit_info_from(env)
       yield
       Bcaudit::AuditInfo.clear
-    end
-
-    def configuration(env)
-      env['bcsec.configuration']
     end
 
     def interactive?(env)
