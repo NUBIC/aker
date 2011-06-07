@@ -42,16 +42,16 @@ module Bcsec
       ##
       # Appends the {Middleware::Form::LoginResponder login responder} to its
       # position in the Rack middleware stack.
-      def self.append_middleware(builder, configuration)
-        builder.use(Middleware::Form::LoginResponder, login_path, configuration)
-        builder.use(Middleware::Form::LogoutResponder, configuration)
+      def self.append_middleware(builder)
+        builder.use(Middleware::Form::LoginResponder, login_path)
+        builder.use(Middleware::Form::LogoutResponder)
       end
 
       ##
       # Prepends the {Middleware::Form::LoginRenderer login form renderer} to
       # its position in the Rack middleware stack.
-      def self.prepend_middleware(builder, configuration)
-        builder.use(Middleware::Form::LoginRenderer, login_path, configuration)
+      def self.prepend_middleware(builder)
+        builder.use(Middleware::Form::LoginRenderer, login_path)
       end
 
       ##

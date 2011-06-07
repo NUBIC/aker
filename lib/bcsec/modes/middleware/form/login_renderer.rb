@@ -11,7 +11,7 @@ module Bcsec::Modes::Middleware::Form
   # @author David Yip
   class LoginRenderer
     include Bcsec::Modes::Support::LoginFormAssetProvider
-    include ConfigurationHelper
+    include Bcsec::Rack::ConfigurationHelper
 
     ##
     # The path at which the middleware will watch for login requests.
@@ -19,21 +19,13 @@ module Bcsec::Modes::Middleware::Form
     attr_accessor :login_path
 
     ##
-    # Bcsec configuration data.  This is usually set by the form mode.
-    #
-    # @return [Configuration]
-    attr_accessor :configuration
-
-    ##
     # Instantiates the middleware.
     #
     # @param app [Rack app] The Rack application on which this middleware
     #   should be layered.
     # @param login_path [String] the login path
-    # @param configuration [Configuration] Bcsec configuration
-    def initialize(app, login_path, configuration)
+    def initialize(app, login_path)
       @app = app
-      self.configuration = configuration
       self.login_path = login_path
     end
 
@@ -54,7 +46,7 @@ module Bcsec::Modes::Middleware::Form
     #
     # @return a finished Rack response
     def call(env)
-      return @app.call(env) if using_custom_login_page?
+      return @app.call(env) if using_custom_login_page?(env)
 
       case [env['REQUEST_METHOD'], env['PATH_INFO']]
         when ['GET', login_path];                provide_login_html(env)

@@ -6,10 +6,8 @@ module Bcsec::Modes::Middleware::Form
     include Rack::Test::Methods
 
     let(:app) do
-      c = configuration
-
       Rack::Builder.new do
-        use Bcsec::Modes::Middleware::Form::LoginResponder, '/login', c
+        use Bcsec::Modes::Middleware::Form::LoginResponder, '/login'
 
         app = lambda do |env|
           if env["REQUEST_METHOD"] == "POST" && env["PATH_INFO"] == "/login" && env['bcsec.login_failed']
@@ -25,35 +23,34 @@ module Bcsec::Modes::Middleware::Form
 
     let(:configuration) { Bcsec::Configuration.new }
 
+    let(:env) do
+      { 'bcsec.configuration' => configuration }
+    end
+
     it "does not intercept GETs to the login path" do
-      get '/login'
+      get '/login', {}, env
 
       last_response.should be_ok
       last_response.body.should == "Hello"
     end
 
     it "does not intercept POSTs to paths that are not the login path" do
-      post "/foo"
+      post "/foo", {}, env
 
       last_response.should be_ok
       last_response.body.should == "Hello"
     end
 
     describe "#call" do
-      let(:env) do
-        {
-          "warden" => @warden,
-          "REQUEST_METHOD" => "POST"
-        }
-      end
+      let(:warden) { mock }
 
       before do
-        @warden = mock
+        env.update("warden" => warden, "REQUEST_METHOD" => "POST")
       end
 
       describe "when authentication failed" do
         before do
-          @warden.stub(:authenticated? => false, :custom_failure! => nil)
+          warden.stub(:authenticated? => false, :custom_failure! => nil)
         end
 
         it "renders a 'login failed' message" do
@@ -78,7 +75,7 @@ module Bcsec::Modes::Middleware::Form
 
       describe "when authentication succeeded" do
         it "redirects to a given URL" do
-          @warden.should_receive(:authenticated?).and_return(true)
+          warden.should_receive(:authenticated?).and_return(true)
 
           post '/login', { :url => "/protected" }, env
 
@@ -87,7 +84,7 @@ module Bcsec::Modes::Middleware::Form
         end
 
         it "redirects to the application's root if no URL was given" do
-          @warden.should_receive(:authenticated?).and_return(true)
+          warden.should_receive(:authenticated?).and_return(true)
           env['SCRIPT_NAME'] = "/foo"
 
           post '/login', {}, env
@@ -97,7 +94,7 @@ module Bcsec::Modes::Middleware::Form
         end
 
         it "redirects to the application's root if the URL given is a blank string" do
-          @warden.should_receive(:authenticated?).and_return(true)
+          warden.should_receive(:authenticated?).and_return(true)
 
           post '/login', { :url => "" }, env
 

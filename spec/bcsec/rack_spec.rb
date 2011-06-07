@@ -83,16 +83,16 @@ module Bcsec
         let(:ui_mode) do
           Class.new(Warden::Strategies::Base) do
             def authenticate!; end
-            def self.prepend_middleware(builder, conf); builder.use :ui_ware_before, conf; end
-            def self.append_middleware(builder, conf); builder.use :ui_ware_after, conf; end
+            def self.prepend_middleware(builder); builder.use :ui_ware_before; end
+            def self.append_middleware(builder); builder.use :ui_ware_after; end
           end
         end
 
         let(:api_mode_a) do
           Class.new(Warden::Strategies::Base) do
             def authenticate!; end
-            def self.prepend_middleware(builder, conf); builder.use :api_ware_before, conf; end
-            def self.append_middleware(builder, conf); builder.use :api_ware_after, conf; end
+            def self.prepend_middleware(builder); builder.use :api_ware_before; end
+            def self.append_middleware(builder); builder.use :api_ware_after; end
           end
         end
 
@@ -135,11 +135,11 @@ module Bcsec
         end
 
         it "passes a configuration object to prepended UI middleware" do
-          builder.should be_using(:ui_ware_before, configuration)
+          builder.should be_using(:ui_ware_before)
         end
 
         it "passes a configuration object to prepended API middleware" do
-          builder.should be_using(:api_ware_before, configuration)
+          builder.should be_using(:api_ware_before)
         end
 
         it "attaches the logout middleware after Bcsec::Rack::Authenticate" do
@@ -173,11 +173,11 @@ module Bcsec
         end
 
         it "passes a configuration object to appended UI middleware" do
-          builder.should be_using(:ui_ware_after, configuration)
+          builder.should be_using(:ui_ware_after)
         end
 
         it "passes a configuration object to appended API middleware" do
-          builder.should be_using(:api_ware_after, configuration)
+          builder.should be_using(:api_ware_after)
         end
 
         it "uses middleware for the passed-in configuration instead of the global configuration if present" do

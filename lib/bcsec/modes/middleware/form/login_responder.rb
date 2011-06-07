@@ -11,7 +11,7 @@ module Bcsec::Modes::Middleware::Form
   # @author David Yip
   class LoginResponder
     include Bcsec::Modes::Support::LoginFormAssetProvider
-    include ConfigurationHelper
+    include Bcsec::Rack::ConfigurationHelper
 
     ##
     # The path at which the middleware will watch for login requests.
@@ -19,21 +19,13 @@ module Bcsec::Modes::Middleware::Form
     attr_accessor :login_path
 
     ##
-    # Bcsec configuration data.  This is usually set by the form mode.
-    #
-    # @return [Configuration]
-    attr_accessor :configuration
-
-    ##
     # Instantiates the middleware.
     #
     # @param app [Rack app] the Rack application on which this middleware
     #                       should be layered
     # @param login_path [String] the login path
-    # @param configuration [Configuration] Bcsec configuration
-    def initialize(app, login_path, configuration)
+    def initialize(app, login_path)
       @app = app
-      self.configuration = configuration
       self.login_path = login_path
     end
 
@@ -56,22 +48,22 @@ module Bcsec::Modes::Middleware::Form
 
     def respond(env)
       warden = env['warden']
-      request = ::Rack::Request.new(env)
 
       if !warden.authenticated?
         warden.custom_failure!
-        unauthenticated(request)
+        unauthenticated(env)
       else
-        redirect_to_target(request)
+        redirect_to_target(env)
       end
     end
 
-    def unauthenticated(request)
-      if using_custom_login_page?
-        return @app.call(request.env.merge('bcsec.login_failed' => true))
+    def unauthenticated(env)
+      if using_custom_login_page?(env)
+        return @app.call(env.merge('bcsec.login_failed' => true))
       end
 
-      body = login_html(request.env,
+      request = Rack::Request.new(env)
+      body = login_html(env,
                         :login_failed => true,
                         :username => request['username'],
                         :url => request['url'])
@@ -79,7 +71,8 @@ module Bcsec::Modes::Middleware::Form
       ::Rack::Response.new(body, 401).finish
     end
 
-    def redirect_to_target(request)
+    def redirect_to_target(env)
+      request = Rack::Request.new(env)
       target = !(request['url'].blank?) ? request['url'] : request.env['SCRIPT_NAME'] + '/'
 
       ::Rack::Response.new { |resp| resp.redirect(target) }.finish

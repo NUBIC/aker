@@ -6,10 +6,8 @@ module Bcsec::Modes::Middleware::Form
     include Rack::Test::Methods
 
     let(:app) do
-      c = configuration
-
       Rack::Builder.new do
-        use Bcsec::Modes::Middleware::Form::LogoutResponder, c
+        use Bcsec::Modes::Middleware::Form::LogoutResponder
 
         app = lambda do |env|
           if env["REQUEST_METHOD"] == "GET" && env["PATH_INFO"] == "/logout"
@@ -25,22 +23,26 @@ module Bcsec::Modes::Middleware::Form
 
     let(:configuration) { Bcsec::Configuration.new }
 
+    let(:env) do
+      { 'bcsec.configuration' => configuration }
+    end
+
     describe '#call' do
       it "responds to GET /logout" do
-        get "/logout"
+        get "/logout", {}, env
 
         last_response.should be_ok
         last_response.content_type.should == "text/html"
       end
 
       it 'does not respond on other paths' do
-        get "/"
+        get "/", {}, env
 
         last_response.status.should == 404
       end
 
       it 'does not respond on other methods' do
-        post "/logout"
+        post "/logout", {}, env
 
         last_response.status.should == 404
       end
@@ -51,7 +53,7 @@ module Bcsec::Modes::Middleware::Form
         end
 
         it "passes GET /logout to the application" do
-          get "/logout"
+          get "/logout", {}, env
 
           last_response.body.should == "Logged out"
         end

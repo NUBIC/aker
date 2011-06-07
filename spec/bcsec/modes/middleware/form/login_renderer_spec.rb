@@ -6,43 +6,41 @@ module Bcsec::Modes::Middleware::Form
     include Rack::Test::Methods
 
     let(:app) do
-      c = configuration
-
       Rack::Builder.new do
-        use Bcsec::Modes::Middleware::Form::LoginRenderer, '/login', c
+        use Bcsec::Modes::Middleware::Form::LoginRenderer, '/login'
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
+    end
+
+    let(:env) do
+      { 'bcsec.configuration' => configuration }
     end
 
     let(:configuration) { Bcsec::Configuration.new }
 
     it "does not intercept POSTs to the login path" do
-      post "/login"
+      post "/login", {}, env
 
       last_response.should be_ok
       last_response.body.should == "Hello"
     end
 
     it "does not intercept GETs to paths that are not the login path" do
-      get "/foo"
+      get "/foo", {}, env
 
       last_response.should be_ok
       last_response.body.should == "Hello"
     end
 
     it "renders login forms for GETs on the login path" do
-      get "/login"
+      get "/login", {}, env
 
       last_response.should be_ok
       last_response.content_type.should == "text/html"
     end
 
-    it 'inserts the redirection URL into the login form' do
-      get "/login", { "url" => "http://www.example.edu" }
-    end
-
     it "outputs CSS for GETs on (the login path) + .css" do
-      get "/login/login.css"
+      get "/login/login.css", {}, env
 
       last_response.should be_ok
       last_response.content_type.should == "text/css"
@@ -54,7 +52,7 @@ module Bcsec::Modes::Middleware::Form
       end
 
       it "passes GET /login to the application" do
-        get "/login"
+        get "/login", {}, env
 
         last_response.body.should == "Hello"
       end

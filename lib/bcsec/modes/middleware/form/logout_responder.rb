@@ -3,17 +3,10 @@ require 'bcsec'
 module Bcsec::Modes::Middleware::Form
   class LogoutResponder
     include Bcsec::Modes::Support::LoginFormAssetProvider
-    include ConfigurationHelper
+    include Bcsec::Rack::ConfigurationHelper
 
-    ##
-    # Bcsec configuration data.  This is usually set by the form mode.
-    #
-    # @return [Bcsec::Configuration]
-    attr_accessor :configuration
-
-    def initialize(app, configuration)
+    def initialize(app)
       @app = app
-      self.configuration = configuration
     end
 
     ##
@@ -24,7 +17,7 @@ module Bcsec::Modes::Middleware::Form
     #
     # @return a finished Rack response
     def call(env)
-      return @app.call(env) if using_custom_logout_page?
+      return @app.call(env) if using_custom_logout_page?(env)
 
       if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == '/logout'
         ::Rack::Response.new(login_html(env, :logged_out => true)).finish

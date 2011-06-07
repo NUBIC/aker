@@ -29,8 +29,8 @@ module Bcsec
       ##
       # Appends the {Middleware::Cas::LogoutResponder logout responder} to the
       # Rack middleware stack.
-      def self.append_middleware(builder, conf)
-        builder.use(Middleware::Cas::LogoutResponder, conf)
+      def self.append_middleware(builder)
+        builder.use(Middleware::Cas::LogoutResponder)
       end
 
       ##
