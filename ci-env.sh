@@ -25,7 +25,7 @@ BCSEC_RVM_RUBY='ree-1.8.7-2010.02';
 BCSEC_RVM_RUBY='ruby-1.9.2-p0';
 ;;
 'ci_jruby')
-BCSEC_RVM_RUBY='jruby-1.5.3';
+BCSEC_RVM_RUBY='jruby-1.6.2';
 ;;
 esac
 

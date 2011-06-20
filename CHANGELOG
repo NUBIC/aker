@@ -6,6 +6,7 @@ Bcsec History
 - Bcsec now has a 30 minute session timeout.  (#5156)
 - It is now possible to customize the login and logout pages when using the
   `form` mode.  (#5469)
+- Updated JRuby tested version to 1.6.2.
 
 2.1.1
 -----
