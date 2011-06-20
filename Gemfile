@@ -63,7 +63,7 @@ group :development do
     # This is to keep JRuby from complaining when bcdatabase loads highline
     gem 'ffi-ncurses'
     gem 'jdbc-sqlite3'
-    gem 'activerecord-jdbcsqlite3-adapter'
+    gem 'activerecord-jdbcsqlite3-adapter', '~> 1.1'
   end
 
   # database_cleaner 0.6 doesn't work due to
