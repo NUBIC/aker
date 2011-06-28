@@ -22,7 +22,7 @@ case "$BCSEC_ENV" in
 BCSEC_RVM_RUBY='ree-1.8.7-2011.03';
 ;;
 'ci_1.9')
-BCSEC_RVM_RUBY='ruby-1.9.2-p0';
+BCSEC_RVM_RUBY='ruby-1.9.2-p180';
 ;;
 'ci_jruby')
 BCSEC_RVM_RUBY='jruby-1.6.2';
