@@ -19,7 +19,7 @@ set -x
 unset BCSEC_RVM_RUBY
 case "$BCSEC_ENV" in
 'ci_1.8.7')
-BCSEC_RVM_RUBY='ree-1.8.7-2010.02';
+BCSEC_RVM_RUBY='ree-1.8.7-2011.03';
 ;;
 'ci_1.9')
 BCSEC_RVM_RUBY='ruby-1.9.2-p0';
