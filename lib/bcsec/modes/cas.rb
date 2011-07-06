@@ -17,6 +17,7 @@ module Bcsec
       include Bcsec::Cas::ConfigurationHelper
       include ::Rack::Utils
       include Support::AttemptedPath
+      include Bcsec::Cas::ServiceUrl
 
       ##
       # A key that refers to this mode; used for configuration convenience.
@@ -79,38 +80,6 @@ module Bcsec
           login_uri.query = "service=#{escape(service_url)}"
           resp.redirect(login_uri.to_s)
         end
-      end
-
-      private
-
-      ##
-      # The service URL supplied to the CAS login page.  This is the
-      # requested URL, sans any service ticket.
-      def service_url
-        requested = URI.parse(
-          if attempted_path
-            url = "#{request.scheme}://#{request.host}"
-
-            unless [ ["https", 443], ["http", 80] ].include?([request.scheme, request.port])
-              url << ":#{request.port}"
-            end
-
-            url << attempted_path
-          else
-            request.url
-          end
-                              )
-        if requested.query
-          requested.query.gsub!(/(&?)ticket=ST-[^&]+(&?)/) do
-            if [$1, $2].uniq == ['&'] # in the middle
-              '&'
-            else
-              nil
-            end
-          end
-          requested.query = nil if requested.query.empty?
-        end
-        requested.to_s
       end
     end
   end

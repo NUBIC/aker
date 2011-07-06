@@ -10,5 +10,6 @@ module Bcsec
     autoload :UserExt,             'bcsec/cas/user_ext'
     autoload :ConfigurationHelper, 'bcsec/cas/configuration_helper'
     autoload :RackProxyCallback,   'bcsec/cas/rack_proxy_callback'
+    autoload :ServiceUrl,          'bcsec/cas/service_url'
   end
 end
