@@ -35,6 +35,18 @@ Feature: CAS UI authentication
 
     Then I should see the search results
 
+  Scenario: The CAS login process removes the service ticket on successful login
+    Given I am not logged into CAS
+     When I access a protected resource
+     Then I should be on the CAS login page
+     When I fill out the form with:
+       | username | password |
+       | mr296    | br0wn    |
+      And I click "LOGIN"
+
+     Then I should be able to access that protected resource
+      And the current URL should not contain a service ticket
+
   Scenario: Logging out of an application means the user can no longer access protected resources
     Given I have logged into CAS using "mr296" / "br0wn"
 

@@ -25,3 +25,7 @@ Then /^I should be on the CAS logout page$/ do
   logout_base = File.join(@cas_server.base_url, "logout")
   page.uri.to_s.should =~ %r{^#{logout_base}}
 end
+
+Then /^the current URL should not contain a service ticket$/ do
+  page.uri.to_s.should_not =~ %r{ticket=}
+end
