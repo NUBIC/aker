@@ -79,7 +79,7 @@ module Bcsec::Cucumber
     end
 
     def tmpdir
-      @tmpdir ||= "/tmp/bcsec-integrated-tests"
+      @tmpdir ||= File.expand_path("../../..//tmp/bcsec-integrated-tests", __FILE__)
       unless File.exist?(@tmpdir)
         mkdir_p @tmpdir
         puts "Using tmpdir #{@tmpdir}"
