@@ -150,8 +150,7 @@ module Bcsec::Cas
 
   describe RackProxyCallback do
     before do
-      @store_filename = "/tmp/bcsec-unit-tests/#{File.basename(__FILE__)}.pstore"
-      FileUtils.mkdir_p File.dirname(@store_filename)
+      @store_filename = "#{tmpdir}/#{File.basename(__FILE__)}.pstore"
     end
 
     after do

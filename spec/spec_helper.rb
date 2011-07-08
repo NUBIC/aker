@@ -25,6 +25,15 @@ RSpec.configure do |config|
   config.before do
     Bcaudit::AuditInfo.current_user = Bcsec::User.new("spec-runner").tap { |u| u.personnel_id = 42 }
   end
+
+  config.after do
+    FileUtils.rm_rf @tmpdir if @tmpdir
+  end
+
+  def tmpdir
+    @tmpdir ||= File.expand_path('../../tmp/bcsec-unit-tests', __FILE__).
+      tap { |p| FileUtils.mkdir_p p }
+  end
 end
 
 def port_offset
