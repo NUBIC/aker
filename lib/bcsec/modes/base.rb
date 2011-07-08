@@ -17,12 +17,14 @@ module Bcsec
     #
     # @author David Yip
     class Base < Warden::Strategies::Base
+      include Bcsec::Rack::EnvironmentHelper
+
       ##
       # Exposes the configuration this mode should use.
       #
       # @return [Bcsec::Configuration]
       def configuration
-        env['bcsec.configuration']
+        super(env)
       end
 
       ##
@@ -32,18 +34,15 @@ module Bcsec
       #
       # @return [Object]
       def authority
-        env['bcsec.authority']
+        super(env)
       end
 
       ##
-      # Whether the request is interactive or not.  Internally it is extracted
-      # from the `bcsec.interactive` Rack environment variable.
+      # Whether or not the current request is interactive.
       #
-      # @see Bcsec::Rack::Setup#call
-      # @see Bcsec::Rack::Setup#interactive?
       # @return [Boolean]
       def interactive?
-        env['bcsec.interactive']
+        super(env)
       end
 
       ##

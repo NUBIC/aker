@@ -6,12 +6,14 @@ module Bcsec::Rack
   #
   # To use these, `include` them into `Rack::Request`.
   module RequestExt
+    include Bcsec::Rack::EnvironmentHelper
+
     ##
-    # Returns the value of the `bcsec.interactive` Rack environment variable.
+    # Whether the current request is interactive.
     #
     # @return [Boolean]
     def interactive?
-      env['bcsec.interactive']
+      super(env)
     end
   end
 end

@@ -14,11 +14,21 @@ module Bcsec::Rack
     end
 
     ##
-    # Returns the value of the `bcsec.interactive` Rack environment variable.
+    # Whether the current request is interactive.
     #
+    # @see Bcsec::Rack::Setup#call
+    # @see Bcsec::Rack::Setup#interactive?
     # @return [Boolean]
     def interactive?(env)
       env['bcsec.interactive']
+    end
+
+    ##
+    # The authority to use for credential validation.
+    #
+    # @return [Object]
+    def authority(env)
+      env['bcsec.authority']
     end
   end
 end
