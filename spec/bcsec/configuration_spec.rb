@@ -5,8 +5,8 @@ describe Bcsec::Configuration do
     @config = blank_config
   end
 
-  def config_from(&block)
-    Bcsec::Configuration.new(&block)
+  def config_from(options={}, &block)
+    Bcsec::Configuration.new(options, &block)
   end
 
   def blank_config
@@ -67,6 +67,70 @@ describe Bcsec::Configuration do
     it "removes the nil modes from a list" do
       @config.api_modes = [:a, nil, :c, nil, nil]
       @config.api_modes.should == [:a, :c]
+    end
+  end
+
+  describe 'slices' do
+    let(:a_slice) { Bcsec::Configuration::Slice.new { portal 'from_slice' } }
+
+    after do
+      Bcsec::Configuration.default_slices.clear
+    end
+
+    describe 'and initialization' do
+      before do
+        Bcsec::Configuration.add_default_slice a_slice
+      end
+
+      context 'without explicit slices' do
+        it 'applies the default slices' do
+          blank_config.portal.should == :from_slice
+        end
+
+        it 'applies any additional configuration after the default slices' do
+          config_from { portal 'from_block' }.portal.should == :from_block
+        end
+      end
+
+      context 'with explicit slices' do
+        let(:config) do
+          Bcsec::Configuration.new(:slices => [
+              Bcsec::Configuration::Slice.new { ui_mode :form },
+              Bcsec::Configuration::Slice.new { api_mode :http_basic }
+            ]
+          ) do
+            api_mode :cas_proxy
+          end
+        end
+
+        it 'applies the explicit slices' do
+          config.ui_mode.should == :form
+        end
+
+        it 'does not apply the default slices' do
+          config.portal?.should be_false
+        end
+
+        it 'applies any additional configuration after the explicit slices' do
+          config.api_modes.should == [:cas_proxy]
+        end
+      end
+    end
+
+    describe '.add_default_slice' do
+      it 'can add a slice from a slice instance' do
+        Bcsec::Configuration.add_default_slice(a_slice)
+
+        Bcsec::Configuration.default_slices.should == [ a_slice ]
+      end
+
+      it 'can add a slice from a block' do
+        Bcsec::Configuration.add_default_slice {
+          portal 'from_default'
+        }
+
+        Bcsec::Configuration.default_slices.first.should be_a Bcsec::Configuration::Slice
+      end
     end
   end
 
@@ -358,6 +422,22 @@ describe Bcsec::Configuration do
   describe "#composite_authority" do
     it "returns a composite authority for the configured authorities" do
       config_from { authorities :static, :static }.composite_authority.authorities.size.should == 2
+    end
+  end
+end
+
+class Bcsec::Configuration
+  describe Slice do
+    subject { Slice.new { array << 2 } }
+    let(:array) { [1] }
+
+    it 'saves the provided block' do
+      subject.contents.should be_a Proc
+    end
+
+    it 'is possible to evaluate the block later' do
+      subject.contents.call
+      array.should == [1, 2]
     end
   end
 end

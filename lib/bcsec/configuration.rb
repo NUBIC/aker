@@ -9,11 +9,65 @@ module Bcsec
   # including authorities, application attributes, and authentication
   # modes.
   class Configuration
+    class << self
+      ##
+      # The default set of {Slice slices}. These will be applied to
+      # all newly created instances. Changes to this array will not be
+      # reflected in existing configurations instances.
+      #
+      # @since 2.2.0
+      # @return [Array<Slice>]
+      def default_slices
+        @default_slices ||= []
+      end
+
+      ##
+      # Appends a slice to the default set of slices. A slice may be
+      # specified either as a {Slice} instance or as a block provided
+      # directly to this method.
+      #
+      # @example from an instance
+      #   class SomeSlice < Bcsec::Configuration::Slice
+      #     def initialize
+      #       super do
+      #         register_authority :static, Bcsec::Authorities::Static
+      #       end
+      #     end
+      #   end
+      #   Bcsec::Configuration.add_default_slice(SomeSlice.new)
+      # @example from a block
+      #   Bcsec::Configuration.add_default_slice do
+      #     register_authority :static, Bcsec::Authorities::Static
+      #   end
+      #
+      # @since 2.2.0
+      # @param [Slice] slice the slice to add, if a block isn't
+      #   provided.
+      # @return [void]
+      def add_default_slice(slice=nil, &block)
+        if slice
+          default_slices << slice
+        end
+        if block
+          default_slices << Slice.new(&block)
+        end
+      end
+    end
+
     ##
     # Creates a new configuration.  If a block is given, it will be
     # evaluated using the {ConfiguratorLanguage DSL} and appended to
     # the new instance.
-    def initialize(&config)
+    #
+    # @param [Hash] options
+    #
+    # @option options [Array<Slice>] :slices substitutes a set of
+    #   slices for the {.default_slices globally-configured defaults}.
+    #   This will only be necessary in very rare situations.
+    def initialize(options={}, &config)
+      (options[:slices] || self.class.default_slices).each do |slice|
+        self.enhance(&slice.contents)
+      end
       self.enhance(&config) if config
     end
 
@@ -217,6 +271,37 @@ module Bcsec
 
     def authority_class_for_name(name)
       Bcsec::Authorities.const_get(name.to_s.camelize)
+    end
+
+    ##
+    # A persistent, reappliable fragment of a {Bcsec::Configuration}.
+    # This class enables Bcsec extensions to provide default chunks of
+    # configuration that will apply to every newly-created
+    # configuration instance.
+    #
+    # In general this facility is not needed by applications that use
+    # Bcsec; it's intended only for libraries that provide additional
+    # functionality on top of Bcsec and need to provide reasonable
+    # defaults and/or mandatory infrastructure for those features.
+    #
+    # Extensions of that kind should create an instance of this class
+    # and register it with {Bcsec::Configuration.add_default_slice}
+    # (or pass a block to that method to have it create one on their
+    # behalf).
+    #
+    # @since 2.2.0
+    class Slice
+      ##
+      # @return [Proc] the configuration DSL fragment comprising this
+      #   slice.
+      attr_accessor :contents
+
+      ##
+      # @param contents the configuration DSL fragment comprising this
+      #   slice.
+      def initialize(&contents)
+        @contents = contents
+      end
     end
   end
 
