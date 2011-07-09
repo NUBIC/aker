@@ -70,6 +70,27 @@ describe Bcsec::Configuration do
     end
   end
 
+  describe "#register_mode" do
+    class Bcsec::Spec::SomeMode < Bcsec::Modes::Base
+      def self.key
+        :some
+      end
+    end
+
+    let(:config) { Bcsec::Configuration.new(:slices => []) }
+
+    it 'registers the mode' do
+      config.register_mode Bcsec::Spec::SomeMode
+
+      config.registered_modes.should == [Bcsec::Spec::SomeMode]
+    end
+
+    it 'rejects objects that do not have keys' do
+      lambda { config.register_mode "No key here" }.
+        should raise_error(/"No key here" is not usable as a Bcsec mode/)
+    end
+  end
+
   describe 'slices' do
     let(:a_slice) { Bcsec::Configuration::Slice.new { portal 'from_slice' } }
 

@@ -37,13 +37,13 @@ module Bcsec::Rack
     #   configuration ({Bcsec.configuration}).
     # @return [void]
     def use_in(builder, configuration=nil)
-      install_modes
-
       effective_configuration = configuration || Bcsec.configuration
       unless effective_configuration
         fail "No configuration was provided and there's no global configuration.  " <<
           "Please set one or the other before calling use_in."
       end
+
+      install_modes(effective_configuration)
 
       builder.use Setup, effective_configuration
 
@@ -64,11 +64,8 @@ module Bcsec::Rack
 
     ##
     # @return [void]
-    def install_modes
-      Bcsec::Modes.constants.
-        collect { |s| Bcsec::Modes.const_get(s) }.
-        select { |c| c.respond_to?(:key) }.
-        each do |mode|
+    def install_modes(configuration)
+      configuration.registered_modes.each do |mode|
         Warden::Strategies.add(mode.key, mode)
       end
     end

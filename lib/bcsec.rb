@@ -10,7 +10,6 @@ module Bcsec
   autoload :Netid,             'bcsec/netid'
   autoload :Rack,              'bcsec/rack'
   autoload :User,              'bcsec/user'
-  autoload :Modes,             'bcsec/modes'
   autoload :Test,              'bcsec/test'
   autoload :VERSION,           'bcsec/version'
 
@@ -45,3 +44,7 @@ module Bcsec
     end
   end
 end
+
+# This file is required instead of autoloaded so that its
+# configuration slice is available immediately.
+require 'bcsec/modes'

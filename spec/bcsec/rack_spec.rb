@@ -28,7 +28,7 @@ module Bcsec
 
     describe ".use_in" do
       let(:builder) { MockBuilder.new }
-      let(:configuration) { Bcsec::Configuration.new }
+      let(:configuration) { Bcsec::Configuration.new(:slices => []) }
 
       before do
         Bcsec.configuration = configuration
@@ -45,20 +45,19 @@ module Bcsec
       end
 
       describe "setting up modes" do
-        it "installs the form mode" do
+        before do
+          configuration.register_mode Bcsec::Modes::Form
+
+          builder.reset!
+          Bcsec::Rack.use_in(builder)
+        end
+
+        it 'installs the modes registered in the configuration' do
           ::Warden::Strategies[:form].should == Bcsec::Modes::Form
         end
 
-        it "installs the basic mode" do
-          ::Warden::Strategies[:http_basic].should == Bcsec::Modes::HttpBasic
-        end
-
-        it "installs the cas mode" do
-          ::Warden::Strategies[:cas].should == Bcsec::Modes::Cas
-        end
-
-        it "installs the cas proxy mode" do
-          ::Warden::Strategies[:cas_proxy].should == Bcsec::Modes::CasProxy
+        it 'does not install other modes just because they exist' do
+          ::Warden::Strategies[:cas].should be_nil
         end
       end
 

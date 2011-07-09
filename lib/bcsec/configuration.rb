@@ -227,6 +227,34 @@ module Bcsec
     end
 
     ##
+    # Register a mode class to be used in this configuration. A mode
+    # class is Warden strategy with some additional bcsec elements on
+    # top.
+    #
+    # Bcsec and Bcsec extensions register the the modes that they
+    # provide (using {Slice slices}), so an application only needs to
+    # invoke this method if it provides its own custom mode.
+    #
+    # @see #registered_modes
+    # @see Bcsec::Modes::Base
+    # @since 2.2.0
+    # @param mode_class [Class]
+    def register_mode(mode_class)
+      fail "#{mode_class.inspect} is not usable as a Bcsec mode" unless mode_class.respond_to?(:key)
+      registered_modes << mode_class
+    end
+
+    ##
+    # The mode classes that have been registered for use in this
+    # configuration.
+    #
+    # @see #register_mode
+    # @return Array<Class>
+    def registered_modes
+      @registered_modes ||= []
+    end
+
+    ##
     # Retrieves the logger which bcsec will use for internal messages.
     #
     # The default instance logs to standard error.
