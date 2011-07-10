@@ -307,7 +307,7 @@ describe Bcsec::Configuration do
       end
 
       it "acquires the cc_pers parameters" do
-        @actual.parameters_for(:pers)[:user].should == "cc_pers_foo"
+        @actual.parameters_for(:cc_pers)[:user].should == "cc_pers_foo"
       end
 
       it "acquires the cas parameters" do
@@ -320,11 +320,6 @@ describe Bcsec::Configuration do
 
       it "acquires all top-level parameters" do
         @actual.parameters_for(:foo)[:bar].should == "baz"
-      end
-
-      it "adds the username and password to the activerecord configuration block" do
-        @actual.parameters_for(:pers)[:activerecord][:username].should == "cc_pers_foo"
-        @actual.parameters_for(:pers)[:activerecord][:password].should == "secret"
       end
     end
 
