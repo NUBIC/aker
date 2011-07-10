@@ -153,11 +153,10 @@ module Bcsec
     # @param [Array<Symbol, String, Class, Object>] new_authorities
     #   each authority specification may take one of four forms.
     #
-    #   * A `Symbol` or a `String` will be camelized and then
-    #     interpreted as a class name in {Bcsec::Authorities}.
-    #     Then it will be treated as a `Class`.  E.g.,
-    #     `:all_access` will be converted into
-    #     `Bcsec::Authorities::AllAccess`.
+    #   * A `Symbol` or a `String` will be resolved as an alias per
+    #     the {#authority_aliases}. The {Bcsec::Authorities}
+    #     documentation lists the built-in aliases. Extensions may
+    #     provide others.
     #   * A `Class` will be instantiated, passing the
     #     configuration (this object) as the sole constructor
     #     parameter.
@@ -227,6 +226,31 @@ module Bcsec
     end
 
     ##
+    # Register an alias for an authority object. The alias is a symbol
+    # (or something that can be turned into one). The authority object
+    # is anything that can be passed to {#authority=}.
+    #
+    # Bcsec does and Bcsec extensions may define shorter aliases for
+    # the authorities that they provide. In general, it's not expected
+    # that applications, even if they provide their own authorities,
+    # will need to configure aliases.
+    #
+    # @param name [#to_sym] the alias itself
+    # @param authority [Symbol,String,Class,Object] the authority
+    #   object to alias. See {#authorities=} for more details.
+    # @return [void]
+    def alias_authority(name, authority)
+      authority_aliases[name.to_sym] = authority
+    end
+
+    ##
+    # @see #alias_authority
+    # @return [Hash] the map of aliases to authority objects.
+    def authority_aliases
+      @authority_aliases ||= {}
+    end
+
+    ##
     # Register a mode class to be used in this configuration. A mode
     # class is Warden strategy with some additional bcsec elements on
     # top.
@@ -283,9 +307,9 @@ module Bcsec
     def build_authority(spec)
       case spec
       when Symbol
-        instantiate_authority(authority_class_for_name(spec))
+        resolve_alias(spec)
       when String
-        instantiate_authority(authority_class_for_name(spec))
+        resolve_alias(spec)
       when Class
         instantiate_authority(spec)
       else # assume it's an instance
@@ -297,8 +321,10 @@ module Bcsec
       clazz.new(self)
     end
 
-    def authority_class_for_name(name)
-      Bcsec::Authorities.const_get(name.to_s.camelize)
+    def resolve_alias(name)
+      resolved_spec = authority_aliases[name.to_sym]
+      fail "Unknown authority alias #{name.inspect}." unless resolved_spec
+      build_authority resolved_spec
     end
 
     ##

@@ -91,11 +91,31 @@ describe Bcsec::Configuration do
     end
   end
 
+  describe '#alias_authority' do
+    let(:new_auth) { Object.new }
+
+    it 'registers the alias' do
+      @config.alias_authority :some, new_auth
+      @config.authority_aliases[:some].should be new_auth
+    end
+
+    it 'registers a string alias as a symbol' do
+      @config.alias_authority 'some', new_auth
+      @config.authority_aliases[:some].should be new_auth
+    end
+  end
+
   describe 'slices' do
     let(:a_slice) { Bcsec::Configuration::Slice.new { portal 'from_slice' } }
 
+    before do
+      @original_slices = Bcsec::Configuration.default_slices.dup
+      Bcsec::Configuration.default_slices.clear
+    end
+
     after do
       Bcsec::Configuration.default_slices.clear
+      Bcsec::Configuration.default_slices.concat(@original_slices)
     end
 
     describe 'and initialization' do
@@ -215,38 +235,53 @@ describe Bcsec::Configuration do
     end
 
     describe "for authorities" do
-      it "can configure an authority from a symbol" do
-        config_from { authority :static }.authorities.first.class.
+      def only_static_config(&block)
+        Bcsec::Configuration.new(
+          :slices => [Bcsec::Configuration::Slice.new {
+            alias_authority :static, Bcsec::Authorities::Static
+          }], &block)
+      end
+
+      it "can configure an authority from an alias symbol" do
+        only_static_config { authority :static }.
+          authorities.first.class.should == Bcsec::Authorities::Static
+      end
+
+      it "can configure an authority from an alias string" do
+        only_static_config { authority "static" }.authorities.first.class.
           should == Bcsec::Authorities::Static
       end
 
-      it "can configure an authority from an underscored symbol" do
-        config_from { portal :Foo;  authority :automatic_access }.authorities.first.class.
-          should == Bcsec::Authorities::AutomaticAccess
+      it 'can configure an authority from an alias to an alias' do
+        only_static_config {
+          alias_authority :moq, :static
+          authority :moq
+        }.authorities.first.should be_a Bcsec::Authorities::Static
       end
 
-      it "can configure an authority from a string" do
-        config_from { authority "static" }.authorities.first.class.
-          should == Bcsec::Authorities::Static
+      it 'fails with a useful message with an unregistered alias' do
+        lambda {
+          only_static_config { authority :cas }
+        }.should raise_error(/Unknown authority alias :cas./)
       end
 
       it "can configure an authority from a class" do
-        config_from { authority Bcsec::Authorities::Static }.authorities.first.class.
+        only_static_config { authority Bcsec::Authorities::Static }.authorities.first.class.
           should == Bcsec::Authorities::Static
       end
 
       it "can configure an authority from an instance" do
         expected = Object.new
-        config_from { authority expected }.authorities.first.should == expected
+        only_static_config { authority expected }.authorities.first.should be expected
       end
 
       it "it passes the configuration to an instantiated authority" do
-        actual = config_from { authority Struct.new(:config) }
-        actual.authorities.first.config.should == actual
+        actual = only_static_config { authority Struct.new(:config) }
+        actual.authorities.first.config.should be actual
       end
 
       it "defers instantiating the authorities until the configuration is complete" do
-        config_from {
+        only_static_config {
           portal :foo
 
           authority Class.new {

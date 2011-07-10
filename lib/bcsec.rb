@@ -1,5 +1,4 @@
 module Bcsec
-  autoload :Authorities,       'bcsec/authorities'
   autoload :Cas,               'bcsec/cas'
   autoload :CentralParameters, 'bcsec/central_parameters'
   autoload :Configuration,     'bcsec/configuration'
@@ -7,7 +6,6 @@ module Bcsec
   autoload :Group,             'bcsec/group'
   autoload :GroupMemberships,  'bcsec/group_membership'
   autoload :GroupMembership,   'bcsec/group_membership'
-  autoload :Netid,             'bcsec/netid'
   autoload :Rack,              'bcsec/rack'
   autoload :User,              'bcsec/user'
   autoload :Test,              'bcsec/test'
@@ -45,6 +43,9 @@ module Bcsec
   end
 end
 
-# This file is required instead of autoloaded so that its
-# configuration slice is available immediately.
+# These files are required instead of autoloaded so that their
+# configuration slices are installed immediately.
+require 'bcsec/authorities'
 require 'bcsec/modes'
+require 'bcsec/netid'
+require 'bcsec/pers'
