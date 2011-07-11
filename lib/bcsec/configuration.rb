@@ -10,20 +10,6 @@ module Bcsec
   # modes.
   class Configuration
     ##
-    # The lower bound, in seconds, for maximum session inactivity.
-    #
-    # This value is available in the Rack environment as
-    # `bcsec.session_timeout`.
-    #
-    # If this is `nil`, then a session timeout will not be enforced.
-    #
-    # The default value is `nil`.
-    #
-    # @see Bcsec::Rack::SessionTimer
-    # @return [Numeric, nil]
-    attr_accessor :session_timeout
-
-    ##
     # Creates a new configuration.  If a block is given, it will be
     # evaluated using the {ConfiguratorLanguage DSL} and appended to
     # the new instance.
