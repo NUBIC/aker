@@ -39,7 +39,7 @@ module Bcsec
         end
 
         it "includes the session timeout" do
-          @defaults[:policy][:'session-timeout'].should == 30.minutes
+          @defaults[:policy][:'session-timeout-seconds'].should == 30.minutes
         end
       end
     end

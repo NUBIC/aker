@@ -130,7 +130,7 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
 end
 
 Given /^the application has a session timeout of (\d+) seconds$/ do |timeout|
-  Bcsec.configuration.add_parameters_for(:policy, %s(session-timeout) => timeout)
+  Bcsec.configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => timeout)
 
   restart_spawned_servers
 end

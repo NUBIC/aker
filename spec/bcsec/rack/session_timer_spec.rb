@@ -11,7 +11,7 @@ module Bcsec::Rack
     let(:timer) { SessionTimer.new(app) }
 
     before do
-      configuration.add_parameters_for(:policy, %s(session-timeout) => expected_timeout)
+      configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => expected_timeout)
     end
 
     describe "#call" do
@@ -29,7 +29,7 @@ module Bcsec::Rack
 
       context 'if no session timeout is given' do
         before do
-          configuration.add_parameters_for(:policy, %s(session-timeout) => nil)
+          configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => nil)
         end
 
         it 'passes control down the Rack stack' do

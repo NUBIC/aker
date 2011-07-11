@@ -5,11 +5,11 @@ module Bcsec::Rack
   # Middleware that permits a Web application to enforce a session inactivity
   # limit.
   #
-  # The session inactivity limit is determined by the `session-timeout`
+  # The session inactivity limit is determined by the `session-timeout-seconds`
   # parameter in Bcsec's `policy` parameter group.  It defaults to 1800 seconds
   # (30 minutes), and can be overridden by a {Bcsec::ConfiguratorLanguage Bcsec
   # configuration block} or {Bcsec::CentralParameters central parameters file}.
-  # To disable session timeout, set `session-timeout` to `nil` or `0`.
+  # To disable session timeout, set `session-timeout-seconds` to `nil` or `0`.
   #
   #
   # Algorithm
@@ -88,7 +88,7 @@ module Bcsec::Rack
     private
 
     def window_size(env)
-      configuration(env).parameters_for(:policy)[%s(session-timeout)].to_i
+      configuration(env).parameters_for(:policy)[%s(session-timeout-seconds)].to_i
     end
   end
 end
