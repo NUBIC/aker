@@ -3,6 +3,10 @@ Bcsec History
 
 2.2.0
 -----
+- Introduced the concept of "configuration slices" so that extensions
+  may add default configuration values. (#5875)
+- Introduced mode registration and authority aliases so that named
+  modes and authorities can have arbitrary class names. (#5875)
 - Bcsec now has a 30 minute session timeout.  (#5156)
 - It is now possible to customize the login and logout pages when using the
   `form` mode.  (#5469)
