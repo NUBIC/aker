@@ -199,7 +199,7 @@ module Bcsec
     # @param [Hash] params the parameters to merge in
     # @return [void]
     def add_parameters_for(group, params)
-      parameters_for(group).merge!(params)
+      nested_merge!(parameters_for(group), params)
     end
 
     ##
@@ -314,6 +314,21 @@ module Bcsec
       resolved_spec = authority_aliases[name.to_sym]
       fail "Unknown authority alias #{name.inspect}." unless resolved_spec
       build_authority resolved_spec
+    end
+
+    def nested_merge!(target, overrides)
+      overrides.each_pair do |k, v|
+        if v.respond_to?(:each_pair)
+          if target.has_key?(k)
+            nested_merge!(target[k], overrides[k])
+          else
+            target[k] = overrides[k]
+          end
+        else
+          target[k] = v
+        end
+      end
+      target
     end
 
     ##

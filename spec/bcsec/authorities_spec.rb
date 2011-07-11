@@ -16,5 +16,15 @@ module Bcsec
       configuration.authority_aliases[:automatic_access].
         should be Bcsec::Authorities::AutomaticAccess
     end
+
+    describe 'parameter defaults' do
+      describe 'for :policy' do
+        subject { configuration.parameters_for(:policy) }
+
+        it 'has [:session-timeout-seconds]' do
+          subject[:'session-timeout-seconds'].should == 1800
+        end
+      end
+    end
   end
 end

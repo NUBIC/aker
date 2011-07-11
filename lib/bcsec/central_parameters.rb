@@ -20,7 +20,7 @@ module Bcsec
       end
 
       values = nested_symbolize_keys!(deep_clone(values))
-      update(nested_merge!(defaults, values))
+      update(values)
     end
 
     ##
@@ -34,15 +34,6 @@ module Bcsec
     # @param [Symbol] key the configuration section to access
     def [](key)
       super
-    end
-
-    ##
-    # @return [Hash] the defaults (as required by the spec in bcwiki).
-    #   It's a new copy every time.
-    def defaults
-      File.open(File.dirname(__FILE__) + "/bcsec-defaults.yml") do |f|
-        nested_symbolize_keys!(YAML::load(f))
-      end
     end
 
     #######
@@ -62,21 +53,6 @@ module Bcsec
         nested_symbolize_keys!(v) if v.respond_to?(:keys)
         target.delete(k)
         target[k.to_sym] = v
-      end
-      target
-    end
-
-    def nested_merge!(target, overrides)
-      overrides.each_pair do |k, v|
-        if v.respond_to?(:each_pair)
-          if target.has_key?(k)
-            nested_merge!(target[k], overrides[k])
-          else
-            target[k] = overrides[k]
-          end
-        else
-          target[k] = v
-        end
       end
       target
     end

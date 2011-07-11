@@ -44,6 +44,8 @@ module Bcsec
           alias_authority :automatic_access, Bcsec::Authorities::AutomaticAccess
           alias_authority :cas, Bcsec::Authorities::Cas
           alias_authority :static, Bcsec::Authorities::Static
+
+          policy_parameters :'session-timeout-seconds' => 1800
         end
       end
     end

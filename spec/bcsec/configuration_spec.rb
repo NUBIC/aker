@@ -232,6 +232,14 @@ describe Bcsec::Configuration do
         start.parameters_for(:netid)[:server].should == "ldap.foo.edu"
         start.parameters_for(:netid)[:username].should == "arb"
       end
+
+      it 'combines arbitrarily nested hashes' do
+        c = config_from { foo_parameters :bar => { :a => { :one => 1 } } }
+        c.enhance { foo_parameters :bar => { :a => { :two => 2 }, :b => { :one => 4 } } }
+
+        c.parameters_for(:foo)[:bar][:a].should == { :one => 1, :two => 2 }
+        c.parameters_for(:foo)[:bar][:b].should == { :one => 4 }
+      end
     end
 
     describe "for authorities" do
@@ -303,7 +311,7 @@ describe Bcsec::Configuration do
       end
 
       it "acquires the netid parameters" do
-        @actual.parameters_for(:netid)[:'ldap-servers'].should == ["registry.northwestern.edu"]
+        @actual.parameters_for(:netid)[:user].should == "cn=foo"
       end
 
       it "acquires the cc_pers parameters" do
