@@ -207,4 +207,18 @@ module Bcsec
       end
     end
   end
+
+  describe Rack::Slice do
+    let(:configuration) { Configuration.new(:slices => [Rack::Slice.new]) }
+
+    describe 'parameter defaults' do
+      describe 'for :policy' do
+        subject { configuration.parameters_for(:policy) }
+
+        it 'has [:session-timeout-seconds]' do
+          subject[:'session-timeout-seconds'].should == 1800
+        end
+      end
+    end
+  end
 end

@@ -86,4 +86,16 @@ module Bcsec::Rack
       end
     end
   end
+
+  ##
+  # @private
+  class Slice < Bcsec::Configuration::Slice
+    def initialize
+      super do
+        policy_parameters :'session-timeout-seconds' => 1800
+      end
+    end
+  end
 end
+
+Bcsec::Configuration.add_default_slice(Bcsec::Rack::Slice.new)
