@@ -262,7 +262,7 @@ module Bcsec
     # configuration.
     #
     # @see #register_mode
-    # @return Array<Class>
+    # @return [Array<Class>]
     def registered_modes
       @registered_modes ||= []
     end

@@ -38,6 +38,7 @@ module Bcsec
 
     ##
     # The slice that aliases the default authorities.
+    # @private
     class Slice < Bcsec::Configuration::Slice
       def initialize
         super do

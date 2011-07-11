@@ -35,6 +35,8 @@ module Bcsec
     autoload :Middleware, 'bcsec/modes/middleware'
     autoload :Support,    'bcsec/modes/support'
 
+    ##
+    # @private
     class Slice < Bcsec::Configuration::Slice
       def initialize
         super do
