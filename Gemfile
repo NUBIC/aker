@@ -80,7 +80,7 @@ group :development do
 
   # cas testing
   gem 'markaby', '0.5'    # other versions break RubyCAS-Server
-  gem 'picnic', :git => 'git+ssh://code.bioinformatics.northwestern.edu/git/picnic.git', :branch => 'activesupport3'
+  gem 'picnic', :git => 'https://github.com/NUBIC/picnic.git', :branch => 'activesupport3'
   gem 'rubycas-server'
 
   # ci & deployment
