@@ -252,6 +252,7 @@ module Bcsec
     # @see Bcsec::Modes::Base
     # @since 2.2.0
     # @param mode_class [Class]
+    # @return [void]
     def register_mode(mode_class)
       fail "#{mode_class.inspect} is not usable as a Bcsec mode" unless mode_class.respond_to?(:key)
       registered_modes << mode_class
@@ -266,6 +267,73 @@ module Bcsec
     def registered_modes
       @registered_modes ||= []
     end
+
+    ##
+    # Register a middleware-building block that will be used to insert
+    # middleware either before or after the Bcsec
+    # {Bcsec::Rack::Authenticate authentication middleware}. This
+    # method requires a block. When it is time to actually install the
+    # middleware, the block will be yielded an object which behaves
+    # like a {Rack::Builder}. The block should attach any middleware
+    # it wishes to install using `use`.
+    #
+    # Unlike the middleware associated with modes, this middleware
+    # will be inserted in the stack in regardless of any other
+    # settings.
+    #
+    # This method is primarily intended for Bcsec and Bcsec
+    # extensions. Applications have complete control over their
+    # middleware stacks and so may build them however is appropriate.
+    #
+    # @example
+    #   config.register_middleware_installer(:before_authentication) do |builder|
+    #     builder.use IpFilter, '10.0.8.9'
+    #   end
+    #
+    # @see #install_middleware
+    # @see Bcsec::Rack.use_in
+    #
+    # @param [:before_authentication,:after_authentication] where the
+    #   relative location in the stack at which this installer should
+    #   be invoked.
+    # @yield [#use] a Rack::Builder. Note that the yield is deferred
+    #   until {#install_middleware} is invoked.
+    # @return [void]
+    def register_middleware_installer(where, &installer)
+      verify_middleware_location(where)
+      (middleware_installers[where] ||= []) << installer
+    end
+
+    ##
+    # @private exposed for testing
+    def middleware_installers
+      @middleware_installers ||= {}
+    end
+
+    ##
+    # Installs the middleware configured under the given key in the
+    # given {Rack::Builder}. This method is primarily for internal
+    # library use.
+    #
+    # @see #register_middleware_installer
+    # @param [:before_authentication,:after_authentication] where the
+    #   set of middleware installers to use.
+    # @param [#use] builder the {Rack::Builder}-like object into which
+    #   the middleware will be installed.
+    # @return [void]
+    def install_middleware(where, builder)
+      verify_middleware_location(where)
+      (middleware_installers[where] || []).each do |installer|
+        installer.call(builder)
+      end
+    end
+
+    def verify_middleware_location(where)
+      unless [:before_authentication, :after_authentication].include?(where)
+        fail "Unsupported middleware location #{where.inspect}."
+      end
+    end
+    private :verify_middleware_location
 
     ##
     # Retrieves the logger which bcsec will use for internal messages.
@@ -364,14 +432,18 @@ module Bcsec
   end
 
   ##
-  # This module provides a DSL adapter for {Configuration}. Example:
+  # This module provides a DSL adapter for {Configuration}.
   #
+  # @example
   #     Bcsec.configure {
   #       portal :ENU
   #       authorities :netid, :pers
   #       api_mode :basic
   #       central "/etc/nubic/bcsec-prod.yml"
   #       netid_parameters :user => "me"
+  #       after_authentication_middleware do |builder|
+  #         builder.use RequestLogger
+  #       end
   #     }
   #
   # Notes:
@@ -382,6 +454,8 @@ module Bcsec
   #   * As shown above, there is sugar for setting other parameters.
   #     "*name*_parameters *hash*" adds to the
   #     {Configuration#parameters_for parameters} for group *name*.
+  #   * Also as shown above, there is sugar for calling
+  #     {Configuration#register_middleware_installer}.
   module ConfiguratorLanguage
     ##
     # @private
@@ -392,9 +466,11 @@ module Bcsec
 
     ##
     # @private
-    def method_missing(m, *args)
+    def method_missing(m, *args, &block)
       if m.to_s =~ /(\S+)_parameters?$/
         @config.add_parameters_for($1.to_sym, args.first)
+      elsif m.to_s =~/(\S+)_middleware$/
+        @config.register_middleware_installer($1.to_sym, &block)
       elsif @config.respond_to?(:"#{m}=")
         @config.send(:"#{m}=", *args)
       elsif @config.respond_to?(m)

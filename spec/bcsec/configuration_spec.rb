@@ -105,6 +105,58 @@ describe Bcsec::Configuration do
     end
   end
 
+  describe 'global middleware installers' do
+    describe '#register_middleware_installer' do
+      [:before_authentication, :after_authentication].each do |k|
+        it "accepts the #{k.inspect} key" do
+          @config.register_middleware_installer(k) { 'foo' }
+          @config.middleware_installers[k].first.call.should == 'foo'
+        end
+      end
+
+      it 'rejects an unknown key' do
+        lambda { @config.register_middleware_installer(:in_the_middle) { 'bar' } }.
+          should raise_error(/Unsupported middleware location :in_the_middle./)
+      end
+    end
+
+    describe '#install_middleware' do
+      let(:builder) { mock(Rack::Builder) }
+
+      let!(:config) do
+        config_from {
+          before_authentication_middleware do |b|
+            b.use "Before!"
+          end
+          after_authentication_middleware do |b|
+            b.use "After!"
+          end
+        }
+      end
+
+      it 'installs before middleware for :before_authentication' do
+        builder.should_receive(:use).once.with("Before!")
+        config.install_middleware(:before_authentication, builder)
+      end
+
+      it 'installs after middleware for :after_authentication' do
+        builder.should_receive(:use).once.with("After!")
+        config.install_middleware(:after_authentication, builder)
+      end
+
+      it 'does nothing if there is no middleware of the specified type' do
+        builder.should_not_receive(:use)
+        lambda { blank_config.install_middleware(:before_authentication, builder) }.
+          should_not raise_error
+      end
+
+      it 'fails for an unknown key' do
+        lambda { config.install_middleware(:in_the_sky, builder) }.
+          should raise_error(/Unsupported middleware location :in_the_sky./)
+      end
+    end
+  end
+
   describe 'slices' do
     let(:a_slice) { Bcsec::Configuration::Slice.new { portal 'from_slice' } }
 
@@ -328,6 +380,22 @@ describe Bcsec::Configuration do
 
       it "acquires all top-level parameters" do
         @actual.parameters_for(:foo)[:bar].should == "baz"
+      end
+    end
+
+    describe 'middleware' do
+      context 'before_authentication_middleware' do
+        it 'registers under the :before_authentication key' do
+          config_from { before_authentication_middleware { 'foob' } }.
+            middleware_installers[:before_authentication].last.call(nil).should == 'foob'
+        end
+      end
+
+      context 'after_authentication_middleware' do
+        it 'registers under the :after_authentication key' do
+          config_from { after_authentication_middleware { 'fooa' } }.
+            middleware_installers[:after_authentication].last.call(nil).should == 'fooa'
+        end
       end
     end
 

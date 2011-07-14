@@ -108,17 +108,27 @@ module Bcsec
           Warden::Strategies.add(:api_mode_a, api_mode_a)
           Warden::Strategies.add(:api_mode_b, api_mode_b)
 
-          Bcsec.configure do
+          config = Bcsec::Configuration.new(:slices => []) do
             ui_mode :ui_mode
             api_modes :api_mode_a, :api_mode_b
+
+            before_authentication_middleware do |builder|
+              builder.use :global_before
+            end
+
+            after_authentication_middleware do |builder|
+              builder.use :global_after
+            end
           end
 
-          Bcsec::Rack.use_in(builder)
+          Bcsec::Rack.use_in(builder, config)
 
-          @authenticate_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Authenticate)
-          @logout_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
-          @bcaudit_index = builder.uses.map { |u| u.first }.index(Bcaudit::Middleware)
-          @session_timer_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::SessionTimer)
+          @indexes = builder.uses.each_with_index.map { |u, i| [u.first, i] }.
+            inject({}) { |h, (mw, i)| h[mw] = i; h }
+          @authenticate_index = @indexes[Bcsec::Rack::Authenticate]
+          @logout_index = @indexes[Bcsec::Rack::Logout]
+          @bcaudit_index = @indexes[Bcaudit::Middleware]
+          @session_timer_index = @indexes[Bcsec::Rack::SessionTimer]
         end
 
         it "uses the Setup middleware first" do
@@ -141,8 +151,16 @@ module Bcsec
           builder.should be_using(:api_ware_before)
         end
 
-        it "attaches the logout middleware after Bcsec::Rack::Authenticate" do
-          @logout_index.should == @authenticate_index + 1
+        it 'attaches the global before middleware immediately before warden' do
+          @indexes[:global_before].should == @indexes[Warden::Manager] - 1
+        end
+
+        it 'attaches the global after middleware immediately after Bcsec::Rack::Authenticate' do
+          @indexes[:global_after].should == @indexes[Bcsec::Rack::Authenticate] + 1
+        end
+
+        it "attaches the logout middleware after the global after middleware" do
+          @indexes[Bcsec::Rack::Logout].should == @indexes[:global_after] + 1
         end
 
         it "attaches the session timer middleware after the logout middleware" do
@@ -179,13 +197,13 @@ module Bcsec
           builder.should be_using(:api_ware_after)
         end
 
-        it "uses middleware for the passed-in configuration instead of the global configuration if present" do
-          config = Bcsec::Configuration.new {
+        it "uses middleware for the global configuration if no specific configuration is provided" do
+          Bcsec.configure {
             ui_mode :ui_mode
           }
 
           builder = MockBuilder.new
-          Bcsec::Rack.use_in(builder, config)
+          Bcsec::Rack.use_in(builder)
 
           builder.uses[0].first.should == Bcsec::Rack::Setup
           builder.uses[1].first.should == :ui_ware_before

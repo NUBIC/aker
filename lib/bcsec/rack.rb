@@ -48,10 +48,12 @@ module Bcsec::Rack
       builder.use Setup, effective_configuration
 
       with_mode_middlewares(builder, effective_configuration) do
+        effective_configuration.install_middleware(:before_authentication, builder)
         builder.use Warden::Manager do |manager|
           manager.failure_app = Bcsec::Rack::Failure.new
         end
         builder.use Authenticate
+        effective_configuration.install_middleware(:after_authentication, builder)
         builder.use Logout, '/logout'
         builder.use SessionTimer
         builder.use Bcaudit::Middleware
