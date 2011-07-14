@@ -1,4 +1,3 @@
-require 'bcaudit'
 require 'bcsec'
 
 module Bcsec::Rack
