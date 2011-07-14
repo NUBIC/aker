@@ -266,6 +266,33 @@ module Bcsec
           @a.group_memberships(:ENU).size.should == 1
         end
       end
+
+      describe 'of identifiers' do
+        before do
+          @a.identifiers[:ssn] = "123-45-6789"
+        end
+
+        it 'preserves an identifier that is already set' do
+          @b.identifiers[:ssn] = "321-54-9876"
+          @a.merge!(@b)
+
+          @a.identifiers[:ssn].should == "123-45-6789"
+        end
+
+        it 'copies an identifier that is new' do
+          @b.identifiers[:netid] = 'bob789'
+          @a.merge!(@b)
+
+          @a.identifiers[:netid].should == 'bob789'
+        end
+
+        it 'leaves alone an identifier that is not present in the argument' do
+          @b.identifiers[:netid] = 'bob789'
+          @a.merge!(@b)
+
+          @a.identifiers[:ssn].should == "123-45-6789"
+        end
+      end
     end
 
     describe "#in_group?" do
@@ -293,6 +320,70 @@ module Bcsec
         @u.group_memberships(:NOTIS) << GroupMembership.new(Group.new("User"))
 
         @u.in_group?("User").should be_false
+      end
+    end
+
+    describe 'nu_employee_id' do
+      describe 'setter' do
+        before do
+          @u.nu_employee_id = "1234"
+        end
+
+        it "is deprecated" do
+          deprecation_message.should =~ /nu_employee_id is deprecated\. Use identifiers\[:nu_employee_id\] instead..*3.0/
+        end
+
+        it 'sets the value in #identifers' do
+          @u.identifiers[:nu_employee_id].should == "1234"
+        end
+      end
+
+      describe 'getter' do
+        before do
+          @u.identifiers[:nu_employee_id] = "funfzehn"
+        end
+
+        let!(:subject) { @u.nu_employee_id }
+
+        it 'is deprecated' do
+          deprecation_message.should =~ /nu_employee_id is deprecated\. Use identifiers\[:nu_employee_id\] instead..*3.0/
+        end
+
+        it 'reads the value from #identifiers' do
+          subject.should == "funfzehn"
+        end
+      end
+    end
+
+    describe 'personnel_id' do
+      describe 'setter' do
+        before do
+          @u.personnel_id = "1234"
+        end
+
+        it "is deprecated" do
+          deprecation_message.should =~ /personnel_id is deprecated\. Use identifiers\[:personnel_id\] instead..*3.0/
+        end
+
+        it 'sets the value in #identifers' do
+          @u.identifiers[:personnel_id].should == "1234"
+        end
+      end
+
+      describe 'getter' do
+        before do
+          @u.identifiers[:personnel_id] = "funfzehn"
+        end
+
+        let!(:subject) { @u.personnel_id }
+
+        it 'is deprecated' do
+          deprecation_message.should =~ /personnel_id is deprecated\. Use identifiers\[:personnel_id\] instead..*3.0/
+        end
+
+        it 'reads the value from #identifiers' do
+          subject.should == "funfzehn"
+        end
       end
     end
   end
