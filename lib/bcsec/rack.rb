@@ -1,6 +1,5 @@
 require 'bcsec'
 require 'warden'
-require 'bcaudit'
 
 ##
 # Integration of Bcsec with {http://rack.rubyforge.org/ Rack}.
@@ -56,7 +55,6 @@ module Bcsec::Rack
         effective_configuration.install_middleware(:after_authentication, builder)
         builder.use Logout, '/logout'
         builder.use SessionTimer
-        builder.use Bcaudit::Middleware
       end
 
       builder.use DefaultLogoutResponder, '/logout'

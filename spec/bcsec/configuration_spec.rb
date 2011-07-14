@@ -106,16 +106,18 @@ describe Bcsec::Configuration do
   end
 
   describe 'global middleware installers' do
+    let(:config) { Bcsec::Configuration.new(:slices => []) }
+
     describe '#register_middleware_installer' do
       [:before_authentication, :after_authentication].each do |k|
         it "accepts the #{k.inspect} key" do
-          @config.register_middleware_installer(k) { 'foo' }
-          @config.middleware_installers[k].first.call.should == 'foo'
+          config.register_middleware_installer(k) { 'foo' }
+          config.middleware_installers[k].first.call.should == 'foo'
         end
       end
 
       it 'rejects an unknown key' do
-        lambda { @config.register_middleware_installer(:in_the_middle) { 'bar' } }.
+        lambda { config.register_middleware_installer(:in_the_middle) { 'bar' } }.
           should raise_error(/Unsupported middleware location :in_the_middle./)
       end
     end
@@ -123,8 +125,8 @@ describe Bcsec::Configuration do
     describe '#install_middleware' do
       let(:builder) { mock(Rack::Builder) }
 
-      let!(:config) do
-        config_from {
+      before do
+        config.enhance {
           before_authentication_middleware do |b|
             b.use "Before!"
           end
@@ -145,8 +147,9 @@ describe Bcsec::Configuration do
       end
 
       it 'does nothing if there is no middleware of the specified type' do
+        config.middleware_installers.clear
         builder.should_not_receive(:use)
-        lambda { blank_config.install_middleware(:before_authentication, builder) }.
+        lambda { config.install_middleware(:before_authentication, builder) }.
           should_not raise_error
       end
 

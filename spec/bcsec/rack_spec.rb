@@ -6,28 +6,8 @@ module Bcsec
       ::Warden::Strategies.clear!
     end
 
-    class MockBuilder
-      def reset!
-        self.uses.clear
-      end
-
-      def use(cls, *params, &block)
-        self.uses << [cls, params, block]
-      end
-
-      def uses
-        @uses ||= []
-      end
-
-      def using?(klass, *params)
-        self.uses.detect { |cls, prms, block| cls == klass && params == prms }
-      end
-
-      alias :find_use_of :using?
-    end
-
     describe ".use_in" do
-      let(:builder) { MockBuilder.new }
+      let(:builder) { Bcsec::Spec::MockBuilder.new }
       let(:configuration) { Bcsec::Configuration.new(:slices => []) }
 
       before do
@@ -125,9 +105,7 @@ module Bcsec
 
           @indexes = builder.uses.each_with_index.map { |u, i| [u.first, i] }.
             inject({}) { |h, (mw, i)| h[mw] = i; h }
-          @authenticate_index = @indexes[Bcsec::Rack::Authenticate]
           @logout_index = @indexes[Bcsec::Rack::Logout]
-          @bcaudit_index = @indexes[Bcaudit::Middleware]
           @session_timer_index = @indexes[Bcsec::Rack::SessionTimer]
         end
 
@@ -167,10 +145,6 @@ module Bcsec
           @session_timer_index.should == @logout_index + 1
         end
 
-        it "attaches the bcaudit middleware after the session timer middleware" do
-          @bcaudit_index.should == @session_timer_index + 1
-        end
-
         it "attaches the default logout responder at the end of the chain" do
           builder.uses.map { |u| u.first }.last.should == Bcsec::Rack::DefaultLogoutResponder
         end
@@ -181,12 +155,12 @@ module Bcsec
           args.should == ["/logout"]
         end
 
-        it "appends middleware for UI modes directly after the bcaudit middleware" do
-          builder.uses[@bcaudit_index + 1].first.should == :ui_ware_after
+        it "appends middleware for UI modes directly after the session timer middleware" do
+          @indexes[:ui_ware_after].should == @indexes[Bcsec::Rack::SessionTimer] + 1
         end
 
         it "appends middleware for API modes after appended UI middleware" do
-          builder.uses[@bcaudit_index + 2].first.should == :api_ware_after
+          @indexes[:api_ware_after].should == @indexes[:ui_ware_after] + 1
         end
 
         it "passes a configuration object to appended UI middleware" do
@@ -202,7 +176,7 @@ module Bcsec
             ui_mode :ui_mode
           }
 
-          builder = MockBuilder.new
+          builder = Bcsec::Spec::MockBuilder.new
           Bcsec::Rack.use_in(builder)
 
           builder.uses[0].first.should == Bcsec::Rack::Setup
@@ -216,7 +190,7 @@ module Bcsec
       end
 
       it "passes on the configuration to the setup middleware if provided" do
-        b = MockBuilder.new
+        b = Bcsec::Spec::MockBuilder.new
         config = Bcsec::Configuration.new { portal :hello }
 
         Bcsec::Rack.use_in(b, config)
