@@ -23,7 +23,8 @@ RSpec.configure do |config|
   config.include Bcsec::Spec::LoggerHelper
 
   config.before do
-    Bcaudit::AuditInfo.current_user = Bcsec::User.new("spec-runner").tap { |u| u.personnel_id = 42 }
+    Bcaudit::AuditInfo.current_user =
+      Bcsec::User.new("spec-runner").tap { |u| u.identifiers[:personnel_id] = 42 }
   end
 
   config.after do

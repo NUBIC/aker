@@ -261,7 +261,6 @@ module Bcsec::Authorities
           users:
             jo:
               password: qofhearts
-              personnel_id: 1
               first_name: "Jo"
               middle_name: "Middle"
               last_name: "Last"
@@ -273,7 +272,9 @@ module Bcsec::Authorities
               city: "Chicago"
               state: "Illinois"
               country: "USA"
-              nu_employee_id: 1
+              identifiers:
+                personnel_id: 1
+                nu_employee_id: 2
               portals:
                 - SQLSubmit
                 - ENU:
@@ -303,7 +304,7 @@ module Bcsec::Authorities
 
           describe "other user attributes" do
             it "includes personnel_id" do
-              @jo.personnel_id.should == 1
+              @jo.identifiers[:personnel_id].should == 1
             end
 
             it "includes first_name" do
@@ -351,7 +352,7 @@ module Bcsec::Authorities
             end
 
             it "includes nu_employee_id" do
-              @jo.nu_employee_id.should == 1
+              @jo.identifiers[:nu_employee_id].should == 2
             end
           end
 

@@ -156,6 +156,8 @@ module Bcsec::Authorities
     #         password: ekibder    # password for :user auth (optional)
     #         first_name: Warren   # any attributes from Bcsec::User may
     #         last_name: Kibbe     #   be set here
+    #         identifiers:         # identifiers will be loaded with
+    #           employee_id: 4     # symbolized keys
     #         portals:             # portal & group auth info (optional)
     #           - SQLSubmit        # A groupless portal
     #           - ENU:             # A portal with simple groups
@@ -185,7 +187,7 @@ module Bcsec::Authorities
         valid_credentials!(:user, username, config["password"]) if config["password"]
         user(username) do |u|
           attr_keys = config.keys
-          (attr_keys - ["password", "portals"]).each do |k|
+          (attr_keys - ["password", "portals", "identifiers"]).each do |k|
             setter = "#{k}="
             if u.respond_to?(setter)
               u.send(setter, config[k])
@@ -206,6 +208,10 @@ module Bcsec::Authorities
             if group_data
               u.group_memberships(portal).concat(load_group_memberships(portal.to_sym, group_data))
             end
+          end
+
+          (config["identifiers"] || {}).each do |ident, value|
+            u.identifiers[ident.to_sym] = value
           end
         end
       end

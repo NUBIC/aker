@@ -14,14 +14,27 @@ module Bcsec
                          "2.2")
       group_memberships.include?(*requested_groups)
     end
+
+    [:nu_employee_id, :personnel_id].each do |deprec_id|
+      define_method deprec_id do
+        Deprecation.notify(
+          "#{deprec_id} is deprecated. Use identifiers[#{deprec_id.inspect}] instead.", "3.0")
+        identifiers[deprec_id]
+      end
+
+      define_method "#{deprec_id}=" do |value|
+        Deprecation.notify(
+          "#{deprec_id} is deprecated. Use identifiers[#{deprec_id.inspect}] instead.", "3.0")
+        identifiers[deprec_id] = value
+      end
+    end
   end
 
   class User
     include DeprecatedUser
 
     ATTRIBUTES = :username, :first_name, :middle_name, :last_name,
-      :title, :business_phone, :fax, :email, :address, :city, :state, :country,
-      :nu_employee_id, :personnel_id
+      :title, :business_phone, :fax, :email, :address, :city, :state, :country
 
     attr_accessor *ATTRIBUTES
 
@@ -110,6 +123,16 @@ module Bcsec
       end
     end
 
+    ##
+    # A mapping of identifers that apply to this user. The values that
+    # might be set in this hash are defined by authorities.
+    #
+    # @since 2.2.0
+    # @return [Hash<Symbol, Object>] the identifiers for this user.
+    def identifiers
+      @identifiers ||= {}
+    end
+
     def portals
       @portals ||= []
     end
@@ -162,6 +185,8 @@ module Bcsec
     #   authorities have different group hierarchies.  In
     #   practice only one authority is providing authorization
     #   information for a portal, so this shouldn't matter.
+    # * For identifiers: any identifier in the _other_ user that is
+    #   not already set in this user is copied over.
     # * For all other attributes: an attribute is copied from
     #   _other_ if that attribute is not already set in this
     #   user.
@@ -199,6 +224,9 @@ module Bcsec
         if self.group_memberships(other_portal).empty?
           self.group_memberships(other_portal).concat(other.group_memberships(other_portal))
         end
+      end
+      other.identifiers.each do |ident, value|
+        identifiers[ident] ||= value
       end
 
       self

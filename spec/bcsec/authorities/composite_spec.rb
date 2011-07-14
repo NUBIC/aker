@@ -98,9 +98,9 @@ module Bcsec::Authorities
 
       it "amplifies the returned user" do
         implement_on(@c, @user)
-        def @a.amplify!(user); user.personnel_id = 17; user; end
+        def @a.amplify!(user); user.identifiers[:personnel_id] = 17; user; end
 
-        @comp.valid_credentials?(:magic, "man").personnel_id.should == 17
+        @comp.valid_credentials?(:magic, "man").identifiers[:personnel_id].should == 17
       end
 
       describe "callbacks" do
