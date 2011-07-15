@@ -119,6 +119,11 @@ module Bcsec::Authorities
       validate_config!
     end
 
+    def config
+      @config
+    end
+    protected :config
+
     ##
     # The configured server's hostname or other address.
     # @return [String]
