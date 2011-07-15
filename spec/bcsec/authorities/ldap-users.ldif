@@ -1,0 +1,197 @@
+version: 1
+
+# These records were derived from the NU LDAP servers on 2010-10-28.
+# They've been obscured slightly.
+
+dn: ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+
+dn: uid=sbw, ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+cn: b
+cn: b whitaker
+cn: sean
+cn: sean b whitaker
+cn: sean whitaker
+cn: whitaker
+cn: whitaker,sean
+cn: whitaker,sean b
+displayName: Sean B Whitaker
+givenName: Sean
+sn: Whitaker
+uid: sbw
+employeeNumber: 103
+mail: s-whitaker@northwestern.edu
+ou: NU Clinical and Translational Sciences Institute, Feinberg School of Med
+ icine
+ou: People
+telephoneNumber: +1 312 555 2310
+title: Project Manager IT
+# Password is 'sean'
+userpassword: {SHA}1+GZMMwfQsLQeB9Nnm8f5Ykb+c8=
+
+dn: uid=cbrinson, ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+cn: brinson
+cn: brinson,cate
+cn: brinson,kate
+cn: brinson,l catherine
+cn: cate
+cn: cate brinson
+cn: cate kate
+cn: catherine
+cn: kate
+cn: kate brinson
+cn: l
+cn: l catherine
+cn: l catherine brinson
+cn: l catherine cate
+cn: l catherine cate kate brinson
+cn: l catherine kate
+displayName: L Catherine Brinson
+givenName: L Catherine
+sn: Brinson
+uid: cbrinson
+employeeNumber: 100
+facsimileTelephoneNumber: +1 847 555 0540
+mail: cbrinson@northwestern.edu
+ou: McC Mechanical Engineering
+ou: People
+postalAddress: TECH 2145 Sheridan Rd$B226$EV 3111
+telephoneNumber: +1 847 555 2347
+title: Professor
+title: Chairperson
+# Password is 'cate'
+userpassword: {SHA}9MmlgfQ7prbm5Zyjotth2/pu4ks=
+
+dn: uid=wakibbe, ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+cn: a
+cn: a kibbe
+cn: kibbe
+cn: kibbe,wak
+cn: kibbe,warren
+cn: kibbe,warren a
+cn: wak
+cn: wak kibbe
+cn: warren
+cn: warren a kibbe
+cn: warren a wak
+cn: warren a wak kibbe
+cn: warren kibbe
+displayName: Warren A Kibbe
+givenName: Warren
+sn: Kibbe
+uid: wakibbe
+employeeNumber: 101
+mail: wakibbe@northwestern.edu
+ou: NU Clinical and Translational Sciences Institute, Feinberg School of Med
+ icine
+ou: Center for Genetic Medicine, Feinberg School of Medicine
+ou: People
+postalAddress: RUBLOFF 750 N Lake Shore Dr$11th Floor$CH
+telephoneNumber: +1 312 555 3229
+title: Research Associate Professor
+# Password is 'warren'
+userpassword: {SHA}VV0B3Wo8+hIFksgRljY3LtlRWOQ=
+
+dn: uid=rms, ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+cn: m
+cn: m sutphin
+cn: rhett
+cn: rhett m sutphin
+cn: rhett sutphin
+cn: sutphin
+cn: sutphin,rhett
+cn: sutphin,rhett m
+displayName: Rhett M Sutphin
+givenName: Rhett
+sn: Sutphin
+uid: rms377
+employeeNumber: 105
+mail: r-sutphin@northwestern.edu
+ou: NU Clinical and Translational Sciences Institute, Feinberg School of Med
+ icine
+ou: People
+telephoneNumber: +1 312 555 2324
+title: Systems Analyst/Programmer Senior
+# Password is 'rhett'
+userpassword: {SHA}0iimqqf1K2J9byT/Y60bE1o9vSE=
+
+dn: uid=ega, ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: edgar
+cn: edgar garcia
+cn: garcia
+cn: garcia,edgar
+displayName: Edgar Garcia
+givenName: Edgar
+sn: Garcia
+uid: ega
+employeeNumber: 106
+mail: edgar-garcia@northwestern.edu
+ou: Lurie Cancer Center, Feinberg School of Medicine
+ou: People
+postalAddress: RUBLOFF 750 N Lake Shore Drive$11th Floor$CH
+telephoneNumber: +1 312 555 2389
+# Password is 'edgar'
+userpassword: {SHA}njIw/etsfKsBVDVrwOcpTMvqKDE=
+
+dn: uid=blc, ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: brian
+cn: brian chamberlain
+cn: brian lee chamberlain
+cn: chamberlain
+cn: chamberlain,brian
+cn: chamberlain,brian lee
+cn: lee
+cn: lee chamberlain
+displayName: Brian Lee Chamberlain
+givenName: Brian
+sn: Chamberlain
+uid: blc
+employeeNumber: 107
+mail: b-chamberlain@northwestern.edu
+ou: NU Clinical and Translational Sciences Institute, Feinberg School of Med
+ icine
+ou: People
+postalAddress: RUBLOFF 750 N Lake Shore Dr$11th Floor$CH
+# Password is 'brian'
+userpassword: {SHA}dg59qyg2hTxjgFAz5RRmgwH6nEc=
+
+# User with bad sn/givenName
+dn: uid=jka, ou=People, dc=northwestern, dc=edu
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Jennifer Karp
+cn: Jennifer
+cn: Karp
+displayName: Jennifer Karp
+givenName: UNKNOWN
+sn: UNKNOWN
+uid: jka
+ou: People

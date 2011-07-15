@@ -7,6 +7,7 @@ module Bcsec
   autoload :Group,             'bcsec/group'
   autoload :GroupMemberships,  'bcsec/group_membership'
   autoload :GroupMembership,   'bcsec/group_membership'
+  autoload :Ldap,              'bcsec/ldap'
   autoload :Netid,             'bcsec/netid'
   autoload :Rack,              'bcsec/rack'
   autoload :User,              'bcsec/user'

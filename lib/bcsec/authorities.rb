@@ -30,6 +30,7 @@ module Bcsec
     autoload :AutomaticAccess, 'bcsec/authorities/automatic_access'
     autoload :Cas,             'bcsec/authorities/cas'
     autoload :Composite,       'bcsec/authorities/composite'
+    autoload :Ldap,            'bcsec/authorities/ldap'
     autoload :Netid,           'bcsec/authorities/netid'
     autoload :Pers,            'bcsec/authorities/pers'
     autoload :Static,          'bcsec/authorities/static'
