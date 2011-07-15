@@ -177,6 +177,14 @@ describe Bcsec::Configuration do
       end
     end
 
+    describe "this" do
+      let(:config) { config_from { foo_parameters :this => this } }
+
+      it 'refers to the configuration being updated itself' do
+        config.parameters_for(:foo)[:this].should be config
+      end
+    end
+
     describe "central parameters" do
       before do
         @actual = config_from { central File.expand_path("../bcsec-sample.yml", __FILE__) }

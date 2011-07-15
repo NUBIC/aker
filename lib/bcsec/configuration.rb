@@ -239,6 +239,8 @@ module Bcsec
   #   * As shown above, there is sugar for setting other parameters.
   #     "*name*_parameters *hash*" adds to the
   #     {Configuration#parameters_for parameters} for group *name*.
+  #   * `this` refers to the configuration being updated (for the rare
+  #     case that you would need to pass it directly to some constructor).
   module ConfiguratorLanguage
     ##
     # @private
@@ -259,6 +261,12 @@ module Bcsec
       else
         super
       end
+    end
+
+    ##
+    # @private
+    def this
+      @config
     end
 
     ##
