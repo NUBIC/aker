@@ -58,7 +58,7 @@ module Bcsec::Authorities
   # @author Rhett Sutphin
   class Ldap
     ##
-    # @see {#attribute_map}
+    # @see #attribute_map
     DEFAULT_ATTRIBUTE_MAP = {
       :uid => :username,
       :sn => :last_name,
@@ -119,33 +119,37 @@ module Bcsec::Authorities
       validate_config!
     end
 
-    ## Accessor for the configured server.
+    ##
+    # The configured server's hostname or other address.
     # @return [String]
     def server
       @config[:server]
     end
 
-    ## Accessor for the port to use in connecting to the server.
+    ##
+    # The port to use when connecting to the server.
     # Defaults to 636.
     # @return [Integer]
     def port
       @config[:port] || 636
     end
 
-    ## Accessor for the configured user.
-    # @return [String]
+    ##
+    # The user to bind as before searching or authenticating.
+    # @return [String,nil]
     def user
       @config[:user]
     end
 
-    ## Accessor for the configured password.
-    # @return [String]
+    ##
+    # The password to use with {#user}.
+    # @return [String,nil]
     def password
       @config[:password]
     end
 
     ##
-    # Accessor for whether to use TLS.
+    # Whether to use TLS when communicating with the server.
     # @return [Boolean]
     def use_tls
       @config[:use_tls].nil? ? true : @config[:use_tls]
@@ -224,6 +228,7 @@ module Bcsec::Authorities
         [ldap, lambda { |user, entry, s| user.send("#{bcsec}=", s[ldap]) }]
       }]
     end
+    private :attribute_map_processors
 
     ##
     # A mapping between attributes from the LDAP server and criteria
