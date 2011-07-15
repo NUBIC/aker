@@ -137,6 +137,61 @@ module Bcsec::Authorities
       end
     end
 
+    describe "#attribute_map" do
+      subject { Ldap.new(@params).attribute_map }
+
+      it 'has defaults' do
+        subject[:givenname].should == :first_name
+      end
+
+      it 'accepts overrides in the configuration' do
+        @params[:attribute_map] = { :givenname => nil }
+        subject[:givenname].should be_nil
+      end
+
+      it 'accepts extensions in the configuration' do
+        @params[:attribute_map] = { :hat_size => :title }
+        subject[:hat_size].should == :title
+      end
+    end
+
+    describe "#attribute_processors" do
+      subject { Ldap.new(@params).attribute_processors }
+      let(:user) { Bcsec::User.new('fred') }
+
+      def process(processor, entry)
+        processor.call(user, entry, lambda { |k| [*entry[k]].first })
+      end
+
+      describe 'a mapping processor' do
+        it 'exists' do
+          process(subject[:givenname], { :givenname => ['Fred'] })
+          user.first_name.should == 'Fred'
+        end
+
+        it 'works when no value is present' do
+          process(subject[:givenname], {})
+          user.first_name.should be_nil
+        end
+      end
+
+      it 'accepts overrides in the configuration' do
+        @params[:attribute_processors] = {
+          :givenname => lambda { |user, entry, s| user.first_name = s[:givenname] * 2 }
+        }
+        process(subject[:givenname], { :givenname => ['Fred'] })
+        user.first_name.should == 'FredFred'
+      end
+
+      it 'accepts extensions in the configuration' do
+        @params[:attribute_processors] = {
+          :ssn => lambda { |user, entry, s| user.identifiers[:ssn] = s[:ssn] }
+        }
+        process(subject[:ssn], { :ssn => ['123-08'] })
+        user.identifiers[:ssn].should == '123-08'
+      end
+    end
+
     describe "a created user object" do
       before do
         @server.start
@@ -169,6 +224,22 @@ module Bcsec::Authorities
 
       it "has an e-mail address" do
         @user.email.should == "wakibbe@northwestern.edu"
+      end
+
+      it 'uses custom mappings' do
+        @params[:attribute_map] = { :employeenumber => :title }
+        actual.find_user('blc').title.should == '107'
+      end
+
+      it 'uses custom processors' do
+        @params[:attribute_processors] = {
+          :addressprocessero => lambda { |user, entry, s|
+            user.address = s[:postaladdress].split('$').first
+            user.city = s[:postaladdress].split('$').last
+          }
+        }
+        actual.find_user('blc').address.should == 'RUBLOFF 750 N Lake Shore Dr'
+        actual.find_user('blc').city.should == 'CH'
       end
 
       it 'uses no deprecated methods' do
@@ -242,6 +313,24 @@ module Bcsec::Authorities
 
         it "filters by fax" do
           found_usernames(:fax => '+1 847 555 0540').should == %w(cbrinson)
+        end
+
+        it 'filters using a custom attribute mapping' do
+          @params[:attribute_map] = { :displayname => :title }
+          found_usernames(:title => 'Warren A Kibbe').should == %w(wakibbe)
+        end
+      end
+
+      describe 'with explicitly mapped criteria attributes' do
+        it 'works' do
+          @params[:criteria_map] = { :emplid => :employeenumber }
+          found_usernames(:emplid => '105').should == %w(rms)
+        end
+
+        it 'prefers the mapping that is explicitly for criteria' do
+          @params[:criteria_map] = { :title => :employeenumber }
+          @params[:attribute_map] = { :displayname => :title }
+          found_usernames(:title => '107').should == %w(blc)
         end
       end
 

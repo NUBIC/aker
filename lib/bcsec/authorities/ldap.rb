@@ -57,9 +57,9 @@ module Bcsec::Authorities
   # @since 2.2.0
   # @author Rhett Sutphin
   class Ldap
-    # Bidirectional mapping between LDAP attributes and Bcsec::User
-    # attributes.  Only contains directly-mappable values.
-    LDAP_TO_BCSEC_ATTRIBUTE_MAPPING = {
+    ##
+    # @see {#attribute_map}
+    DEFAULT_ATTRIBUTE_MAP = {
       :uid => :username,
       :sn => :last_name,
       :givenname => :first_name,
@@ -67,13 +67,10 @@ module Bcsec::Authorities
       :mail => :email,
       :telephonenumber => :business_phone,
       :facsimiletelephonenumber => :fax,
-    }.collect { |ldap_attr, bcsec_attr|
-      { :ldap => ldap_attr, :bcsec => bcsec_attr }
-    }
+    }.freeze
 
     ##
-    # Create a new instance.  (Unlike bcsec 1.x's `NetidAuthenticator`,
-    # this class is not a singleton.)
+    # Create a new instance.
     #
     # @param [Configuration, Hash] config the configuration for
     #   this instance.  If a hash, the parameters are extracted
@@ -97,6 +94,16 @@ module Bcsec::Authorities
     #
     # @option config [String] :password The password that goes with
     #   *:user* (optional; required if *:user* is specified)
+    #
+    # @option config [Hash<Symbol, Symbol>] :attribute_map Extensions
+    #   and overrides for the LDAP-to-Bcsec user attribute
+    #   mapping. See {#attribute_map} for details.
+    #
+    # @option config [Hash<Symbol, #call>] :attribute_processors See
+    #   {#attribute_processors} for details.
+    #
+    # @option config [Hash<Symbol, Symbol>] :criteria_map See
+    #   {#criteria_map} for details.
     #
     # @param [Symbol] name the name for this authority. If you need to
     #   have multiple LDAP authorities in the same configuration,
@@ -142,6 +149,99 @@ module Bcsec::Authorities
     # @return [Boolean]
     def use_tls
       @config[:use_tls].nil? ? true : @config[:use_tls]
+    end
+
+    ##
+    # The mapping between attributes from the LDAP server and
+    # {Bcsec::User} attributes. This mapping is used in two ways:
+    #
+    # * When returning users from the LDAP server, the first value for any
+    #   mapped attribute is used as the value for that attribute in the
+    #   user object.
+    # * Bcsec user attributes in this map will be translated into LDAP
+    #   attributes when doing a criteria query with {#find_users}.
+    #
+    # There is a default mapping which will be reasonable for many
+    # cases. To extend it, provide the `:attribute_map` parameter when
+    # constructing this authority.
+    #
+    # If this mapping is not reversible (i.e., each value is unique),
+    # then the behavior of this authority is not defined. Each value
+    # in this map must be a writable attribute on Bcsec::User.
+    #
+    # @example
+    #   ldap.attribute_map # => { :givenname => :first_name }
+    #   ldap.find_user('jmt123')
+    #     # => The givenName attribute in the LDAP record will be
+    #     #    mapped to Bcsec::User#first_name in the returned user
+    #   ldap.find_users(:first_name => 'Jo')
+    #     # => The LDAP server will be queried using givenName=Jo.
+    #
+    # @return [Hash<Symbol, Symbol>] the mapping from LDAP attribute
+    #   to Bcsec user attribute.
+    def attribute_map
+      @attribute_map ||= DEFAULT_ATTRIBUTE_MAP.merge(@config[:attribute_map] || {})
+    end
+
+    ##
+    # @return [Hash<Symbol, Symbol>] The reverse of {#attribute_map}.
+    def reverse_attribute_map
+      @reverse_attribute_map ||= attribute_map.inject({}) { |h, (k, v)| h[v] = k; h }
+    end
+    protected :reverse_attribute_map
+
+    ##
+    # A set of named procs which will be applied while creating a
+    # {Bcsec::User} from an LDAP entry. The values in the map should
+    # be procs. Each proc should accept three arguments:
+    #
+    # * The user being created from the LDAP entry.
+    # * The full ldap entry. This is a hash-like object that allows
+    #   you to retrieve LDAP attributes using their names in lower
+    #   case. Values in the entry may be arrays or scalars. They may
+    #   not be serializable, so before copying a value out you should
+    #   be sure to dup it.
+    # * A proc that allows you to safely extract a single value from
+    #   the entry. The values returned from this proc are safe to set
+    #   directly in the user.
+    #
+    # If there is an entry in this mapping whose key is the same as a
+    # key in {#attribute_map}, the processor will be used instead of
+    # the simple mapping implied by `attribute_map`.
+    #
+    # @example An example processor
+    #   lambda { |user, entry, s|
+    #     user.identifiers[:ssn] = s[:ssn]
+    #   }
+    #
+    # @return [Hash<Symbol, #call>]
+    def attribute_processors
+      @attribute_processors ||= attribute_map_processors.merge(@config[:attribute_processors] || {})
+    end
+
+    def attribute_map_processors
+      Hash[attribute_map.collect { |ldap, bcsec|
+        [ldap, lambda { |user, entry, s| user.send("#{bcsec}=", s[ldap]) }]
+      }]
+    end
+
+    ##
+    # A mapping between attributes from the LDAP server and criteria
+    # keys used in {#find_users}. This mapping will be used when
+    # translating criteria hashes into LDAP queries. It is similar to
+    # {#attribute_map} in that way, but there are two differences:
+    #
+    # * The mapping is [criteria key] => [LDAP attribute]. This is the
+    #   reverse of `attribute_map`.
+    # * The "criteria" in `attribute_map` have to be {Bcsec::User}
+    #   attribute names. This map does not have that restriction.
+    #
+    # If a criterion appears both in this map and `attribute_map`, the
+    # mapping in this map is used.
+    #
+    # @return [Hash<Symbol,Symbol>]
+    def criteria_map
+      @config[:criteria_map] || {}
     end
 
     ##
@@ -208,11 +308,9 @@ module Bcsec::Authorities
 
     def create_user(ldap_entry)
       Bcsec::User.new(one_value(ldap_entry, :uid)).tap do |u|
-        # directly mappable attrs
-        LDAP_TO_BCSEC_ATTRIBUTE_MAPPING.reject { |map| map[:bcsec] == :username }.collect { |map|
-          [map[:ldap], :"#{map[:bcsec]}="]
-        }.each do |ldap_attr, user_setter|
-          u.send user_setter, one_value(ldap_entry, ldap_attr)
+        s = lambda { |k| one_value(ldap_entry, k) }
+        attribute_processors.reject { |k, v| k == :username }.each do |k, processor|
+          processor.call(u, ldap_entry, s)
         end
 
         u.extend Bcsec::Ldap::UserExt
@@ -259,10 +357,9 @@ module Bcsec::Authorities
     end
 
     def create_single_filter(bcsec_attribute, value)
-      ldap_attribute_map =
-        LDAP_TO_BCSEC_ATTRIBUTE_MAPPING.detect { |map| map[:bcsec] == bcsec_attribute }
-      if !value.nil? && ldap_attribute_map
-        Net::LDAP::Filter.eq(ldap_attribute_map[:ldap].to_s, value)
+      ldap_attribute = criteria_map[bcsec_attribute] || reverse_attribute_map[bcsec_attribute]
+      if !value.nil? && ldap_attribute
+        Net::LDAP::Filter.eq(ldap_attribute.to_s, value)
       end
     end
   end
