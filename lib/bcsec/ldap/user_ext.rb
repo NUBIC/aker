@@ -1,4 +1,4 @@
-require 'bcsec/netid'
+require 'bcsec/ldap'
 
 module Bcsec::Ldap
   ##
