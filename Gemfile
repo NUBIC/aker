@@ -1,21 +1,16 @@
 source :rubygems
-source 'http://download.bioinformatics.northwestern.edu/gems/'
 
 gemspec
 
-# for testing against different releases of ActiveRecord
-if ENV['ACTIVERECORD_VERSION']
-  version = case ENV['ACTIVERECORD_VERSION']
-            when 'ar_2.3' then '~> 2.3.0'
-            when 'ar_3.0' then '~> 3.0'
-            else raise "Unknown ActiveRecord version #{ENV['ACTIVERECORD_VERSION']}"
+# for testing against different releases of ActiveSupport
+if ENV['ACTIVESUPPORT_VERSION']
+  version = case ENV['ACTIVESUPPORT_VERSION']
+            when 'as_2.3' then '~> 2.3.0'
+            when 'as_3.0' then '~> 3.0'
+            else raise "Unknown ActiveSupport version #{ENV['ACTIVESUPPORT_VERSION']}"
             end
 
-  gem 'activerecord', version
-end
-
-group :resolver_hacks do
-  gem 'builder', '~> 2.1.2' if ENV['ACTIVERECORD_VERSION'] == 'ar_3.0'
+  gem 'activesupport', version
 end
 
 group :development do
@@ -24,10 +19,6 @@ group :development do
   gem 'rack-test', '~> 0.5'
   gem 'mechanize', '~> 1.0'
   gem 'rspec', '~> 2.6'
-
-  platforms :ruby_19 do
-    gem 'test-unit', '1.2.3'
-  end
 
   gem 'rcov', '~> 0.9'
   gem 'rest-client', '~> 1.4.0'
@@ -39,7 +30,6 @@ group :development do
   platforms :jruby do
     gem 'maruku'
   end
-
   platforms :ruby_18, :ruby_19 do
     gem 'rdiscount'
   end
@@ -47,46 +37,23 @@ group :development do
   # metrics
   gem 'saikuro_treemap', '0.1.2'
 
-  # pers testing
-  platforms :ruby_18, :ruby_19 do
-    gem 'ruby-oci8', '~> 2.0'
-  end
-
-  platforms :jruby do
-    # This is to keep JRuby from complaining when bcdatabase loads highline
-    gem 'ffi-ncurses'
-    gem 'jdbc-sqlite3'
-    gem 'activerecord-jdbcsqlite3-adapter', '~> 1.1'
-  end
-
-  # database_cleaner 0.6 doesn't work due to
-  # http://github.com/bmabey/database_cleaner/issues/23
-  # 0.5.2 doesn't work on JRuby due to a variation on
-  # http://github.com/bmabey/database_cleaner/issues/11
-  gem 'database_cleaner', '= 0.5', :require => nil
-
-  platforms :ruby_18, :ruby_19 do
-    gem 'sqlite3-ruby', '~> 1.2.0'
-  end
-
-  gem 'bcoracle', '~> 1.1'
-
-  platforms :ruby_19 do
-    gem 'unicode_utils'
-  end
-
-  # netid testing
+  # ldap testing
   gem 'ladle', '~> 0.2'
 
   # cas testing
   gem 'markaby', '0.5'    # other versions break RubyCAS-Server
   gem 'picnic', :git => 'git://github.com/NUBIC/picnic.git', :branch => 'activesupport3'
   gem 'rubycas-server'
+  gem 'activerecord', '>= 2.3.0'
+  platforms :jruby do
+    gem 'jdbc-sqlite3'
+    gem 'activerecord-jdbcsqlite3-adapter', '~> 1.1'
+  end
+  platforms :ruby_18, :ruby_19 do
+    gem 'sqlite3-ruby', '~> 1.2.0'
+  end
 
   # ci & deployment
-  gem 'net-ssh', '~> 2.0'
-  gem 'net-scp', '~> 1.0'
-  gem 'nubic-gem-tasks', '~> 1.0'
   gem 'nokogiri'
   gem 'rake', '>= 0.9.0'
   gem 'ci_reporter', '~> 1.6'

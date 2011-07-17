@@ -18,21 +18,14 @@ Gem::Specification.new do |s|
 
   # general
   s.add_dependency 'rubytree', '~> 0.7.0'
+  s.add_dependency 'activesupport', '>= 2.3.0'
 
-  # pers
-  s.add_dependency 'activerecord', '>= 2.3.0'
-  s.add_dependency 'schema_qualified_tables', '~> 1.0'
-  s.add_dependency 'bcdatabase', '~> 1.0'
-  s.add_dependency 'composite_primary_keys'
-  s.add_dependency 'bcaudit', '~> 0.2'
-  s.add_dependency 'activerecord-oracle_enhanced-adapter', '~> 1.3.0'
-
-  # netid
+  # ldap
   s.add_dependency 'net-ldap', '~> 0.1.1'
 
   # cas
   s.add_dependency 'castanet', '~> 1.0.0'
 
-  # modes
+  # rack integration & modes
   s.add_dependency 'warden', '~> 1.0'
 end
