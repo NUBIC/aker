@@ -10,7 +10,7 @@ module Aker
   #
   # - {Aker::Authorities::Cas :cas} provides CAS ticket verification
   #   using a CAS 2 server.
-  # - {Aker::Authorities::Ldap :ldap} verifies usernames and
+  # - {Aker::Ldap::Authority :ldap} verifies usernames and
   #   passwords using an LDAP server.
   # - {Aker::Authorities::Static :static} provides credential
   #   verification and user authorization based on an in-memory set of
@@ -26,7 +26,6 @@ module Aker
     autoload :AutomaticAccess, 'aker/authorities/automatic_access'
     autoload :Cas,             'aker/authorities/cas'
     autoload :Composite,       'aker/authorities/composite'
-    autoload :Ldap,            'aker/authorities/ldap'
     autoload :Static,          'aker/authorities/static'
 
     autoload :Support,         'aker/authorities/support'

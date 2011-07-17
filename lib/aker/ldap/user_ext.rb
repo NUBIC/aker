@@ -5,7 +5,7 @@ module Aker::Ldap
   # Extensions to {Aker::User} for users that were found in
   # an LDAP server.
   #
-  # @see Aker::Authorities::Ldap
+  # @see Aker::Ldap::Authority
   module UserExt
     ##
     # A hash of all the attributes in the user's ldap

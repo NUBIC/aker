@@ -1,7 +1,7 @@
 require 'net/ldap'
-require 'aker/authorities'
+require 'aker/ldap'
 
-module Aker::Authorities
+module Aker::Ldap
   ##
   # A generic authority for performing authentication and user lookup
   # via an LDAP server.  It authenticates username/password
@@ -31,8 +31,8 @@ module Aker::Authorities
   #      hr_parameters :server => "hr.example.com", :port => 5003
   #      dept_parameters :server => "ldap.mydept.example.com"
   #
-  #      hr_ldap = Aker::Authorities::Ldap.new(this, :hr)
-  #      dept_ldap = Aker::Authorities::Ldap.new(this, :dept)
+  #      hr_ldap = Aker::Ldap::Authority.new(this, :hr)
+  #      dept_ldap = Aker::Ldap::Authority.new(this, :dept)
   #
   #      authorities hr_ldap, dept_ldap
   #    }
@@ -41,10 +41,10 @@ module Aker::Authorities
   #    # Not pictured: using a default slice and aliasing to make
   #    # these authorities look like built-in authorities.
   #
-  #    class HrLdap < Aker::Authorities::Ldap
+  #    class HrLdap < Aker::Ldap::Authority
   #      def initialize(config); super config, :hr; end
   #    end
-  #    class DeptLdap < Aker::Authorities::Ldap
+  #    class DeptLdap < Aker::Ldap::Authority
   #      def initialize(config); super config, :dept; end
   #    end
   #
@@ -56,7 +56,7 @@ module Aker::Authorities
   #
   # @since 2.2.0
   # @author Rhett Sutphin
-  class Ldap
+  class Authority
     ##
     # @see #attribute_map
     DEFAULT_ATTRIBUTE_MAP = {
@@ -68,7 +68,7 @@ module Aker::Authorities
       :telephonenumber => :business_phone,
       :facsimiletelephonenumber => :fax,
     }.freeze
-
+    
     ##
     # Create a new instance.
     #
@@ -312,7 +312,7 @@ module Aker::Authorities
         return result.collect { |r| create_user(r) }
       end
     end
-    include Support::FindSoleUser
+    include ::Aker::Authorities::Support::FindSoleUser
 
     protected
 
@@ -323,7 +323,7 @@ module Aker::Authorities
           processor.call(u, ldap_entry, s)
         end
 
-        u.extend Aker::Ldap::UserExt
+        u.extend UserExt
         u.ldap_attributes = ldap_entry
       end
     end

@@ -6,7 +6,6 @@ module Aker
   autoload :Group,             'aker/group'
   autoload :GroupMemberships,  'aker/group_membership'
   autoload :GroupMembership,   'aker/group_membership'
-  autoload :Ldap,              'aker/ldap'
   autoload :User,              'aker/user'
   autoload :Test,              'aker/test'
   autoload :VERSION,           'aker/version'
@@ -46,5 +45,6 @@ end
 # These files are required instead of autoloaded so that their
 # configuration slices are installed immediately.
 require 'aker/authorities'
+require 'aker/ldap'
 require 'aker/modes'
 require 'aker/rack'

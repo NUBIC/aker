@@ -2,8 +2,8 @@ require File.expand_path('../../../spec_helper', __FILE__)
 
 require 'ladle'
 
-module Aker::Authorities
-  describe Ldap do
+module Aker::Ldap
+  describe Authority do
     before(:all) do
       # Create server once; it will be started by specs or groups that
       # need it.
@@ -28,7 +28,7 @@ module Aker::Authorities
 
     def actual
       # creates an instance which could connect to the ladle-provided server
-      Ldap.new({
+      Authority.new({
           # TODO: why doesn't the ladle-provided instance work in
           # anonymous mode?
           :user => 'uid=rms,ou=People,dc=northwestern,dc=edu',
@@ -40,18 +40,18 @@ module Aker::Authorities
 
     it "can be instantiated with a Aker::Configuration" do
       p = params
-      Ldap.new(Aker::Configuration.new { ldap_parameters p }).
+      Authority.new(Aker::Configuration.new { ldap_parameters p }).
         server.should == "127.0.0.1"
     end
 
     it 'uses a specified name to find its parameters' do
       p = params
-      Ldap.new(Aker::Configuration.new { foo_parameters p }, :foo).
+      Authority.new(Aker::Configuration.new { foo_parameters p }, :foo).
         server.should == "127.0.0.1"
     end
 
     it "can be instantiated with a parameters hash" do
-      Ldap.new(params).server.should == "127.0.0.1"
+      Authority.new(params).server.should == "127.0.0.1"
     end
 
     describe "at-construction parameter validation" do
@@ -126,7 +126,7 @@ module Aker::Authorities
       end
 
       it "uses TLS encryption by default" do
-        Ldap.new(params).ldap_parameters[:encryption].should == :simple_tls
+        Authority.new(params).ldap_parameters[:encryption].should == :simple_tls
       end
 
       it "uses no encryption when so configured" do
@@ -136,7 +136,7 @@ module Aker::Authorities
     end
 
     describe "#attribute_map" do
-      subject { Ldap.new(params).attribute_map }
+      subject { Authority.new(params).attribute_map }
 
       it 'has defaults' do
         subject[:givenname].should == :first_name
@@ -154,7 +154,7 @@ module Aker::Authorities
     end
 
     describe "#attribute_processors" do
-      subject { Ldap.new(params).attribute_processors }
+      subject { Authority.new(params).attribute_processors }
       let(:user) { Aker::User.new('fred') }
 
       def process(processor, entry)

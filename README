@@ -115,7 +115,7 @@ Using form authentication
 Aker's {Aker::Modes::Form :form} mode provides a traditional HTML
 form for user authentication.  It works with one or more authorities
 which handle the `:user` credential kind &mdash; compatible
-authorities that ship with Aker are {Aker::Authorities::Ldap
+authorities that ship with Aker are {Aker::Ldap::Authority
 :ldap}, and {Aker::Authorities::Static :static}.
 
 `:form` is the default UI mode.  If you want to explicitly configure
