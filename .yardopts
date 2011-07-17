@@ -1,4 +1,4 @@
 --no-private
 --markup markdown
 --hide-void-return
---files CHANGELOG
+--files CHANGELOG.md
