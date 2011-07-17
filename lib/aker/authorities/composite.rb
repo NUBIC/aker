@@ -187,7 +187,7 @@ module Aker::Authorities
     #   {#valid_credentials?}).
     # @param [String] reason the reason why authentication failed,
     #   broadly speaking; e.g., `"invalid credentials"` or `"user vetoed
-    #   by Pers"`.
+    #   by MyLockoutAuthority"`.
     #
     # @return [void]
     def on_authentication_failure(user, kind, credentials, reason)

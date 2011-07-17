@@ -217,7 +217,7 @@ module Aker
     ##
     # Register an alias for an authority object. The alias is a symbol
     # (or something that can be turned into one). The authority object
-    # is anything that can be passed to {#authority=}.
+    # is any single element that can be passed to {#authorities=}.
     #
     # Aker does and Aker extensions may define shorter aliases for
     # the authorities that they provide. In general, it's not expected
@@ -274,7 +274,7 @@ module Aker
     # {Aker::Rack::Authenticate authentication middleware}. This
     # method requires a block. When it is time to actually install the
     # middleware, the block will be yielded an object which behaves
-    # like a {Rack::Builder}. The block should attach any middleware
+    # like a `Rack::Builder`. The block should attach any middleware
     # it wishes to install using `use`.
     #
     # Unlike the middleware associated with modes, this middleware
@@ -312,13 +312,13 @@ module Aker
 
     ##
     # Installs the middleware configured under the given key in the
-    # given {Rack::Builder}. This method is primarily for internal
+    # given `Rack::Builder}. This method is primarily for internal
     # library use.
     #
     # @see #register_middleware_installer
     # @param [:before_authentication,:after_authentication] where the
     #   set of middleware installers to use.
-    # @param [#use] builder the {Rack::Builder}-like object into which
+    # @param [#use] builder the `Rack::Builder`-like object into which
     #   the middleware will be installed.
     # @return [void]
     def install_middleware(where, builder)

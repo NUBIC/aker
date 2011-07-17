@@ -62,7 +62,7 @@ module Aker::Cas
 
     ##
     # The URL that the CAS client can retrieve the PGT from once it
-    # has been deposited at the {#cas_proxy_callback_url} by the CAS
+    # has been deposited at the {#proxy_callback_url} by the CAS
     # server.  It is set in the CAS parameters as
     # `:proxy_retrieval_url`.
     #
