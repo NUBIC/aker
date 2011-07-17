@@ -4,8 +4,6 @@ spec/reports
 pkg
 doc
 .yardoc
-doc-with-rails
-.yardoc-with-rails
 reports
 aker-*.gem
 tmp
@@ -19,12 +17,3 @@ ci_bin
 
 .bundle
 Gemfile.lock
-
-support/nu-schema/target
-
-mydel.sql
-mydisable.sql
-# Don't commit the full dump -- it has semi-personal info in it.
-db/exports/cc_pers.dmp
-# Also don't commit the structure dump -- no need.
-db/exports/cc_pers_structure.dmp
