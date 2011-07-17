@@ -1,8 +1,21 @@
-Bcsec History
-=============
+Aker History
+============
 
 3.0.0
 -----
+- First open-source version.
+- Project renamed from "Bcsec" (short for Bioinformatics Core
+  security) to "Aker" (ancient Egyptian god of the horizon).
+- Bcsec contained several authorities which were specific to NUBIC;
+  those have been removed and purged from the git history for the
+  project.
+
+Bcsec History
+=============
+
+This is the history for the parts of Bcsec which remains in
+Aker. Versions that only included changes to code which has been
+removed from the open source version have been removed.
 
 2.2.0
 -----
@@ -20,42 +33,21 @@ Bcsec History
   order to prevent the service ticket from showing up in the user's
   browsing history. (#2725)
 - Extract and expose the method for determining the CAS service URL
-  for a particular request. (See {Bcsec::Cas::ServiceUrl}.)
+  for a particular request. (See `Bcsec::Cas::ServiceUrl`.)
 - Updated JRuby tested version to 1.6.2.
-
-2.1.1
------
-- Fixed: removed several potential SQL injection sites in the Pers
-  models. (#5202)
 
 2.1.0
 -----
 
 - ActiveRecord / ActiveSupport 3 compatibility. (#2804)
-- Fixed: include all child affiliates in group memberships loaded from
-  the `:pers` authority. (#4861)
 - Fixed: user information is no longer saved in the session in
   non-interactive modes.  (#2757)
-- Worked-around: weird problem with `#save!` of invalid pers model
-  instances in JRuby. (#4831)
-- Added: all registry-provided attributes are exposed on users found
-  or verified using the `:netid` authority. (#4869)
-
-2.0.6
------
-
-- Fixed: Pers authority no longer throws missing-audit-info exceptions
-  during authentication.  (#4430)
 
 2.0.5
 -----
 
 - Updated tested platforms to JRuby 1.5.3 and Ruby 1.9.2.  (MRI 1.8.7
   in the specific form of REE 2010.02 remains the same.)
-- Integrated bcaudit to enable column-level auditing on the {Pers}
-  models (#3836).  Bcaudit is now automatically included in the rack
-  middleware installed by bcsec.  Applications which use both bcsec
-  and bcaudit should not separately configure in bcaudit's middleware.
 
 2.0.4
 -----
@@ -65,8 +57,8 @@ Bcsec History
   joined using a logical OR.  All the built-in authorities have been
   updated to support this; custom authorities may need to be updated
   as well.  (#4027)
-- Added: {Bcsec::Authorities::Static#load!} will now load arbitrary
-  {Bcsec::User} attributes from the YAML file, not just the username,
+- Added: `Bcsec::Authorities::Static#load!` will now load arbitrary
+  `Bcsec::User` attributes from the YAML file, not just the username,
   password, and authorization information. (#4297)
 - Changed: Depend on net-ldap 0.1.1 instead of ruby-net-ldap 0.0.4.
   This new version of the net/ldap library is backwards compatible,
@@ -78,47 +70,21 @@ Bcsec History
 - Fixed: static authority now allows different users to have the same
   password. (#4068)
 
-2.0.2
------
-
-- Fixed: hierarchical group loading in the `:pers` authority would
-  skip every other top-level group (#3882).
-
 2.0.1
 -----
 
-- Added {Bcsec::Authorities::AutomaticAccess}.
-- Fixed: `#amplify!` in the :pers authority would fail when there was
-  no portal configured (#3811).
+- Added `Bcsec::Authorities::AutomaticAccess`.
 
 2.0.0
 -----
 
 - Complete rewrite: better architecture (no sole singletons); rack
   support; better RESTful API authentication support; support for MRI
-  1.8.7, JRuby, and YARV 1.9.1; and much more.  See the [release in
-  redmine][redmine2.0] for details.
-
-[redmine2.0]: https://code.bioinformatics.northwestern.edu/redmine/versions/show/168
-
-1.6.3
------
-
-- Extend NetidAuthenticator#find_user to allow lookups by e-mail
-  address.  (Temporary implementation of #2680 pre-2.0.)
-
-1.6.2
------
-
-- Provide NetidAuthenticator#find_user to allow applications to do LDAP lookups
-  outside of the authentication flow (feature #2309)
+  1.8.7, JRuby, and YARV 1.9.1; and much more.
 
 1.6.1
 -----
 
-- Fix the netid authenticator (broken since 1.5.1) (bug #2138)
-- Don't use ruby-net-ldap-provided strings outside of netid authenticator
-  (bug #2144)
 - Correct MockAuthenticator-authorized users so that they reflect the
   appropriate group memberships when logging in with CAS (bug #2221)
 - Prevent nil dereference in User#in_group? when the user has no groups at all
@@ -129,32 +95,12 @@ Bcsec History
 - Fix nil-sensitivity bug in Bcsec.use_cas (#1994)
 - Remove explicit `gem` invocations from library code
 - Make minor changes to allow bcsec to run under jruby 1.4.0
-- Rename Pers::Login.portal= to Pers::Login.portal_name= to avoid overwriting
-  association setter
-- Add Pers::Login.person association
-- Bump ActiveRecord dependency to 2.3.3 so we can use :primary_key in
-  belongs_to
 
 1.5.2
 -----
 
-- `Pers::GroupMembership` belongs to `Pers::Group`
 - Modify build layout a bit so that the source directory can be used with
   bundler's :path option in sowsear
-- Expand more-semantic name aliases for `Pers::Institution` and
-  `Pers::Affiliate`
-
-1.5.1
------
-
-- `Pers::Portal` has many `Pers::Group`s
-- Return a detailed Bcsec::User instance from
-  Bcsec::NetidAuthenticator.valid_credentials? using all fields available from
-  NU's LDAP servers (feature #1970)
-- Update PersAuthenticator.amplify and Pers::Person.to_user to handle
-  newly-added Bcsec::User fields
-- Don't assume that all valid accounts have a t_personnel record in
-  PersAuthenticator#amplify (bug #1903)
 
 1.5.0
 -----
@@ -167,42 +113,6 @@ Bcsec History
 
 - Configuration from use_cas now propagates to RailsCasFilter.
 
-1.4.7
------
-
-- Pers::AppointmentType added
-
-1.4.6
------
-
-- Pers::Title added
-
-1.4.5
------
-
-- Primary keys for Pers::GroupAssociation
-- Pers::Group and Pers::GroupActivity added
-
-1.4.4
------
-
-- All raw sql now use schema qualified table names
-
-1.4.3
------
-
-- Pers::Login portal setter to avoid conflict with portal association
-
-1.4.2
------
-
-- Pers::Person logins now an instance method to allow for correct schema names
-
-1.4.1
------
-
-- Sequence, schema and person association for Pers::Affiliation
-
 1.4.0
 -----
 
@@ -211,26 +121,9 @@ Bcsec History
   http://rubycas-client.rubyforge.org/ for configuration details.
   These parameters override central configuration.
 
-1.3.3
------
-
-- Sequence for Pers::Affiliate
-
-1.3.2
------
-
-- Sequence for Pers::Person
-
-1.3.1
------
-
-- Saving people without passwords now works
-
 1.3.0
 -----
 
-- Add schema-qualified table name support (from bcdatabase).  All the models
-  in the Pers module are now annotated as belonging to the :cc_pers schema.
 - Dev: support deploy:tag from git-svn clones
 
 1.2.6
@@ -240,21 +133,6 @@ Bcsec History
   authenticate. It responds to allow_access? and always returns true.
 - Added ability to add authenticators with may_access? method only.
 - Added rspec-rails version to use when running specs.
-
-1.2.5
------
-
-- Added sequence name for Pers::GroupMembership
-
-1.2.4
------
-
-- Added affiliations to people, affiliates to group memberships
-
-1.2.3
------
-
-- Added ability to update encrypted person passwords
 
 1.2.2
 -----
@@ -271,8 +149,6 @@ Bcsec History
 1.2.0
 -----
 
-- Allow PersAuthenticator to be used for authentication even if Bcsec::portal
-  isn't set.
 - Add Bcsec::portal_set? and similar to allow querying whether certain
   config attributes are set without throwing an exception when they aren't.
 - Add adapter code in rspec_helper.rb so that rspec-rails can be used as a gem.
@@ -291,14 +167,10 @@ Bcsec History
 1.0.0
 -----
 
-- Security groups are cached in memory by PersAuthenticator, including their
-  tree relationships if relevant.
 - A user's security groups are cached in the current user object in the
   session.
 - In group checks are handled in memory instead of hitting the database every
   time.
-- Obey t_security_group_memberships.expire_on when loading group memberships
-  in PersAuthenticator.
 - Added dependency on RubyTree gem
 
 0.1.1
@@ -315,18 +187,11 @@ Bcsec History
 - Add MockAuthenticator#load_credentials! to support loading test credentials
   from a file.
 
-0.0.3
------
-
-- Don't load activerecord-oracle-adapter if it isn't present
-
 0.0.2
 -----
 
 - Adapt deploy task to be multi-developer friendly
 - Add separate uninstall task to return to published version
-- Fix issue where oracle-fix.rb would cause rubygems to attempt to load
-  activerecord-1.15.3
 
 0.0.1
 -----
@@ -339,7 +204,6 @@ Bcsec History
 0.0.0
 -----
 
-- Extract non-rails-specific bcsec elements from bcsec engine.  Includes
-  models for parts of cc_pers and rlogin support classes.
+- Extract non-rails-specific bcsec elements from bcsec engine.
 - Convert test/unit tests moved from bcsec plugin into rspec specs.  (Shallow
   conversion only so far.)
