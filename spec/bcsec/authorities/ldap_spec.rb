@@ -21,12 +21,10 @@ module Bcsec::Authorities
       @server.stop if @server
     end
 
-    before do
-      # minimal valid set
-      @params = {
-        :server => '127.0.0.1'
-      }
-    end
+    # Minimal valid set
+    let(:params) {
+      { :server => '127.0.0.1' }
+    }
 
     def actual
       # creates an instance which could connect to the ladle-provided server
@@ -37,52 +35,52 @@ module Bcsec::Authorities
           :password => 'rhett',
           :use_tls => false,
           :port => @server.port
-        }.merge(@params))
+        }.merge(params))
     end
 
     it "can be instantiated with a Bcsec::Configuration" do
-      params = @params.dup
-      Ldap.new(Bcsec::Configuration.new { ldap_parameters params }).
+      p = params
+      Ldap.new(Bcsec::Configuration.new { ldap_parameters p }).
         server.should == "127.0.0.1"
     end
 
     it 'uses a specified name to find its parameters' do
-      params = @params.dup
-      Ldap.new(Bcsec::Configuration.new { foo_parameters params }, :foo).
+      p = params
+      Ldap.new(Bcsec::Configuration.new { foo_parameters p }, :foo).
         server.should == "127.0.0.1"
     end
 
     it "can be instantiated with a parameters hash" do
-      Ldap.new(@params).server.should == "127.0.0.1"
+      Ldap.new(params).server.should == "127.0.0.1"
     end
 
     describe "at-construction parameter validation" do
       it "requires the server name" do
-        @params[:server] = nil
+        params[:server] = nil
         lambda { actual }.should raise_error("The server parameter is required for ldap.")
       end
 
       it "does not require a user name" do
-        @params[:user] = nil
-        @params[:password] = nil
+        params[:user] = nil
+        params[:password] = nil
         lambda { actual }.should_not raise_error
       end
 
       it "does not require a password usually" do
-        @params[:user] = nil
-        @params[:password] = nil
+        params[:user] = nil
+        params[:password] = nil
         lambda { actual }.should_not raise_error
       end
 
       it "requires a password if there is a username" do
-        @params[:user] = 'uid=rms'
-        @params[:password] = nil
+        params[:user] = 'uid=rms'
+        params[:password] = nil
         lambda { actual }.should raise_error(
           "For ldap, both user and password are required if one is set.")
       end
 
       it "does not require a port" do
-        @params[:port] = nil
+        params[:port] = nil
         actual.port.should == 636
       end
     end
@@ -95,8 +93,8 @@ module Bcsec::Authorities
 
     describe "Net::LDAP parameter set" do
       before do
-        @params[:user] = "uid=rms,ou=People,dc=northwestern,dc=edu"
-        @params[:password] = "rhett"
+        params[:user] = "uid=rms,ou=People,dc=northwestern,dc=edu"
+        params[:password] = "rhett"
       end
 
       it "uses the specified server" do
@@ -104,7 +102,7 @@ module Bcsec::Authorities
       end
 
       it "uses the specified port" do
-        @params[:port] = 23443
+        params[:port] = 23443
         actual.ldap_parameters[:port].should == 23443
       end
 
@@ -122,41 +120,41 @@ module Bcsec::Authorities
       end
 
       it 'uses anonymous auth when there are no connection credentials' do
-        @params[:user] = nil
-        @params[:password] = nil
+        params[:user] = nil
+        params[:password] = nil
         actual.ldap_parameters[:auth][:method].should == :anonymous
       end
 
       it "uses TLS encryption by default" do
-        Ldap.new(@params).ldap_parameters[:encryption].should == :simple_tls
+        Ldap.new(params).ldap_parameters[:encryption].should == :simple_tls
       end
 
       it "uses no encryption when so configured" do
-        @params[:use_tls] = false
+        params[:use_tls] = false
         actual.ldap_parameters[:encryption].should be_nil
       end
     end
 
     describe "#attribute_map" do
-      subject { Ldap.new(@params).attribute_map }
+      subject { Ldap.new(params).attribute_map }
 
       it 'has defaults' do
         subject[:givenname].should == :first_name
       end
 
       it 'accepts overrides in the configuration' do
-        @params[:attribute_map] = { :givenname => nil }
+        params[:attribute_map] = { :givenname => nil }
         subject[:givenname].should be_nil
       end
 
       it 'accepts extensions in the configuration' do
-        @params[:attribute_map] = { :hat_size => :title }
+        params[:attribute_map] = { :hat_size => :title }
         subject[:hat_size].should == :title
       end
     end
 
     describe "#attribute_processors" do
-      subject { Ldap.new(@params).attribute_processors }
+      subject { Ldap.new(params).attribute_processors }
       let(:user) { Bcsec::User.new('fred') }
 
       def process(processor, entry)
@@ -176,7 +174,7 @@ module Bcsec::Authorities
       end
 
       it 'accepts overrides in the configuration' do
-        @params[:attribute_processors] = {
+        params[:attribute_processors] = {
           :givenname => lambda { |user, entry, s| user.first_name = s[:givenname] * 2 }
         }
         process(subject[:givenname], { :givenname => ['Fred'] })
@@ -184,7 +182,7 @@ module Bcsec::Authorities
       end
 
       it 'accepts extensions in the configuration' do
-        @params[:attribute_processors] = {
+        params[:attribute_processors] = {
           :ssn => lambda { |user, entry, s| user.identifiers[:ssn] = s[:ssn] }
         }
         process(subject[:ssn], { :ssn => ['123-08'] })
@@ -227,12 +225,12 @@ module Bcsec::Authorities
       end
 
       it 'uses custom mappings' do
-        @params[:attribute_map] = { :employeenumber => :title }
-        actual.find_user('blc').title.should == '107'
+        params[:attribute_map] = { :employeenumber => :country }
+        actual.find_user('blc').country.should == '107'
       end
 
       it 'uses custom processors' do
-        @params[:attribute_processors] = {
+        params[:attribute_processors] = {
           :addressprocessero => lambda { |user, entry, s|
             user.address = s[:postaladdress].split('$').first
             user.city = s[:postaladdress].split('$').last
@@ -316,20 +314,20 @@ module Bcsec::Authorities
         end
 
         it 'filters using a custom attribute mapping' do
-          @params[:attribute_map] = { :displayname => :title }
-          found_usernames(:title => 'Warren A Kibbe').should == %w(wakibbe)
+          params[:attribute_map] = { :displayname => :country }
+          found_usernames(:country => 'Warren A Kibbe').should == %w(wakibbe)
         end
       end
 
       describe 'with explicitly mapped criteria attributes' do
         it 'works' do
-          @params[:criteria_map] = { :emplid => :employeenumber }
+          params[:criteria_map] = { :emplid => :employeenumber }
           found_usernames(:emplid => '105').should == %w(rms)
         end
 
         it 'prefers the mapping that is explicitly for criteria' do
-          @params[:criteria_map] = { :title => :employeenumber }
-          @params[:attribute_map] = { :displayname => :title }
+          params[:criteria_map] = { :title => :employeenumber }
+          params[:attribute_map] = { :displayname => :title }
           found_usernames(:title => '107').should == %w(blc)
         end
       end
