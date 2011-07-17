@@ -46,9 +46,9 @@ module Aker::Rack
     #
     # [There is a related fourth environment variable:
     #
-    #  * `"aker"`: an instance of {Aker::Rack::Facade} permitting
-    #    authentication and authorization queries about the current
-    #    user (if any).
+    #  * `"aker.check"`: an instance of {Aker::Rack::Facade}
+    #    permitting authentication and authorization queries about the
+    #    current user (if any).
     #
     # This fourth variable is added by the {Authenticate} middleware;
     # see its documentation for more.]

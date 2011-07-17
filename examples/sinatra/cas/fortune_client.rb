@@ -64,9 +64,9 @@ OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:verify_mode] = OpenSSL::SSL::VERIFY_NO
 ##
 # Require authentication for all actions.
 before do
-  @user = env['aker'].user
+  @user = env['aker.check'].user
 
-  env['aker'].authentication_required!
+  env['aker.check'].authentication_required!
 end
 
 ##

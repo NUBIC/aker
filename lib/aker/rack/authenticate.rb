@@ -15,7 +15,7 @@ module Aker::Rack
     ##
     # Authenticates incoming requests using Warden.
     #
-    # Additionally, this class exposes the `aker` environment
+    # Additionally, this class exposes the `aker.check` environment
     # variable to downstream middleware and the app.  It is an
     # instance of {Aker::Rack::Facade} permitting authentication and
     # authorization queries about the current user (if any).
@@ -29,7 +29,7 @@ module Aker::Rack
         warden.authenticate(*configuration.api_modes)
       end
 
-      env['aker'] = Facade.new(configuration, warden.user)
+      env['aker.check'] = Facade.new(configuration, warden.user)
 
       @app.call(env)
     end

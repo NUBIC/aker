@@ -4,8 +4,8 @@ class Simple < Sinatra::Base
   end
 
   get '/protected' do
-    env['aker'].authentication_required!
-    username = env['aker'].user.username
+    env['aker.check'].authentication_required!
+    username = env['aker.check'].user.username
 
     "This is a protected resource.  You are accessing it as #{username}."
   end

@@ -25,7 +25,7 @@ module Aker::Modes::Middleware::Cas
     private
 
     def authenticated?(env)
-      env['aker'] && env['aker'].user
+      env['aker.check'] && env['aker.check'].user
     end
 
     def ticket_present?(env)

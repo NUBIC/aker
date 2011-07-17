@@ -30,7 +30,7 @@ class FortuneServer < Sinatra::Base
   ##
   # Make all actions require authentication.
   before do
-    env['aker'].authentication_required!
+    env['aker.check'].authentication_required!
   end
 
   ##

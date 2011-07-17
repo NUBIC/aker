@@ -31,7 +31,7 @@ module Aker::Modes::Middleware::Cas
 
       context 'ticket is present and the user is authenticated' do
         before do
-          env['aker'] = Aker::Rack::Facade.new(Aker.configuration, Aker::User.new('jo'))
+          env['aker.check'] = Aker::Rack::Facade.new(Aker.configuration, Aker::User.new('jo'))
 
           get '/foo?ticket=ST-45&q=bar', {}, env
         end

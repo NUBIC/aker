@@ -50,7 +50,7 @@ module Aker::Rack
     end
 
     def user(env)
-      env['aker'].user
+      env['aker.check'].user
     end
 
     def log_authorization_failure(env)

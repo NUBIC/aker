@@ -53,17 +53,17 @@ module Aker::Rack
       end
     end
 
-    describe "env['aker']" do
+    describe "env['aker.check']" do
       let(:user) { Aker::User.new("jo") }
 
       before do
         warden.stub!(:user => user, :authenticate => nil)
       end
 
-      let(:facade) { call['aker'] }
+      let(:facade) { call['aker.check'] }
 
       it "is a facade" do
-        facade.should be_is_a(Facade)
+        facade.should be_a(Facade)
       end
 
       it "has the user" do

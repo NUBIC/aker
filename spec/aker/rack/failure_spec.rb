@@ -35,7 +35,7 @@ module Aker::Rack
 
     describe "of authorization" do
       before do
-        @env['aker'] = Facade.new(@env["aker.configuration"], Aker::User.new("jo"))
+        @env['aker.check'] = Facade.new(@env["aker.configuration"], Aker::User.new("jo"))
       end
 
       shared_examples_for "an authorization failure" do
