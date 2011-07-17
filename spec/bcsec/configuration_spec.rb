@@ -295,6 +295,22 @@ describe Bcsec::Configuration do
         c.parameters_for(:foo)[:bar][:a].should == { :one => 1, :two => 2 }
         c.parameters_for(:foo)[:bar][:b].should == { :one => 4 }
       end
+
+      it 'respects values set to nil when combining' do
+        c = config_from { foo_parameters :bar => :quux }
+        c.parameters_for(:foo)[:bar].should == :quux
+
+        c.enhance { foo_parameters :bar => nil }
+        c.parameters_for(:foo)[:bar].should be_nil
+      end
+
+      it 'respects values set to nil when deeply combining' do
+        c = config_from { foo_parameters :bar => { :a => { :two => 2 } } }
+        c.parameters_for(:foo)[:bar][:a][:two].should == 2
+
+        c.enhance { foo_parameters :bar => { :a => { :two => nil } } }
+        c.parameters_for(:foo)[:bar][:a][:two].should be_nil
+      end
     end
 
     describe "for authorities" do
