@@ -6,15 +6,13 @@ module Aker::Cas
   ##
   # Extensions for {Aker::User} instances that come from CAS
   # credentials.
-  #
-  # @see Aker::Authorities::Cas
   module UserExt
     include Castanet::Client
 
     ##
     # The base URL of the CAS server.
     #
-    # This is typically set by {Aker::Authorities::Cas#valid_credentials?}.
+    # This is typically set by {Authority#valid_credentials?}.
     #
     # @see Aker::Cas::ConfigurationHelper#cas_url
     # @return [String]
@@ -23,7 +21,7 @@ module Aker::Cas
     ##
     # The proxy callback URL used by the CAS server.
     #
-    # This is typically set by {Aker::Authorities::Cas#valid_credentials?}.
+    # This is typically set by {Authority#valid_credentials?}.
     #
     # @see Aker::Cas::ConfigurationHelper#proxy_callback_url
     # @return [String, nil]
@@ -32,7 +30,7 @@ module Aker::Cas
     ##
     # The proxy retrieval URL from which Aker will retrieve PGTs.
     #
-    # This is typically set by {Aker::Authorities::Cas#valid_credentials?}.
+    # This is typically set by {Authority#valid_credentials?}.
     #
     # @see Aker::Cas::ConfigurationHelper#proxy_retrieval_url
     # @return [String, nil]
@@ -56,7 +54,7 @@ module Aker::Cas
     #   application &mdash; i.e., the URL for the server plus the mount
     #   point for the application, if any.
     #
-    # @see Aker::Modes::CasProxy#service_url
+    # @see ProxyMode#service_url
     #
     # @return [String] a new ticket
     def cas_proxy_ticket(service_base_url)

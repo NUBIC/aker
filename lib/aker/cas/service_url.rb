@@ -9,7 +9,7 @@ module Aker::Cas
   # accessor. It may optionally also have a `#attempted_path`
   # accessor.
   #
-  # @see Aker::Modes::Cas
+  # @see ServiceMode
   # @see Aker::Modes::Support::AttemptedPath
   module ServiceUrl
     ##

@@ -11,13 +11,5 @@ module Aker
     it "registers the basic mode" do
       configuration.registered_modes.should include(Aker::Modes::HttpBasic)
     end
-
-    it "registers the cas mode" do
-      configuration.registered_modes.should include(Aker::Modes::Cas)
-    end
-
-    it "registers the cas proxy mode" do
-      configuration.registered_modes.should include(Aker::Modes::CasProxy)
-    end
   end
 end

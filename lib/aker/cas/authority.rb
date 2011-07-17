@@ -2,13 +2,13 @@ require 'aker/authorities'
 
 require 'castanet'
 
-module Aker::Authorities
+module Aker::Cas
   ##
   # An authority which verifies CAS tickets with an actual CAS server.
   #
   # @see Aker::Cas::UserExt
-  class Cas
-    include Aker::Cas::ConfigurationHelper
+  class Authority
+    include ConfigurationHelper
     include Castanet::Client
 
     attr_reader :configuration

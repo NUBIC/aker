@@ -129,14 +129,14 @@ it, do like so:
 Using CAS
 ---------
 
-Aker's {Aker::Modes::Cas :cas} mode provides interactive user
+Aker's {Aker::Cas::ServiceMode :cas} mode provides interactive user
 authentication via an external CAS 2 server.  The
-{Aker::Modes::CasProxy :cas_proxy} mode complements `:cas` by
-providing non-interactive authentication using CAS proxy tickets.
-Each of these modes works with an authority which can handle the
-corresponding credential kind (i.e., `:cas` needs a `:cas`-handling
-authority). The {Aker::Authorities::Cas :cas} authority handles
-both.  Here's an example configuration:
+{Aker::Cas::ProxyMode :cas_proxy} mode complements `:cas` by providing
+non-interactive authentication using CAS proxy tickets.  Each of these
+modes works with an authority which can handle the corresponding
+credential kind (i.e., `:cas` needs a `:cas`-handling authority). The
+{Aker::Cas::Authority :cas} authority handles both.  Here's an
+example configuration:
 
     Aker.configure {
       authority :cas

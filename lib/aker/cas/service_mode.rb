@@ -2,22 +2,22 @@ require 'aker'
 require 'rack'
 
 module Aker
-  module Modes
+  module Cas
     ##
     # An interactive mode that provides CAS authentication conformant to CAS 2.
     #
-    # This mode does _not_ handle non-interactive CAS proxying.  See {CasProxy}
-    # for that.
+    # This mode does _not_ handle non-interactive CAS proxying.  See
+    # {ProxyMode} for that.
     #
     # @see http://www.jasig.org/cas/protocol
     #      CAS 2 protocol specification
     #
     # @author David Yip
-    class Cas < Aker::Modes::Base
-      include Aker::Cas::ConfigurationHelper
+    class ServiceMode < Aker::Modes::Base
+      include ConfigurationHelper
       include ::Rack::Utils
-      include Support::AttemptedPath
-      include Aker::Cas::ServiceUrl
+      include Aker::Modes::Support::AttemptedPath
+      include ServiceUrl
 
       ##
       # A key that refers to this mode; used for configuration convenience.
@@ -28,12 +28,12 @@ module Aker
       end
 
       ##
-      # Appends the {Middleware::Cas::LogoutResponder logout
-      # responder} and the {Middleware::Cas::TicketRemover ticket
-      # remover} to the Rack middleware stack.
+      # Appends the {Middleware::LogoutResponder logout responder} and
+      # the {Middleware::TicketRemover ticket remover} to the Rack
+      # middleware stack.
       def self.append_middleware(builder)
-        builder.use(Middleware::Cas::LogoutResponder)
-        builder.use(Middleware::Cas::TicketRemover)
+        builder.use(Middleware::LogoutResponder)
+        builder.use(Middleware::TicketRemover)
       end
 
       ##

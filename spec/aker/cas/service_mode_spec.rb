@@ -1,21 +1,21 @@
 require File.expand_path("../../../spec_helper", __FILE__)
-require File.expand_path("a_aker_mode", File.dirname(__FILE__))
+require File.expand_path("../../modes/a_aker_mode", __FILE__)
 require 'rack'
 require 'uri'
 
-module Aker::Modes
-  describe Cas do
+module Aker::Cas
+  describe ServiceMode do
     before do
       @env = ::Rack::MockRequest.env_for('/')
       @scope = mock
-      @mode = Cas.new(@env, @scope)
+      @mode = ServiceMode.new(@env, @scope)
     end
 
     it_should_behave_like "a aker mode"
 
     describe "#key" do
       it "is :cas" do
-        Cas.key.should == :cas
+        ServiceMode.key.should == :cas
       end
     end
 

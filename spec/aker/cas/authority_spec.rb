@@ -1,18 +1,18 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
-module Aker::Authorities
-  describe Cas do
+module Aker::Cas
+  describe Authority do
     let(:config) do
       Aker::Configuration.new do
         cas_parameters :base_url => "https://cas.example.net/cas/"
       end
     end
 
-    let(:authority) { Cas.new(config) }
+    let(:authority) { Authority.new(config) }
 
     describe "initialization" do
       it "accepts a configuration" do
-        Cas.new(config)
+        Authority.new(config)
       end
 
       it "requires a base URL in the configuration" do

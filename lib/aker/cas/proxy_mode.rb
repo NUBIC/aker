@@ -1,7 +1,7 @@
 require 'aker'
 
 module Aker
-  module Modes
+  module Cas
     ##
     # A non-interactive mode that provides CAS proxy authentication conformant to
     # CAS 2.
@@ -13,8 +13,8 @@ module Aker
     #      CAS 2 protocol specification
     #
     # @author David Yip
-    class CasProxy < Aker::Modes::Base
-      include Support::Rfc2617
+    class ProxyMode < Aker::Modes::Base
+      include Aker::Modes::Support::Rfc2617
 
       ##
       # A key that refers to this mode; used for configuration convenience.

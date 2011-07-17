@@ -1,5 +1,4 @@
 module Aker
-  autoload :Cas,               'aker/cas'
   autoload :CentralParameters, 'aker/central_parameters'
   autoload :Configuration,     'aker/configuration'
   autoload :Deprecation,       'aker/deprecation'
@@ -45,6 +44,7 @@ end
 # These files are required instead of autoloaded so that their
 # configuration slices are installed immediately.
 require 'aker/authorities'
+require 'aker/cas'
 require 'aker/ldap'
 require 'aker/modes'
 require 'aker/rack'

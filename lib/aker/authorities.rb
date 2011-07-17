@@ -8,7 +8,7 @@ module Aker
   #
   # Aker 2 ships with five authorities:
   #
-  # - {Aker::Authorities::Cas :cas} provides CAS ticket verification
+  # - {Aker::Cas::Authority :cas} provides CAS ticket verification
   #   using a CAS 2 server.
   # - {Aker::Ldap::Authority :ldap} verifies usernames and
   #   passwords using an LDAP server.
@@ -24,7 +24,6 @@ module Aker
   # @see Aker::Configuration#authorities=
   module Authorities
     autoload :AutomaticAccess, 'aker/authorities/automatic_access'
-    autoload :Cas,             'aker/authorities/cas'
     autoload :Composite,       'aker/authorities/composite'
     autoload :Static,          'aker/authorities/static'
 
@@ -37,7 +36,6 @@ module Aker
       def initialize
         super do
           alias_authority :automatic_access, Aker::Authorities::AutomaticAccess
-          alias_authority :cas, Aker::Authorities::Cas
           alias_authority :static, Aker::Authorities::Static
         end
       end

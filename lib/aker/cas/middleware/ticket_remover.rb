@@ -1,6 +1,6 @@
 require 'aker'
 
-module Aker::Modes::Middleware::Cas
+module Aker::Cas::Middleware
   ##
   # Middleware which issues a redirect immediately after CAS
   # authentication succeeds so that users never see a URL with the

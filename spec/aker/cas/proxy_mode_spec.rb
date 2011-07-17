@@ -1,13 +1,13 @@
 require File.expand_path("../../../spec_helper", __FILE__)
-require File.expand_path("a_aker_mode", File.dirname(__FILE__))
+require File.expand_path("../../modes/a_aker_mode", __FILE__)
 require 'rack'
 
-module Aker::Modes
-  describe CasProxy do
+module Aker::Cas
+  describe ProxyMode do
     before do
       @env = Rack::MockRequest.env_for('/')
       @scope = mock
-      @mode = CasProxy.new(@env, @scope)
+      @mode = ProxyMode.new(@env, @scope)
       @env['aker.configuration'] = Aker::Configuration.new
     end
 
@@ -15,7 +15,7 @@ module Aker::Modes
 
     describe "#key" do
       it "is :cas_proxy" do
-        CasProxy.key.should == :cas_proxy
+        ProxyMode.key.should == :cas_proxy
       end
     end
 

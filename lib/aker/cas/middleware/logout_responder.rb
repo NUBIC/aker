@@ -1,6 +1,6 @@
 require 'aker'
 
-module Aker::Modes::Middleware::Cas
+module Aker::Cas::Middleware
   class LogoutResponder
     include Aker::Rack::ConfigurationHelper
 

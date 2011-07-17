@@ -1,13 +1,13 @@
-require File.expand_path("../../../../../spec_helper", __FILE__)
+require File.expand_path("../../../../spec_helper", __FILE__)
 require "rack/test"
 
-module Aker::Modes::Middleware::Cas
+module Aker::Cas::Middleware
   describe TicketRemover do
     include Rack::Test::Methods
 
     let(:app) do
       Rack::Builder.new do
-        use Aker::Modes::Middleware::Cas::TicketRemover
+        use Aker::Cas::Middleware::TicketRemover
         run lambda { |env| [404, { "Content-Type" => "text/plain" }, ['Requested content']] }
       end
     end
