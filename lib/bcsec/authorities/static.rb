@@ -134,10 +134,6 @@ module Bcsec::Authorities
     #
     # @return [void]
     def valid_credentials!(kind, username, *credentials)
-      if String === kind
-        Bcsec::Deprecation.notify("Please specify a kind in valid_credentials!", "2.2")
-        return valid_credentials!(:user, kind, username, *credentials)
-      end
       if kind == :user
         credentials = [username, *credentials]
       end
@@ -284,18 +280,4 @@ module Bcsec::Authorities
       @groups[portal].last
     end
   end
-
-  ##
-  # @private undocumented so that people don't get any smart ideas
-  #   about using them
-  module StaticDeprecatedMethods
-    def may_access!(username, portal)
-      Bcsec::Deprecation.notify("may_access! is deprecated.  " <<
-                                "Directly add portals via #user or use #load!.",
-                                "2.2")
-      user(username).portals << portal.to_sym
-    end
-  end
-
-  Static.send(:include, StaticDeprecatedMethods)
 end

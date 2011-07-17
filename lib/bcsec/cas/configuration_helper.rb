@@ -17,7 +17,7 @@ module Bcsec::Cas
     #
     # @return [String]
     def cas_login_url
-      configuration.parameters_for(:cas)[:login_url] || URI.join(cas_base_url, 'login').to_s
+      configuration.parameters_for(:cas)[:login_url] || URI.join(cas_url, 'login').to_s
     end
 
     ##
@@ -27,7 +27,7 @@ module Bcsec::Cas
     #
     # @return [String]
     def cas_logout_url
-      configuration.parameters_for(:cas)[:logout_url] || URI.join(cas_base_url, 'logout').to_s
+      configuration.parameters_for(:cas)[:logout_url] || URI.join(cas_url, 'logout').to_s
     end
 
     ##
@@ -50,14 +50,6 @@ module Bcsec::Cas
     end
 
     ##
-    # @deprecated Use {#cas_url} instead.
-    def cas_base_url
-      Bcsec::Deprecation.notify('cas_base_url is deprecated.  Use cas_url instead.', '2.3')
-
-      cas_url
-    end
-
-    ##
     # The URL that CAS will provide the PGT and PGTIOU to, per section
     # 2.5.4 of the spec.  Some CAS servers require that this be an
     # SSL-protected resource.  It is set in the CAS parameters as
@@ -66,14 +58,6 @@ module Bcsec::Cas
     # @return [String, nil]
     def proxy_callback_url
       configuration.parameters_for(:cas)[:proxy_callback_url]
-    end
-
-    ##
-    # @deprecated Use {#proxy_callback_url} instead.
-    def cas_proxy_callback_url
-      Bcsec::Deprecation.notify('cas_proxy_callback_url is deprecated.  Use proxy_callback_url instead.', '2.2')
-
-      proxy_callback_url
     end
 
     ##
@@ -88,14 +72,6 @@ module Bcsec::Cas
     # @return [String, nil]
     def proxy_retrieval_url
       configuration.parameters_for(:cas)[:proxy_retrieval_url]
-    end
-
-    ##
-    # @deprecated Use {#proxy_retrieval_url} instead.
-    def cas_proxy_retrieval_url
-      Bcsec::Deprecation.notify('cas_proxy_retrieval_url is deprecated.  Use proxy_retrieval_url instead.', '2.2')
-
-      proxy_retrieval_url
     end
 
     private

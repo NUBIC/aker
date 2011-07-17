@@ -451,38 +451,5 @@ module Bcsec::Authorities
         @s.clear.object_id.should == @s.object_id
       end
     end
-
-    describe "treatment of deprecated methods from MockAuthenticator" do
-      describe "#valid_credentials! without a kind" do
-        before do
-          @s.valid_credentials!("suzy", "q")
-        end
-
-        it "gets a warning" do
-          deprecation_message.should =~ /Please specify a kind in valid_credentials!/
-          deprecation_message.should =~ /2\.2/
-        end
-
-        it "assumes that the kind is :user" do
-          @s.valid_credentials?(:user, "suzy", "q").should be_true
-        end
-      end
-
-      describe "#may_access!" do
-        before do
-          @s.may_access!("suzy", :ENU)
-        end
-
-        it "gets a warning" do
-          deprecation_message.should =~
-            /may_access! is deprecated.  Directly add portals via #user or use #load!./
-          deprecation_message.should =~ /2\.2/
-        end
-
-        it "is converted into a portal append" do
-          @s.user("suzy").may_access?(:ENU).should be_true
-        end
-      end
-    end
   end
 end

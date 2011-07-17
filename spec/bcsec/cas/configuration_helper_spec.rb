@@ -48,44 +48,44 @@ module Bcsec::Cas
       end
     end
 
-    describe "#cas_base_url" do
+    describe "#cas_url" do
       before do
         @config.parameters_for(:cas)[:cas_base_url] = "https://cas2.example.org/"
       end
 
       it "is preferentially loaded from the :base_url property" do
-        @actual.cas_base_url.should == "https://cas.example.org/"
+        @actual.cas_url.should == "https://cas.example.org/"
       end
 
       it "is loaded from the :cas_base_url property if that's all that's provided" do
         @config.parameters_for(:cas)[:base_url] = nil
-        @actual.cas_base_url.should == "https://cas2.example.org/"
+        @actual.cas_url.should == "https://cas2.example.org/"
       end
 
       it "adds a terminating / to the base URL if one isn't given" do
         @config.parameters_for(:cas)[:base_url] = "https://cas2.example.org"
 
-        @actual.cas_base_url.should == "https://cas2.example.org/"
+        @actual.cas_url.should == "https://cas2.example.org/"
       end
 
       it "does not add a terminating / to the base URL if one is given" do
         @config.parameters_for(:cas)[:base_url] = "https://cas2.example.org/"
 
-        @actual.cas_base_url.should == "https://cas2.example.org/"
+        @actual.cas_url.should == "https://cas2.example.org/"
       end
     end
 
-    describe "#cas_proxy_callback_url" do
+    describe "#proxy_callback_url" do
       it "is loaded from the :proxy_callback_url property" do
         @config.parameters_for(:cas)[:proxy_callback_url] = "https://cas.example.net/callback/gpgt"
-        @actual.cas_proxy_callback_url.should == "https://cas.example.net/callback/gpgt"
+        @actual.proxy_callback_url.should == "https://cas.example.net/callback/gpgt"
       end
     end
 
-    describe "#cas_proxy_retrieval_url" do
+    describe "#proxy_retrieval_url" do
       it "is loaded from the :proxy_retrieval_url property" do
         @config.parameters_for(:cas)[:proxy_retrieval_url] = "https://cas.example.net/callback/rpgt"
-        @actual.cas_proxy_retrieval_url.should == "https://cas.example.net/callback/rpgt"
+        @actual.proxy_retrieval_url.should == "https://cas.example.net/callback/rpgt"
       end
     end
   end

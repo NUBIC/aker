@@ -4,17 +4,6 @@ module Bcsec
   ##
   # @private
   module DeprecatedUser
-    ##
-    # Returns whether a user is a member of any of the requested groups in the
-    # default portal.
-    #
-    # @deprecated Use `group_memberships.include?` instead.
-    def in_group?(*requested_groups)
-      Deprecation.notify("in_group? is deprecated.  Use group_memberships.include? instead.",
-                         "2.2")
-      group_memberships.include?(*requested_groups)
-    end
-
     [:nu_employee_id, :personnel_id].each do |deprec_id|
       define_method deprec_id do
         Deprecation.notify(

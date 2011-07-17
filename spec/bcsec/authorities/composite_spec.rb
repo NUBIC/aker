@@ -467,14 +467,6 @@ module Bcsec::Authorities
         @a.actual_options.should == [{ :email => 'baz' }]
       end
 
-      it "does not cause an error for a non-splat #find_users implementation" do
-        def @a.find_users(options); [ Bcsec::User.new('jo') ]; end
-
-        @comp.find_users({ :something => "foo" }, { :bar => "quux" }).
-          collect { |u| u.username }.should == %w(jo)
-        deprecation_message.should =~ /Implement Object\#find_users with a \*splat as of 2.0.4\./
-      end
-
       it "amplifies found users" do
         def @a.find_users(*options); [ Bcsec::User.new('jo') ]; end
         def @a.amplify!(user); user.last_name = "Miller"; user; end

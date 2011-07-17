@@ -497,89 +497,8 @@ module Bcsec
 
   ##
   # @private
-  module DeprecatedConfiguratorLanguage
-    def app_name(*ignored)
-      Deprecation.notify("app_name is unnecessary.  Remove it from your configuration.", "2.2")
-    end
-
-    def authenticator(*args)
-      Deprecation.notify("authenticator is deprecated.  Use authority instead.", "2.2")
-      authorities *args
-    end
-
-    def authenticators(*args)
-      Deprecation.notify("authenticators is deprecated.  Use authorities instead.", "2.2")
-      authorities *args
-    end
-
-    def authorities(*args)
-      super(*replace_deprecated_authenticators(args))
-    end
-
-    # alias + module super doesn't work on MRI 1.8.x (does work on
-    # 1.9.1 and JRuby 1.4.0 though)
-    def authority(*args)
-      authorities(*args)
-    end
-
-    {
-      :server => :server,
-      :username => :user,
-      :password => :password
-    }.each do |attr, param|
-      replacement = "netid_parameters :#{param} => \#{value.inspect}"
-      class_eval <<-RUBY
-        def ldap_#{attr}(value)
-          Deprecation.notify("ldap_#{attr} is deprecated.  Use #{replacement} instead.", "2.2")
-          netid_parameters :#{param} => value
-        end
-      RUBY
-    end
-
-    def establish_cc_pers_connection(*args)
-      Deprecation.notify("establish_cc_pers_connection is deprecated.  " <<
-                         "Use pers_parameters :separate_connection => true instead.", "2.2")
-      pers_parameters :separate_connection => true
-    end
-
-    private
-
-    def replace_deprecated_authenticators(args)
-      args.collect { |name|
-        case name
-        when :mock
-          Deprecation.notify("The :mock authenticator is now the " <<
-                             ":static authority.  Please update your configuration.",
-                             "2.2")
-          :static
-        when :authenticate_only
-          Deprecation.notify("The :authenticate_only authenticator is no longer " <<
-                             "necessary.  To prevent the portal access check, " <<
-                             "don't include a portal in the configuration.",
-                             "2.2")
-          nil
-        else
-          name
-        end
-      }.compact
-    end
-
-    def use_cas
-      Deprecation.notify("use_cas is deprecated.  Use api_modes :cas_proxy; " <<
-                         "ui_mode :cas; authorities :cas instead.",
-                         "2.2")
-
-      ui_mode :cas
-      api_modes :cas_proxy
-      authorities :cas
-    end
-  end
-
-  ##
-  # @private
   class Configurator
     include ConfiguratorLanguage
-    include DeprecatedConfiguratorLanguage
 
     def initialize(target, &block)
       @config = target
