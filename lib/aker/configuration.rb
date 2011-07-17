@@ -437,10 +437,10 @@ module Aker
   # @example
   #     Aker.configure {
   #       portal :ENU
-  #       authorities :netid, :pers
+  #       authorities :ldap, :static
   #       api_mode :basic
   #       central "/etc/nubic/aker-prod.yml"
-  #       netid_parameters :user => "me"
+  #       ldap_parameters :server => 'ldap.example.org'
   #       after_authentication_middleware do |builder|
   #         builder.use RequestLogger
   #       end

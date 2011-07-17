@@ -8,14 +8,10 @@ module Aker
   #
   # Aker 2 ships with five authorities:
   #
-  # - {Aker::Authorities::Netid :netid} verifies usernames and
-  #   passwords using NU's central LDAP servers.
-  # - {Aker::Authorities::Pers :pers} uses the shared `cc_pers`
-  #   schema to provide authentication and authorization.  This is the
-  #   only built-in authority that is suitable for providing
-  #   authorization in production applications.
   # - {Aker::Authorities::Cas :cas} provides CAS ticket verification
   #   using a CAS 2 server.
+  # - {Aker::Authorities::Ldap :ldap} verifies usernames and
+  #   passwords using an LDAP server.
   # - {Aker::Authorities::Static :static} provides credential
   #   verification and user authorization based on an in-memory set of
   #   users.  It can be configured in code or by loading a YAML file.
@@ -31,8 +27,6 @@ module Aker
     autoload :Cas,             'aker/authorities/cas'
     autoload :Composite,       'aker/authorities/composite'
     autoload :Ldap,            'aker/authorities/ldap'
-    autoload :Netid,           'aker/authorities/netid'
-    autoload :Pers,            'aker/authorities/pers'
     autoload :Static,          'aker/authorities/static'
 
     autoload :Support,         'aker/authorities/support'

@@ -7,24 +7,16 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 
 require 'aker'
 
-require File.expand_path('../database_helper', __FILE__)
 require File.expand_path('../deprecation_helper', __FILE__)
 require File.expand_path('../logger_helper', __FILE__)
 require File.expand_path("../../tool-patches/rcov-encoding-1.9.rb", __FILE__)
 require File.expand_path('../mock_builder', __FILE__)
-
-# Round-about require so that this will continue to work after purging
-# pers but before doing manual edits.
-File.expand_path('../pers_helper.rb', __FILE__).tap do |path|
-  require path if File.exist?(path)
-end
 
 if RUBY_PLATFORM == 'java'
   require File.expand_path('../java_helper', __FILE__)
 end
 
 RSpec.configure do |config|
-  Aker::Spec::DatabaseData.use_in(config)
   Aker::Spec::DeprecationMode.use_in(config)
   config.include Aker::Spec::LoggerHelper
 

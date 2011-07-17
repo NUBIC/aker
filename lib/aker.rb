@@ -47,6 +47,4 @@ end
 # configuration slices are installed immediately.
 require 'aker/authorities'
 require 'aker/modes'
-require 'aker/netid'
-require 'aker/pers'
 require 'aker/rack'

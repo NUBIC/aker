@@ -7,7 +7,7 @@ module Aker::Authorities
   # intended for production, but rather for testing (particularly
   # integrated testing) and bootstrapping (e.g., for rapidly testing
   # out aker in an application before setting up the infrastructure
-  # needed for {Aker::Authorities::Pers Pers} or {Netid}).
+  # needed for {Ldap} or a custom authority).
   class Static
     ##
     # Creates a new instance.  Does not use any configuration properties.

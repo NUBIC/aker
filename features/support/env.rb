@@ -13,13 +13,6 @@ require File.expand_path("../../../spec/matchers", __FILE__)
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
 require File.expand_path("../mechanize_test.rb", __FILE__)
 
-# Roundabout require so that features in general will continue to work
-# after removing the pers files but before updating the contents of
-# this file.
-File.expand_path("../pers_support.rb", __FILE__).tap do |path|
-  require path if File.exist?(path)
-end
-
 Before do
   # suppress logging
   aker_log = "#{tmpdir}/aker.log"
@@ -41,7 +34,6 @@ module Aker::Cucumber
     include ::Aker::Spec::Matchers
     include ::RSpec::Matchers
     include ::Aker::Cucumber::MechanizeTest
-    include ::Aker::Cucumber::Pers if defined?(::Aker::Cucumber::Pers)
     include FileUtils
 
     CAS_PORT = 5409
