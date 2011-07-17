@@ -1,13 +1,13 @@
-require File.expand_path("../../../../../spec_helper", __FILE__)
+require File.expand_path("../../../../spec_helper", __FILE__)
 require "rack/test"
 
-module Aker::Modes::Middleware::Form
+module Aker::Form::Middleware
   describe LogoutResponder do
     include Rack::Test::Methods
 
     let(:app) do
       Rack::Builder.new do
-        use Aker::Modes::Middleware::Form::LogoutResponder
+        use Aker::Form::Middleware::LogoutResponder
 
         app = lambda do |env|
           if env["REQUEST_METHOD"] == "GET" && env["PATH_INFO"] == "/logout"

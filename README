@@ -112,7 +112,7 @@ But then in production use:
 Using form authentication
 -------------------------
 
-Aker's {Aker::Modes::Form :form} mode provides a traditional HTML
+Aker's {Aker::Form::Mode :form} mode provides a traditional HTML
 form for user authentication.  It works with one or more authorities
 which handle the `:user` credential kind &mdash; compatible
 authorities that ship with Aker are {Aker::Ldap::Authority

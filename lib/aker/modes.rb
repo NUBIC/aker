@@ -14,7 +14,7 @@ module Aker
   #   a CAS server.
   # - {Aker::Cas::ProxyMode :cas_proxy} is an API mode that implements the
   #   CAS proxying protocol.
-  # - {Aker::Modes::Form :form} is a UI mode that provides an HTML form that
+  # - {Aker::Form::Mode :form} is a UI mode that provides an HTML form that
   #   prompts for username and password.
   # - {Aker::Modes::HttpBasic :http_basic} is an API/UI mode that implements
   #   the HTTP Basic authentication protocol.  (It's both an API and UI mode
@@ -28,9 +28,7 @@ module Aker
   # @see Aker::Configuration#api_modes=
   module Modes
     autoload :Base,       'aker/modes/base'
-    autoload :Form,       'aker/modes/form'
     autoload :HttpBasic,  'aker/modes/http_basic'
-    autoload :Middleware, 'aker/modes/middleware'
     autoload :Support,    'aker/modes/support'
 
     ##
@@ -38,7 +36,6 @@ module Aker
     class Slice < Aker::Configuration::Slice
       def initialize
         super do
-          register_mode Aker::Modes::Form
           register_mode Aker::Modes::HttpBasic
         end
       end

@@ -3,7 +3,7 @@ require 'uri'
 require 'rack'
 
 module Aker
-  module Modes
+  module Form
     ##
     # An interactive mode that accepts a username and password POSTed from an
     # HTML form.
@@ -12,12 +12,12 @@ module Aker
     # password in a `password` parameter.
     #
     # This mode also renders said HTML form if authentication fails.  This is
-    # provided by {Middleware::Form::LoginRenderer}.
+    # provided by {Middleware::LoginRenderer}.
     #
     # @author David Yip
-    class Form < Aker::Modes::Base
+    class Mode < Aker::Modes::Base
       include ::Rack::Utils
-      include Support::AttemptedPath
+      include Aker::Modes::Support::AttemptedPath
 
       ##
       # A key that refers to this mode; used for configuration convenience.
@@ -41,18 +41,18 @@ module Aker
       end
 
       ##
-      # Appends the {Middleware::Form::LoginResponder login responder} to its
+      # Appends the {Middleware::LoginResponder login responder} to its
       # position in the Rack middleware stack.
       def self.append_middleware(builder)
-        builder.use(Middleware::Form::LoginResponder, login_path)
-        builder.use(Middleware::Form::LogoutResponder)
+        builder.use(Middleware::LoginResponder, login_path)
+        builder.use(Middleware::LogoutResponder)
       end
 
       ##
-      # Prepends the {Middleware::Form::LoginRenderer login form renderer} to
+      # Prepends the {Middleware::LoginRenderer login form renderer} to
       # its position in the Rack middleware stack.
       def self.prepend_middleware(builder)
-        builder.use(Middleware::Form::LoginRenderer, login_path)
+        builder.use(Middleware::LoginRenderer, login_path)
       end
 
       ##

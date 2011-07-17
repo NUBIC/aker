@@ -1,7 +1,7 @@
-require File.expand_path("../../../../spec_helper", __FILE__)
+require File.expand_path("../../../spec_helper", __FILE__)
 require 'nokogiri'
 
-module Aker::Modes::Support
+module Aker::Form
   describe LoginFormAssetProvider do
     let(:vessel) do
       Object.new.tap { |o| o.extend(LoginFormAssetProvider) }
@@ -58,7 +58,7 @@ module Aker::Modes::Support
     describe "#login_css" do
       it "provides CSS for the login form" do
         expected_css = File.read(File.join(File.dirname(__FILE__),
-                                           %w(.. .. .. .. assets aker modes middleware form login.css)))
+                                           %w(.. .. .. assets aker modes middleware form login.css)))
 
         vessel.login_css.should == expected_css
       end

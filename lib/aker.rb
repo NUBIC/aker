@@ -45,6 +45,7 @@ end
 # configuration slices are installed immediately.
 require 'aker/authorities'
 require 'aker/cas'
+require 'aker/form'
 require 'aker/ldap'
 require 'aker/modes'
 require 'aker/rack'

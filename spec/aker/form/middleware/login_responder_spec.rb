@@ -1,13 +1,13 @@
-require File.expand_path("../../../../../spec_helper", __FILE__)
+require File.expand_path("../../../../spec_helper", __FILE__)
 require "rack/test"
 
-module Aker::Modes::Middleware::Form
+module Aker::Form::Middleware
   describe LoginResponder do
     include Rack::Test::Methods
 
     let(:app) do
       Rack::Builder.new do
-        use Aker::Modes::Middleware::Form::LoginResponder, '/login'
+        use Aker::Form::Middleware::LoginResponder, '/login'
 
         app = lambda do |env|
           if env["REQUEST_METHOD"] == "POST" && env["PATH_INFO"] == "/login" && env['aker.login_failed']

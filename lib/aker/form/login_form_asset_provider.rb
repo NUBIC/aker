@@ -2,7 +2,7 @@ require 'aker/modes/support'
 require 'erb'
 require 'rack'
 
-module Aker::Modes::Support
+module Aker::Form
   ##
   # Provides HTML and CSS for login forms.
   #
@@ -18,7 +18,7 @@ module Aker::Modes::Support
     # @return [String] a directory path
     def asset_root
       File.expand_path(File.join(File.dirname(__FILE__),
-                                 %w(.. .. .. ..),
+                                 %w(.. .. ..),
                                  %w(assets aker modes middleware form)))
     end
 

@@ -26,14 +26,14 @@ module Aker
 
       describe "setting up modes" do
         before do
-          configuration.register_mode Aker::Modes::Form
+          configuration.register_mode Aker::Modes::HttpBasic
 
           builder.reset!
           Aker::Rack.use_in(builder)
         end
 
         it 'installs the modes registered in the configuration' do
-          ::Warden::Strategies[:form].should == Aker::Modes::Form
+          ::Warden::Strategies[:http_basic].should == Aker::Modes::HttpBasic
         end
 
         it 'does not install other modes just because they exist' do

@@ -1,8 +1,8 @@
 require 'aker'
 
-module Aker::Modes::Middleware::Form
+module Aker::Form::Middleware
   class LogoutResponder
-    include Aker::Modes::Support::LoginFormAssetProvider
+    include Aker::Form::LoginFormAssetProvider
     include Aker::Rack::ConfigurationHelper
 
     def initialize(app)

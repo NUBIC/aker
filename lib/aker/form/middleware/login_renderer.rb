@@ -1,8 +1,8 @@
 require 'aker'
 
-module Aker::Modes::Middleware::Form
+module Aker::Form::Middleware
   ##
-  # Rack middleware used by {Aker::Modes::Form} to render an HTML login
+  # Rack middleware used by {Aker::Form::Mode} to render an HTML login
   # form.
   #
   # This middleware implements half of the form login process.  The
@@ -10,7 +10,7 @@ module Aker::Modes::Middleware::Form
   #
   # @author David Yip
   class LoginRenderer
-    include Aker::Modes::Support::LoginFormAssetProvider
+    include Aker::Form::LoginFormAssetProvider
     include Aker::Rack::ConfigurationHelper
 
     ##

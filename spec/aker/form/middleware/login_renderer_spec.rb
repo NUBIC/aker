@@ -1,13 +1,13 @@
-require File.expand_path("../../../../../spec_helper", __FILE__)
+require File.expand_path("../../../../spec_helper", __FILE__)
 require "rack/test"
 
-module Aker::Modes::Middleware::Form
+module Aker::Form::Middleware
   describe LoginRenderer do
     include Rack::Test::Methods
 
     let(:app) do
       Rack::Builder.new do
-        use Aker::Modes::Middleware::Form::LoginRenderer, '/login'
+        use Aker::Form::Middleware::LoginRenderer, '/login'
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
     end

@@ -1,20 +1,20 @@
 require File.expand_path("../../../spec_helper", __FILE__)
-require File.expand_path("a_aker_mode", File.dirname(__FILE__))
+require File.expand_path("../../modes/a_aker_mode", __FILE__)
 require "rack"
 
-module Aker::Modes
-  describe Form do
+module Aker::Form
+  describe Mode do
     before do
       @env = ::Rack::MockRequest.env_for("/")
       @scope = mock
-      @mode = Form.new(@env, @scope)
+      @mode = Mode.new(@env, @scope)
     end
 
     it_should_behave_like "a aker mode"
 
     describe "#key" do
       it "is :form" do
-        Form.key.should == :form
+        Mode.key.should == :form
       end
     end
 
