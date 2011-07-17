@@ -1,6 +1,9 @@
 Bcsec History
 =============
 
+3.0.0
+-----
+
 2.2.0
 -----
 - Introduced the concept of "configuration slices" so that extensions
