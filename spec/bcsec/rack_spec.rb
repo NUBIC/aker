@@ -6,29 +6,9 @@ module Bcsec
       ::Warden::Strategies.clear!
     end
 
-    class MockBuilder
-      def reset!
-        self.uses.clear
-      end
-
-      def use(cls, *params, &block)
-        self.uses << [cls, params, block]
-      end
-
-      def uses
-        @uses ||= []
-      end
-
-      def using?(klass, *params)
-        self.uses.detect { |cls, prms, block| cls == klass && params == prms }
-      end
-
-      alias :find_use_of :using?
-    end
-
     describe ".use_in" do
-      let(:builder) { MockBuilder.new }
-      let(:configuration) { Bcsec::Configuration.new }
+      let(:builder) { Bcsec::Spec::MockBuilder.new }
+      let(:configuration) { Bcsec::Configuration.new(:slices => []) }
 
       before do
         Bcsec.configuration = configuration
@@ -45,20 +25,19 @@ module Bcsec
       end
 
       describe "setting up modes" do
-        it "installs the form mode" do
+        before do
+          configuration.register_mode Bcsec::Modes::Form
+
+          builder.reset!
+          Bcsec::Rack.use_in(builder)
+        end
+
+        it 'installs the modes registered in the configuration' do
           ::Warden::Strategies[:form].should == Bcsec::Modes::Form
         end
 
-        it "installs the basic mode" do
-          ::Warden::Strategies[:http_basic].should == Bcsec::Modes::HttpBasic
-        end
-
-        it "installs the cas mode" do
-          ::Warden::Strategies[:cas].should == Bcsec::Modes::Cas
-        end
-
-        it "installs the cas proxy mode" do
-          ::Warden::Strategies[:cas_proxy].should == Bcsec::Modes::CasProxy
+        it 'does not install other modes just because they exist' do
+          ::Warden::Strategies[:cas].should be_nil
         end
       end
 
@@ -109,17 +88,25 @@ module Bcsec
           Warden::Strategies.add(:api_mode_a, api_mode_a)
           Warden::Strategies.add(:api_mode_b, api_mode_b)
 
-          Bcsec.configure do
+          config = Bcsec::Configuration.new(:slices => []) do
             ui_mode :ui_mode
             api_modes :api_mode_a, :api_mode_b
+
+            before_authentication_middleware do |builder|
+              builder.use :global_before
+            end
+
+            after_authentication_middleware do |builder|
+              builder.use :global_after
+            end
           end
 
-          Bcsec::Rack.use_in(builder)
+          Bcsec::Rack.use_in(builder, config)
 
-          @authenticate_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Authenticate)
-          @logout_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::Logout)
-          @bcaudit_index = builder.uses.map { |u| u.first }.index(Bcaudit::Middleware)
-          @session_timer_index = builder.uses.map { |u| u.first }.index(Bcsec::Rack::SessionTimer)
+          @indexes = builder.uses.each_with_index.map { |u, i| [u.first, i] }.
+            inject({}) { |h, (mw, i)| h[mw] = i; h }
+          @logout_index = @indexes[Bcsec::Rack::Logout]
+          @session_timer_index = @indexes[Bcsec::Rack::SessionTimer]
         end
 
         it "uses the Setup middleware first" do
@@ -142,16 +129,20 @@ module Bcsec
           builder.should be_using(:api_ware_before)
         end
 
-        it "attaches the logout middleware after Bcsec::Rack::Authenticate" do
-          @logout_index.should == @authenticate_index + 1
+        it 'attaches the global before middleware immediately before warden' do
+          @indexes[:global_before].should == @indexes[Warden::Manager] - 1
+        end
+
+        it 'attaches the global after middleware immediately after Bcsec::Rack::Authenticate' do
+          @indexes[:global_after].should == @indexes[Bcsec::Rack::Authenticate] + 1
+        end
+
+        it "attaches the logout middleware after the global after middleware" do
+          @indexes[Bcsec::Rack::Logout].should == @indexes[:global_after] + 1
         end
 
         it "attaches the session timer middleware after the logout middleware" do
           @session_timer_index.should == @logout_index + 1
-        end
-
-        it "attaches the bcaudit middleware after the session timer middleware" do
-          @bcaudit_index.should == @session_timer_index + 1
         end
 
         it "attaches the default logout responder at the end of the chain" do
@@ -164,12 +155,12 @@ module Bcsec
           args.should == ["/logout"]
         end
 
-        it "appends middleware for UI modes directly after the bcaudit middleware" do
-          builder.uses[@bcaudit_index + 1].first.should == :ui_ware_after
+        it "appends middleware for UI modes directly after the session timer middleware" do
+          @indexes[:ui_ware_after].should == @indexes[Bcsec::Rack::SessionTimer] + 1
         end
 
         it "appends middleware for API modes after appended UI middleware" do
-          builder.uses[@bcaudit_index + 2].first.should == :api_ware_after
+          @indexes[:api_ware_after].should == @indexes[:ui_ware_after] + 1
         end
 
         it "passes a configuration object to appended UI middleware" do
@@ -180,13 +171,13 @@ module Bcsec
           builder.should be_using(:api_ware_after)
         end
 
-        it "uses middleware for the passed-in configuration instead of the global configuration if present" do
-          config = Bcsec::Configuration.new {
+        it "uses middleware for the global configuration if no specific configuration is provided" do
+          Bcsec.configure {
             ui_mode :ui_mode
           }
 
-          builder = MockBuilder.new
-          Bcsec::Rack.use_in(builder, config)
+          builder = Bcsec::Spec::MockBuilder.new
+          Bcsec::Rack.use_in(builder)
 
           builder.uses[0].first.should == Bcsec::Rack::Setup
           builder.uses[1].first.should == :ui_ware_before
@@ -199,12 +190,26 @@ module Bcsec
       end
 
       it "passes on the configuration to the setup middleware if provided" do
-        b = MockBuilder.new
+        b = Bcsec::Spec::MockBuilder.new
         config = Bcsec::Configuration.new { portal :hello }
 
         Bcsec::Rack.use_in(b, config)
 
         b.should be_using(Bcsec::Rack::Setup, config)
+      end
+    end
+  end
+
+  describe Rack::Slice do
+    let(:configuration) { Configuration.new(:slices => [Rack::Slice.new]) }
+
+    describe 'parameter defaults' do
+      describe 'for :policy' do
+        subject { configuration.parameters_for(:policy) }
+
+        it 'has [:session-timeout-seconds]' do
+          subject[:'session-timeout-seconds'].should == 1800
+        end
       end
     end
   end

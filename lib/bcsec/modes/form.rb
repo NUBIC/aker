@@ -1,5 +1,6 @@
 require 'bcsec'
 require 'uri'
+require 'rack'
 
 module Bcsec
   module Modes

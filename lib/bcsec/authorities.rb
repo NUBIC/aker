@@ -36,5 +36,20 @@ module Bcsec
     autoload :Static,          'bcsec/authorities/static'
 
     autoload :Support,         'bcsec/authorities/support'
+
+    ##
+    # The slice that aliases the default authorities.
+    # @private
+    class Slice < Bcsec::Configuration::Slice
+      def initialize
+        super do
+          alias_authority :automatic_access, Bcsec::Authorities::AutomaticAccess
+          alias_authority :cas, Bcsec::Authorities::Cas
+          alias_authority :static, Bcsec::Authorities::Static
+        end
+      end
+    end
   end
 end
+
+Bcsec::Configuration.add_default_slice(Bcsec::Authorities::Slice.new)

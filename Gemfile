@@ -23,7 +23,7 @@ group :development do
   gem 'cucumber', '~> 0.10.0'
   gem 'rack-test', '~> 0.5'
   gem 'mechanize', '~> 1.0'
-  gem 'rspec', '~> 2.5.0'
+  gem 'rspec', '~> 2.6'
 
   platforms :ruby_19 do
     gem 'test-unit', '1.2.3'

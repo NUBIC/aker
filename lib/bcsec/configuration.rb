@@ -9,11 +9,65 @@ module Bcsec
   # including authorities, application attributes, and authentication
   # modes.
   class Configuration
+    class << self
+      ##
+      # The default set of {Slice slices}. These will be applied to
+      # all newly created instances. Changes to this array will not be
+      # reflected in existing configurations instances.
+      #
+      # @since 2.2.0
+      # @return [Array<Slice>]
+      def default_slices
+        @default_slices ||= []
+      end
+
+      ##
+      # Appends a slice to the default set of slices. A slice may be
+      # specified either as a {Slice} instance or as a block provided
+      # directly to this method.
+      #
+      # @example from an instance
+      #   class SomeSlice < Bcsec::Configuration::Slice
+      #     def initialize
+      #       super do
+      #         register_authority :static, Bcsec::Authorities::Static
+      #       end
+      #     end
+      #   end
+      #   Bcsec::Configuration.add_default_slice(SomeSlice.new)
+      # @example from a block
+      #   Bcsec::Configuration.add_default_slice do
+      #     register_authority :static, Bcsec::Authorities::Static
+      #   end
+      #
+      # @since 2.2.0
+      # @param [Slice] slice the slice to add, if a block isn't
+      #   provided.
+      # @return [void]
+      def add_default_slice(slice=nil, &block)
+        if slice
+          default_slices << slice
+        end
+        if block
+          default_slices << Slice.new(&block)
+        end
+      end
+    end
+
     ##
     # Creates a new configuration.  If a block is given, it will be
     # evaluated using the {ConfiguratorLanguage DSL} and appended to
     # the new instance.
-    def initialize(&config)
+    #
+    # @param [Hash] options
+    #
+    # @option options [Array<Slice>] :slices substitutes a set of
+    #   slices for the {.default_slices globally-configured defaults}.
+    #   This will only be necessary in very rare situations.
+    def initialize(options={}, &config)
+      (options[:slices] || self.class.default_slices).each do |slice|
+        self.enhance(&slice.contents)
+      end
       self.enhance(&config) if config
     end
 
@@ -99,11 +153,10 @@ module Bcsec
     # @param [Array<Symbol, String, Class, Object>] new_authorities
     #   each authority specification may take one of four forms.
     #
-    #   * A `Symbol` or a `String` will be camelized and then
-    #     interpreted as a class name in {Bcsec::Authorities}.
-    #     Then it will be treated as a `Class`.  E.g.,
-    #     `:all_access` will be converted into
-    #     `Bcsec::Authorities::AllAccess`.
+    #   * A `Symbol` or a `String` will be resolved as an alias per
+    #     the {#authority_aliases}. The {Bcsec::Authorities}
+    #     documentation lists the built-in aliases. Extensions may
+    #     provide others.
     #   * A `Class` will be instantiated, passing the
     #     configuration (this object) as the sole constructor
     #     parameter.
@@ -146,7 +199,7 @@ module Bcsec
     # @param [Hash] params the parameters to merge in
     # @return [void]
     def add_parameters_for(group, params)
-      parameters_for(group).merge!(params)
+      nested_merge!(parameters_for(group), params)
     end
 
     ##
@@ -158,19 +211,129 @@ module Bcsec
     def central(filename)
       params = ::Bcsec::CentralParameters.new(filename)
 
-      transform_cc_pers_parameters!(params)
-
       params.each { |k, v| add_parameters_for(k, v) }
     end
 
-    def transform_cc_pers_parameters!(params)
-      params[:pers] = params[:cc_pers].dup.tap do |pers|
-        pers[:activerecord][:username] = pers[:user]
-        pers[:activerecord][:password] = pers[:password]
-      end
-
-      params.delete(:cc_pers)
+    ##
+    # Register an alias for an authority object. The alias is a symbol
+    # (or something that can be turned into one). The authority object
+    # is anything that can be passed to {#authority=}.
+    #
+    # Bcsec does and Bcsec extensions may define shorter aliases for
+    # the authorities that they provide. In general, it's not expected
+    # that applications, even if they provide their own authorities,
+    # will need to configure aliases.
+    #
+    # @param name [#to_sym] the alias itself
+    # @param authority [Symbol,String,Class,Object] the authority
+    #   object to alias. See {#authorities=} for more details.
+    # @return [void]
+    def alias_authority(name, authority)
+      authority_aliases[name.to_sym] = authority
     end
+
+    ##
+    # @see #alias_authority
+    # @return [Hash] the map of aliases to authority objects.
+    def authority_aliases
+      @authority_aliases ||= {}
+    end
+
+    ##
+    # Register a mode class to be used in this configuration. A mode
+    # class is Warden strategy with some additional bcsec elements on
+    # top.
+    #
+    # Bcsec and Bcsec extensions register the the modes that they
+    # provide (using {Slice slices}), so an application only needs to
+    # invoke this method if it provides its own custom mode.
+    #
+    # @see #registered_modes
+    # @see Bcsec::Modes::Base
+    # @since 2.2.0
+    # @param mode_class [Class]
+    # @return [void]
+    def register_mode(mode_class)
+      fail "#{mode_class.inspect} is not usable as a Bcsec mode" unless mode_class.respond_to?(:key)
+      registered_modes << mode_class
+    end
+
+    ##
+    # The mode classes that have been registered for use in this
+    # configuration.
+    #
+    # @see #register_mode
+    # @return [Array<Class>]
+    def registered_modes
+      @registered_modes ||= []
+    end
+
+    ##
+    # Register a middleware-building block that will be used to insert
+    # middleware either before or after the Bcsec
+    # {Bcsec::Rack::Authenticate authentication middleware}. This
+    # method requires a block. When it is time to actually install the
+    # middleware, the block will be yielded an object which behaves
+    # like a {Rack::Builder}. The block should attach any middleware
+    # it wishes to install using `use`.
+    #
+    # Unlike the middleware associated with modes, this middleware
+    # will be inserted in the stack in regardless of any other
+    # settings.
+    #
+    # This method is primarily intended for Bcsec and Bcsec
+    # extensions. Applications have complete control over their
+    # middleware stacks and so may build them however is appropriate.
+    #
+    # @example
+    #   config.register_middleware_installer(:before_authentication) do |builder|
+    #     builder.use IpFilter, '10.0.8.9'
+    #   end
+    #
+    # @see #install_middleware
+    # @see Bcsec::Rack.use_in
+    #
+    # @param [:before_authentication,:after_authentication] where the
+    #   relative location in the stack at which this installer should
+    #   be invoked.
+    # @yield [#use] a Rack::Builder. Note that the yield is deferred
+    #   until {#install_middleware} is invoked.
+    # @return [void]
+    def register_middleware_installer(where, &installer)
+      verify_middleware_location(where)
+      (middleware_installers[where] ||= []) << installer
+    end
+
+    ##
+    # @private exposed for testing
+    def middleware_installers
+      @middleware_installers ||= {}
+    end
+
+    ##
+    # Installs the middleware configured under the given key in the
+    # given {Rack::Builder}. This method is primarily for internal
+    # library use.
+    #
+    # @see #register_middleware_installer
+    # @param [:before_authentication,:after_authentication] where the
+    #   set of middleware installers to use.
+    # @param [#use] builder the {Rack::Builder}-like object into which
+    #   the middleware will be installed.
+    # @return [void]
+    def install_middleware(where, builder)
+      verify_middleware_location(where)
+      (middleware_installers[where] || []).each do |installer|
+        installer.call(builder)
+      end
+    end
+
+    def verify_middleware_location(where)
+      unless [:before_authentication, :after_authentication].include?(where)
+        fail "Unsupported middleware location #{where.inspect}."
+      end
+    end
+    private :verify_middleware_location
 
     ##
     # Retrieves the logger which bcsec will use for internal messages.
@@ -201,9 +364,9 @@ module Bcsec
     def build_authority(spec)
       case spec
       when Symbol
-        instantiate_authority(authority_class_for_name(spec))
+        resolve_alias(spec)
       when String
-        instantiate_authority(authority_class_for_name(spec))
+        resolve_alias(spec)
       when Class
         instantiate_authority(spec)
       else # assume it's an instance
@@ -215,20 +378,72 @@ module Bcsec
       clazz.new(self)
     end
 
-    def authority_class_for_name(name)
-      Bcsec::Authorities.const_get(name.to_s.camelize)
+    def resolve_alias(name)
+      resolved_spec = authority_aliases[name.to_sym]
+      fail "Unknown authority alias #{name.inspect}." unless resolved_spec
+      build_authority resolved_spec
+    end
+
+    def nested_merge!(target, overrides)
+      overrides.each_pair do |k, v|
+        if v.respond_to?(:each_pair)
+          if target.has_key?(k)
+            nested_merge!(target[k], overrides[k])
+          else
+            target[k] = overrides[k]
+          end
+        else
+          target[k] = v
+        end
+      end
+      target
+    end
+
+    ##
+    # A persistent, reappliable fragment of a {Bcsec::Configuration}.
+    # This class enables Bcsec extensions to provide default chunks of
+    # configuration that will apply to every newly-created
+    # configuration instance.
+    #
+    # In general this facility is not needed by applications that use
+    # Bcsec; it's intended only for libraries that provide additional
+    # functionality on top of Bcsec and need to provide reasonable
+    # defaults and/or mandatory infrastructure for those features.
+    #
+    # Extensions of that kind should create an instance of this class
+    # and register it with {Bcsec::Configuration.add_default_slice}
+    # (or pass a block to that method to have it create one on their
+    # behalf).
+    #
+    # @since 2.2.0
+    class Slice
+      ##
+      # @return [Proc] the configuration DSL fragment comprising this
+      #   slice.
+      attr_accessor :contents
+
+      ##
+      # @param contents the configuration DSL fragment comprising this
+      #   slice.
+      def initialize(&contents)
+        @contents = contents
+      end
     end
   end
 
   ##
-  # This module provides a DSL adapter for {Configuration}. Example:
+  # This module provides a DSL adapter for {Configuration}.
   #
+  # @example
   #     Bcsec.configure {
   #       portal :ENU
   #       authorities :netid, :pers
   #       api_mode :basic
   #       central "/etc/nubic/bcsec-prod.yml"
   #       netid_parameters :user => "me"
+  #       after_authentication_middleware do |builder|
+  #         builder.use RequestLogger
+  #       end
   #     }
   #
   # Notes:
@@ -239,6 +454,8 @@ module Bcsec
   #   * As shown above, there is sugar for setting other parameters.
   #     "*name*_parameters *hash*" adds to the
   #     {Configuration#parameters_for parameters} for group *name*.
+  #   * Also as shown above, there is sugar for calling
+  #     {Configuration#register_middleware_installer}.
   #   * `this` refers to the configuration being updated (for the rare
   #     case that you would need to pass it directly to some constructor).
   module ConfiguratorLanguage
@@ -251,9 +468,11 @@ module Bcsec
 
     ##
     # @private
-    def method_missing(m, *args)
+    def method_missing(m, *args, &block)
       if m.to_s =~ /(\S+)_parameters?$/
         @config.add_parameters_for($1.to_sym, args.first)
+      elsif m.to_s =~/(\S+)_middleware$/
+        @config.register_middleware_installer($1.to_sym, &block)
       elsif @config.respond_to?(:"#{m}=")
         @config.send(:"#{m}=", *args)
       elsif @config.respond_to?(m)

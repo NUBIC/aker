@@ -5,8 +5,8 @@ describe Bcsec::Configuration do
     @config = blank_config
   end
 
-  def config_from(&block)
-    Bcsec::Configuration.new(&block)
+  def config_from(options={}, &block)
+    Bcsec::Configuration.new(options, &block)
   end
 
   def blank_config
@@ -70,6 +70,166 @@ describe Bcsec::Configuration do
     end
   end
 
+  describe "#register_mode" do
+    class Bcsec::Spec::SomeMode < Bcsec::Modes::Base
+      def self.key
+        :some
+      end
+    end
+
+    let(:config) { Bcsec::Configuration.new(:slices => []) }
+
+    it 'registers the mode' do
+      config.register_mode Bcsec::Spec::SomeMode
+
+      config.registered_modes.should == [Bcsec::Spec::SomeMode]
+    end
+
+    it 'rejects objects that do not have keys' do
+      lambda { config.register_mode "No key here" }.
+        should raise_error(/"No key here" is not usable as a Bcsec mode/)
+    end
+  end
+
+  describe '#alias_authority' do
+    let(:new_auth) { Object.new }
+
+    it 'registers the alias' do
+      @config.alias_authority :some, new_auth
+      @config.authority_aliases[:some].should be new_auth
+    end
+
+    it 'registers a string alias as a symbol' do
+      @config.alias_authority 'some', new_auth
+      @config.authority_aliases[:some].should be new_auth
+    end
+  end
+
+  describe 'global middleware installers' do
+    let(:config) { Bcsec::Configuration.new(:slices => []) }
+
+    describe '#register_middleware_installer' do
+      [:before_authentication, :after_authentication].each do |k|
+        it "accepts the #{k.inspect} key" do
+          config.register_middleware_installer(k) { 'foo' }
+          config.middleware_installers[k].first.call.should == 'foo'
+        end
+      end
+
+      it 'rejects an unknown key' do
+        lambda { config.register_middleware_installer(:in_the_middle) { 'bar' } }.
+          should raise_error(/Unsupported middleware location :in_the_middle./)
+      end
+    end
+
+    describe '#install_middleware' do
+      let(:builder) { mock(Rack::Builder) }
+
+      before do
+        config.enhance {
+          before_authentication_middleware do |b|
+            b.use "Before!"
+          end
+          after_authentication_middleware do |b|
+            b.use "After!"
+          end
+        }
+      end
+
+      it 'installs before middleware for :before_authentication' do
+        builder.should_receive(:use).once.with("Before!")
+        config.install_middleware(:before_authentication, builder)
+      end
+
+      it 'installs after middleware for :after_authentication' do
+        builder.should_receive(:use).once.with("After!")
+        config.install_middleware(:after_authentication, builder)
+      end
+
+      it 'does nothing if there is no middleware of the specified type' do
+        config.middleware_installers.clear
+        builder.should_not_receive(:use)
+        lambda { config.install_middleware(:before_authentication, builder) }.
+          should_not raise_error
+      end
+
+      it 'fails for an unknown key' do
+        lambda { config.install_middleware(:in_the_sky, builder) }.
+          should raise_error(/Unsupported middleware location :in_the_sky./)
+      end
+    end
+  end
+
+  describe 'slices' do
+    let(:a_slice) { Bcsec::Configuration::Slice.new { portal 'from_slice' } }
+
+    before do
+      @original_slices = Bcsec::Configuration.default_slices.dup
+      Bcsec::Configuration.default_slices.clear
+    end
+
+    after do
+      Bcsec::Configuration.default_slices.clear
+      Bcsec::Configuration.default_slices.concat(@original_slices)
+    end
+
+    describe 'and initialization' do
+      before do
+        Bcsec::Configuration.add_default_slice a_slice
+      end
+
+      context 'without explicit slices' do
+        it 'applies the default slices' do
+          blank_config.portal.should == :from_slice
+        end
+
+        it 'applies any additional configuration after the default slices' do
+          config_from { portal 'from_block' }.portal.should == :from_block
+        end
+      end
+
+      context 'with explicit slices' do
+        let(:config) do
+          Bcsec::Configuration.new(:slices => [
+              Bcsec::Configuration::Slice.new { ui_mode :form },
+              Bcsec::Configuration::Slice.new { api_mode :http_basic }
+            ]
+          ) do
+            api_mode :cas_proxy
+          end
+        end
+
+        it 'applies the explicit slices' do
+          config.ui_mode.should == :form
+        end
+
+        it 'does not apply the default slices' do
+          config.portal?.should be_false
+        end
+
+        it 'applies any additional configuration after the explicit slices' do
+          config.api_modes.should == [:cas_proxy]
+        end
+      end
+    end
+
+    describe '.add_default_slice' do
+      it 'can add a slice from a slice instance' do
+        Bcsec::Configuration.add_default_slice(a_slice)
+
+        Bcsec::Configuration.default_slices.should == [ a_slice ]
+      end
+
+      it 'can add a slice from a block' do
+        Bcsec::Configuration.add_default_slice {
+          portal 'from_default'
+        }
+
+        Bcsec::Configuration.default_slices.first.should be_a Bcsec::Configuration::Slice
+      end
+    end
+  end
+
   describe "#logger" do
     before do
       @captured_stderr = StringIO.new
@@ -127,41 +287,64 @@ describe Bcsec::Configuration do
         start.parameters_for(:netid)[:server].should == "ldap.foo.edu"
         start.parameters_for(:netid)[:username].should == "arb"
       end
+
+      it 'combines arbitrarily nested hashes' do
+        c = config_from { foo_parameters :bar => { :a => { :one => 1 } } }
+        c.enhance { foo_parameters :bar => { :a => { :two => 2 }, :b => { :one => 4 } } }
+
+        c.parameters_for(:foo)[:bar][:a].should == { :one => 1, :two => 2 }
+        c.parameters_for(:foo)[:bar][:b].should == { :one => 4 }
+      end
     end
 
     describe "for authorities" do
-      it "can configure an authority from a symbol" do
-        config_from { authority :static }.authorities.first.class.
+      def only_static_config(&block)
+        Bcsec::Configuration.new(
+          :slices => [Bcsec::Configuration::Slice.new {
+            alias_authority :static, Bcsec::Authorities::Static
+          }], &block)
+      end
+
+      it "can configure an authority from an alias symbol" do
+        only_static_config { authority :static }.
+          authorities.first.class.should == Bcsec::Authorities::Static
+      end
+
+      it "can configure an authority from an alias string" do
+        only_static_config { authority "static" }.authorities.first.class.
           should == Bcsec::Authorities::Static
       end
 
-      it "can configure an authority from an underscored symbol" do
-        config_from { portal :Foo;  authority :automatic_access }.authorities.first.class.
-          should == Bcsec::Authorities::AutomaticAccess
+      it 'can configure an authority from an alias to an alias' do
+        only_static_config {
+          alias_authority :moq, :static
+          authority :moq
+        }.authorities.first.should be_a Bcsec::Authorities::Static
       end
 
-      it "can configure an authority from a string" do
-        config_from { authority "static" }.authorities.first.class.
-          should == Bcsec::Authorities::Static
+      it 'fails with a useful message with an unregistered alias' do
+        lambda {
+          only_static_config { authority :cas }
+        }.should raise_error(/Unknown authority alias :cas./)
       end
 
       it "can configure an authority from a class" do
-        config_from { authority Bcsec::Authorities::Static }.authorities.first.class.
+        only_static_config { authority Bcsec::Authorities::Static }.authorities.first.class.
           should == Bcsec::Authorities::Static
       end
 
       it "can configure an authority from an instance" do
         expected = Object.new
-        config_from { authority expected }.authorities.first.should == expected
+        only_static_config { authority expected }.authorities.first.should be expected
       end
 
       it "it passes the configuration to an instantiated authority" do
-        actual = config_from { authority Struct.new(:config) }
-        actual.authorities.first.config.should == actual
+        actual = only_static_config { authority Struct.new(:config) }
+        actual.authorities.first.config.should be actual
       end
 
       it "defers instantiating the authorities until the configuration is complete" do
-        config_from {
+        only_static_config {
           portal :foo
 
           authority Class.new {
@@ -191,11 +374,11 @@ describe Bcsec::Configuration do
       end
 
       it "acquires the netid parameters" do
-        @actual.parameters_for(:netid)[:'ldap-servers'].should == ["registry.northwestern.edu"]
+        @actual.parameters_for(:netid)[:user].should == "cn=foo"
       end
 
       it "acquires the cc_pers parameters" do
-        @actual.parameters_for(:pers)[:user].should == "cc_pers_foo"
+        @actual.parameters_for(:cc_pers)[:user].should == "cc_pers_foo"
       end
 
       it "acquires the cas parameters" do
@@ -209,10 +392,21 @@ describe Bcsec::Configuration do
       it "acquires all top-level parameters" do
         @actual.parameters_for(:foo)[:bar].should == "baz"
       end
+    end
 
-      it "adds the username and password to the activerecord configuration block" do
-        @actual.parameters_for(:pers)[:activerecord][:username].should == "cc_pers_foo"
-        @actual.parameters_for(:pers)[:activerecord][:password].should == "secret"
+    describe 'middleware' do
+      context 'before_authentication_middleware' do
+        it 'registers under the :before_authentication key' do
+          config_from { before_authentication_middleware { 'foob' } }.
+            middleware_installers[:before_authentication].last.call(nil).should == 'foob'
+        end
+      end
+
+      context 'after_authentication_middleware' do
+        it 'registers under the :after_authentication key' do
+          config_from { after_authentication_middleware { 'fooa' } }.
+            middleware_installers[:after_authentication].last.call(nil).should == 'fooa'
+        end
       end
     end
 
@@ -366,6 +560,22 @@ describe Bcsec::Configuration do
   describe "#composite_authority" do
     it "returns a composite authority for the configured authorities" do
       config_from { authorities :static, :static }.composite_authority.authorities.size.should == 2
+    end
+  end
+end
+
+class Bcsec::Configuration
+  describe Slice do
+    subject { Slice.new { array << 2 } }
+    let(:array) { [1] }
+
+    it 'saves the provided block' do
+      subject.contents.should be_a Proc
+    end
+
+    it 'is possible to evaluate the block later' do
+      subject.contents.call
+      array.should == [1, 2]
     end
   end
 end

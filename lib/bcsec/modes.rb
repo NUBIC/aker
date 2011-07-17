@@ -34,5 +34,20 @@ module Bcsec
     autoload :HttpBasic,  'bcsec/modes/http_basic'
     autoload :Middleware, 'bcsec/modes/middleware'
     autoload :Support,    'bcsec/modes/support'
+
+    ##
+    # @private
+    class Slice < Bcsec::Configuration::Slice
+      def initialize
+        super do
+          register_mode Bcsec::Modes::Cas
+          register_mode Bcsec::Modes::CasProxy
+          register_mode Bcsec::Modes::Form
+          register_mode Bcsec::Modes::HttpBasic
+        end
+      end
+    end
   end
 end
+
+Bcsec::Configuration.add_default_slice(Bcsec::Modes::Slice.new)
