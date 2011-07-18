@@ -17,6 +17,6 @@ module Aker::Test::Helpers
   def login_env(user)
     u = Aker::User === user ? user : Aker.authority.find_user(user)
 
-    { 'aker' => Aker::Rack::Facade.new(Aker.configuration, u) }
+    { 'aker.check' => Aker::Rack::Facade.new(Aker.configuration, u) }
   end
 end

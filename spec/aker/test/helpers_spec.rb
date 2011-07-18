@@ -19,8 +19,8 @@ module Aker::Test
 
       shared_examples_for "a login helper" do
         it "generates a Rack environment containing an authenticated user" do
-          @env['aker'].user.should_not be_nil
-          @env['aker'].user.username.should == 'jo'
+          @env['aker.check'].user.should_not be_nil
+          @env['aker.check'].user.username.should == 'jo'
         end
       end
 
