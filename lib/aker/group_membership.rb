@@ -8,6 +8,12 @@ module Aker
     ##
     # The affiliate IDs to which this membership is scoped.  If this
     # array is blank or nil, the membership applies to all affiliates.
+    #
+    # An "affiliate" is an arbitrary scope designator for a
+    # membership. The specific form will depend on the authority that
+    # is authorizing the user.
+    #
+    # @return [Array<Object>]
     attr_accessor :affiliate_ids
 
     ##
@@ -23,9 +29,10 @@ module Aker
     # Determines whether this membership applies to the given
     # affiliate.
     #
+    # @param [Object] affiliate_id
     # @return [Boolean]
     def include_affiliate?(affiliate_id)
-      affiliate_ids.blank? ? true : affiliate_ids.include?(affiliate_id.to_i)
+      affiliate_ids.blank? ? true : affiliate_ids.include?(affiliate_id)
     end
 
     ##
@@ -75,7 +82,7 @@ module Aker
     # (Note that this method hides the superclass `include?` method.)
     #
     # @param [Group,#to_s] group the group in question or its name
-    # @param [Array<Fixnum>,nil] *affiliate_ids the affiliates to use to
+    # @param [Array<Object>,nil] *affiliate_ids the affiliates to use to
     #   constrain the query.
     #
     # @return [Boolean] true so long as the user is authorized in
@@ -94,7 +101,7 @@ module Aker
     # You can still use it under its `detect` alias.)
     #
     # @param [Group,#to_s] group the group in question or its name
-    # @param [Array<Fixnum>,nil] *affiliate_ids the affiliates to use to
+    # @param [Array<Object>,nil] *affiliate_ids the affiliates to use to
     #   constrain the query.
     #
     # @return [Array<GroupMembership>]

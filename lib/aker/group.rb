@@ -6,6 +6,9 @@ module Aker
   ##
   # The authority-independent representation of a group.
   #
+  # Groups can be related in a tree. If so, a membership in an
+  # ancestor group implies membership in all its descendents.
+  #
   # @see http://rubytree.rubyforge.org/rdoc/Tree/TreeNode.html
   class Group < Tree::TreeNode
     ##

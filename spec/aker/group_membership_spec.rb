@@ -188,7 +188,7 @@ module Aker
 
       describe "when affiliate-specific" do
         before do
-          @gm = affiliated("dc", 34, 42)
+          @gm = affiliated("dc", 34, 42, "abc")
         end
 
         it "is true when the affiliate is present" do
@@ -200,7 +200,7 @@ module Aker
         end
 
         it "accepts string affiliate IDs" do
-          @gm.include_affiliate?("42").should be_true
+          @gm.include_affiliate?("abc").should be_true
         end
       end
     end
