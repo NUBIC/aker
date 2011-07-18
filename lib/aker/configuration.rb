@@ -254,7 +254,7 @@ module Aker
 
     ##
     # Register a mode class to be used in this configuration. A mode
-    # class is Warden strategy with some additional aker elements on
+    # class is a Warden strategy with some additional Aker elements on
     # top.
     #
     # Aker and Aker extensions register the the modes that they
@@ -262,6 +262,7 @@ module Aker
     # invoke this method if it provides its own custom mode.
     #
     # @see #registered_modes
+    # @see https://github.com/hassox/warden/wiki/Strategies
     # @see Aker::Modes::Base
     # @since 2.2.0
     # @param mode_class [Class]

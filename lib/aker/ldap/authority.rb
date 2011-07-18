@@ -154,7 +154,8 @@ module Aker::Ldap
     end
 
     ##
-    # Whether to use TLS when communicating with the server.
+    # Whether to use TLS when communicating with the server.  TLS is enabled by
+    # default.
     # @return [Boolean]
     def use_tls
       @config[:use_tls].nil? ? true : @config[:use_tls]
