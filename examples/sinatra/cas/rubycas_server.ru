@@ -3,9 +3,9 @@ require 'bundler'
 Bundler.setup
 
 #
-# We start off by loading up bcsec.
+# We start off by loading up aker.
 #
-require 'bcsec'
+require 'aker'
 
 #
 # Next, some housekeeping.
@@ -21,19 +21,19 @@ require 'openssl/ssl'
 OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:verify_mode] = OpenSSL::SSL::VERIFY_NONE
 
 #
-# Now we finally get to something that actually involves bcsec -- namely,
-# configuring bcsec's authorities.
+# Now we finally get to something that actually involves aker -- namely,
+# configuring aker's authorities.
 #
-# Since RubyCAS-Server uses bcsec only as an authenticator, we do not need
-# to set up any of bcsec's Rack extensions.
+# Since RubyCAS-Server uses aker only as an authenticator, we do not need
+# to set up any of aker's Rack extensions.
 #
 
 credentials = {
  'mr296' => 'br0wn'
 }
 
-Bcsec.configure do
-  static = Bcsec::Authorities::Static.new
+Aker.configure do
+  static = Aker::Authorities::Static.new
 
   credentials.each do |username, password|
     static.valid_credentials!(:user, username, password)
@@ -45,14 +45,14 @@ end
 #
 # RubyCAS-Server implements authentication strategies with what it calls
 # authenticators.  The following code builds an authenticator that instructs
-# bcsec to validate username/password pairs.
+# aker to validate username/password pairs.
 #
 
 require 'casserver/authenticators/base'
 
-class BcsecAuthenticator < CASServer::Authenticators::Base
+class AkerAuthenticator < CASServer::Authenticators::Base
   def validate(credentials)
-    Bcsec.authority.valid_credentials?(:user, credentials[:username], credentials[:password])
+    Aker.authority.valid_credentials?(:user, credentials[:username], credentials[:password])
   end
 end
 
@@ -61,7 +61,7 @@ end
 # now it's time to tie them all together.
 #
 # Picnic expects to find a Picnic::Conf object in $CONF, so here we give it what
-# it wants.  Here, we instruct RubyCAS-Server to use BcsecAuthenticator and
+# it wants.  Here, we instruct RubyCAS-Server to use AkerAuthenticator and
 # give it a database for storing state.
 #
 # N.B. In-memory SQLite3 databases will not work with RubyCAS-Server: the schema
@@ -78,7 +78,7 @@ require 'picnic/conf'
 
 $CONF = Picnic::Conf.new({
   :authenticator => [
-    { :class => 'BcsecAuthenticator' }
+    { :class => 'AkerAuthenticator' }
   ],
   :database => {
     :adapter => 'sqlite3',

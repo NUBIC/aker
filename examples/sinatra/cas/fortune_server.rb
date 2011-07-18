@@ -5,7 +5,7 @@ require 'json'
 # This server is half of a very rough, ad-hoc client-server implementation of
 # the fortune program.  It is a demonstration of
 #
-# 1. CAS proxying as implemented by bcsec, and
+# 1. CAS proxying as implemented by aker, and
 # 2. How ridiculously complex we can make simple UNIX programs[0].
 #
 # [0] http://radar.oreilly.com/2007/03/sfearthquakes-on-twitter.html
@@ -30,7 +30,7 @@ class FortuneServer < Sinatra::Base
   ##
   # Make all actions require authentication.
   before do
-    env['bcsec'].authentication_required!
+    env['aker'].authentication_required!
   end
 
   ##

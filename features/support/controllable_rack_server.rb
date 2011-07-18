@@ -1,6 +1,6 @@
 require File.expand_path('../spawned_http_server.rb', __FILE__)
 
-module Bcsec::Cucumber
+module Aker::Cucumber
   class ControllableRackServer < SpawnedHttpServer
     attr_accessor :app
 

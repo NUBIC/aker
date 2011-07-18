@@ -1,9 +1,9 @@
-module Bcsec
+module Aker
   module Spec
     module LoggerHelper
       def actual_log
         unless @log_io
-          raise "You don't seem to be using the spec logger.  Is it in your bcsec configuration?"
+          raise "You don't seem to be using the spec logger.  Is it in your aker configuration?"
         end
         @log_io.string
       end

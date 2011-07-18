@@ -1,6 +1,6 @@
 ######
 # This is not an executable script.  It selects and configures rvm for
-# bcsec's CI process based on the BCSEC_ENV environment variable.
+# aker's CI process based on the AKER_ENV environment variable.
 #
 # Use it by sourcing it:
 #
@@ -16,23 +16,23 @@ echo ". ~/.rvm/scripts/rvm"
 . ~/.rvm/scripts/rvm
 set -x
 
-unset BCSEC_RVM_RUBY
-case "$BCSEC_ENV" in
+unset AKER_RVM_RUBY
+case "$AKER_ENV" in
 'ci_1.8.7')
-BCSEC_RVM_RUBY='ree-1.8.7-2011.03';
+AKER_RVM_RUBY='ree-1.8.7-2011.03';
 ;;
 'ci_1.9')
-BCSEC_RVM_RUBY='ruby-1.9.2-p180';
+AKER_RVM_RUBY='ruby-1.9.2-p180';
 ;;
 'ci_jruby')
-BCSEC_RVM_RUBY='jruby-1.6.2';
+AKER_RVM_RUBY='jruby-1.6.2';
 ;;
 esac
 
-GEMSET="bcsec-${ACTIVERECORD_VERSION}"
+GEMSET="aker-${ACTIVERECORD_VERSION}"
 
-if [ -z "$BCSEC_RVM_RUBY" ]; then
-    echo "Could not map env (BCSEC_ENV=\"${BCSEC_ENV}\") to an RVM version.";
+if [ -z "$AKER_RVM_RUBY" ]; then
+    echo "Could not map env (AKER_ENV=\"${AKER_ENV}\") to an RVM version.";
     shopt -q login_shell
     if [ $? -eq 0 ]; then
         echo "This means you are still using the previously selected RVM ruby."
@@ -44,9 +44,9 @@ if [ -z "$BCSEC_RVM_RUBY" ]; then
     fi
 fi
 
-echo "Switching to ${BCSEC_RVM_RUBY}@${GEMSET}"
+echo "Switching to ${AKER_RVM_RUBY}@${GEMSET}"
 set +xe
-rvm use "${BCSEC_RVM_RUBY}@${GEMSET}"
+rvm use "${AKER_RVM_RUBY}@${GEMSET}"
 if [ $? -ne 0 ]; then
     echo "Switch failed"
     exit 2;

@@ -1,24 +1,24 @@
 After do
-  Bcsec.configuration = nil
+  Aker.configuration = nil
 end
 
 Given /^I have an authority that accepts these usernames and passwords:$/ do |table|
-  static = Bcsec::Authorities::Static.new
+  static = Aker::Authorities::Static.new
   table.hashes.each do |u|
     static.valid_credentials!(:user, u['username'], u['password'])
   end
-  Bcsec.configure { authority static }
+  Aker.configure { authority static }
 end
 
 Given /^(\w+) is in (?:the (.*?) groups? for )?(\w+)$/ do |username, group_clause, portal|
-  static = Bcsec.configuration.authorities.find { |a| Bcsec::Authorities::Static === a }
+  static = Aker.configuration.authorities.find { |a| Aker::Authorities::Static === a }
   raise "No static authority configured" unless static
   static.user(username) do |user|
     user.portals << portal.to_sym
     user.default_portal = portal.to_sym unless user.default_portal
     if group_clause
       group_clause.gsub(/ and /, ' ').split(/[\s,]+/).each do |group|
-        user.group_memberships(portal) << Bcsec::GroupMembership.new(Bcsec::Group.new(group))
+        user.group_memberships(portal) << Aker::GroupMembership.new(Aker::Group.new(group))
       end
     end
   end
@@ -29,75 +29,75 @@ Given /^I have a CAS server that accepts these usernames and passwords:$/ do |ta
     @cas_server.register_user(u['username'], u['password'])
   end
   cas = @cas_server
-  Bcsec.configure {
+  Aker.configure {
     cas_parameters :base_url => cas.base_url
   }
 end
 
-Given /^I have a bcsec\-protected application using$/ do |bcsec_params|
-  enhance_configuration_from_table(bcsec_params)
+Given /^I have a aker\-protected application using$/ do |aker_params|
+  enhance_configuration_from_table(aker_params)
 
   app = Rack::Builder.new do
     use Rack::Session::Cookie
-    Bcsec::Rack.use_in(self)
+    Aker::Rack.use_in(self)
 
     map '/protected' do
-      run Bcsec::Cucumber::RackEndpoints.authentication_required
+      run Aker::Cucumber::RackEndpoints.authentication_required
     end
 
     map '/search' do
-      run Bcsec::Cucumber::RackEndpoints.search
+      run Aker::Cucumber::RackEndpoints.search
     end
 
     map '/owners' do
-      run Bcsec::Cucumber::RackEndpoints.group_only("Owners")
+      run Aker::Cucumber::RackEndpoints.group_only("Owners")
     end
 
     map '/shared' do
-      run Bcsec::Cucumber::RackEndpoints.partial_group("Owners")
+      run Aker::Cucumber::RackEndpoints.partial_group("Owners")
     end
 
     map '/' do
-      run Bcsec::Cucumber::RackEndpoints.public
+      run Aker::Cucumber::RackEndpoints.public
     end
   end
 
   start_main_rack_server(app)
 end
 
-Given /^I have a bcsec\-protected RESTful API using$/ do |bcsec_params|
-  config = Bcsec::Configuration.new
+Given /^I have a aker\-protected RESTful API using$/ do |aker_params|
+  config = Aker::Configuration.new
   if (@cas_server)
     config.parameters_for(:cas)[:base_url] = @cas_server.base_url
   end
-  enhance_configuration_from_table(bcsec_params, config)
+  enhance_configuration_from_table(aker_params, config)
 
   api_app = Rack::Builder.new do
     use Rack::Session::Cookie
-    Bcsec::Rack.use_in(self, config)
+    Aker::Rack.use_in(self, config)
 
     map '/a-resource' do
-      run Bcsec::Cucumber::RackEndpoints.authenticated_api_resource
+      run Aker::Cucumber::RackEndpoints.authenticated_api_resource
     end
 
     map '/' do
-      run Bcsec::Cucumber::RackEndpoints.public
+      run Aker::Cucumber::RackEndpoints.public
     end
   end
 
   @api_server = start_rack_server(api_app, 5427)
 end
 
-Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
-  pgt_app = Bcsec::Cas::RackProxyCallback.application(:store => "#{tmpdir}/pgt_store")
+Given /^I have a aker\-protected consumer of a CAS\-protected API$/ do
+  pgt_app = Aker::Cas::RackProxyCallback.application(:store => "#{tmpdir}/pgt_store")
   pgt_server = start_rack_server(pgt_app, 5310, :ssl => true)
 
-  Bcsec.configuration.
+  Aker.configuration.
     parameters_for(:cas)[:proxy_retrieval_url] = URI.join(pgt_server.base_url, "retrieve_pgt").to_s
-  Bcsec.configuration.
+  Aker.configuration.
     parameters_for(:cas)[:proxy_callback_url] = URI.join(pgt_server.base_url, "receive_pgt").to_s
 
-  Bcsec.configure {
+  Aker.configure {
     authority :cas
     ui_mode :cas
   }
@@ -105,24 +105,24 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
   api_server = @api_server
   app = Rack::Builder.new do
     use Rack::Session::Cookie
-    Bcsec::Rack.use_in(self)
+    Aker::Rack.use_in(self)
 
     map '/consume' do
-      run Bcsec::Cucumber::RackEndpoints.
+      run Aker::Cucumber::RackEndpoints.
         cas_api_consumer(api_server.base_url, "/a-resource")
     end
 
     map '/replaying' do
-      run Bcsec::Cucumber::RackEndpoints.
+      run Aker::Cucumber::RackEndpoints.
         cas_api_replayer(api_server.base_url, "/a-resource")
     end
 
     map '/protected' do
-      run Bcsec::Cucumber::RackEndpoints.authentication_required
+      run Aker::Cucumber::RackEndpoints.authentication_required
     end
 
     map '/' do
-      run Bcsec::Cucumber::RackEndpoints.public
+      run Aker::Cucumber::RackEndpoints.public
     end
   end
 
@@ -130,7 +130,7 @@ Given /^I have a bcsec\-protected consumer of a CAS\-protected API$/ do
 end
 
 Given /^the application has a session timeout of (\d+) seconds$/ do |timeout|
-  Bcsec.configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => timeout)
+  Aker.configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => timeout)
 
   restart_spawned_servers
 end

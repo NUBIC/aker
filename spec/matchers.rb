@@ -1,4 +1,4 @@
-module Bcsec
+module Aker
   module Spec
     module Matchers
       class AllMatch

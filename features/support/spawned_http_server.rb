@@ -1,7 +1,7 @@
 require 'net/http'
 require 'fileutils'
 
-module Bcsec
+module Aker
   module Cucumber
     class SpawnedHttpServer
       include FileUtils

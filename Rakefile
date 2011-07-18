@@ -16,11 +16,11 @@ require 'nubic/gem_tasks'
 gem 'ci_reporter'
 require 'ci/reporter/rake/rspec'
 
-require 'bcsec'
+require 'aker'
 
 Dir["tasks/*.rake"].each { |f| import f }
 
-gemspec = eval(File.read('bcsec.gemspec'), binding, 'bcsec.gemspec')
+gemspec = eval(File.read('aker.gemspec'), binding, 'aker.gemspec')
 
 Gem::PackageTask.new(gemspec).define
 
@@ -87,23 +87,23 @@ namespace :yard do
 
   desc "Build API documentation with yard"
   YARD::Rake::YardocTask.new("once") do |t|
-    t.options = ["--title", "bcsec #{Bcsec::VERSION}"]
+    t.options = ["--title", "aker #{Aker::VERSION}"]
   end
 
-  desc "Create API documentation combined with bcsec-rails"
+  desc "Create API documentation combined with aker-rails"
   task "with-rails" do
-    # Need to defer determining the path to bcsec-rails until it is
+    # Need to defer determining the path to aker-rails until it is
     # actually used, so we can't use YardocTask at the top level
     YARD::Rake::YardocTask.new("with-rails-actual") do |t|
       t.options = %w(--db .yardoc-with-rails -o doc-with-rails) +
-        ["--title", "bcsec #{Bcsec::VERSION} & bcsec-rails"]
-      bcsec_rails_path =
-        ENV['BCSEC_RAILS_PATH'] || "../bcsec-rails"
-      raise "Please specify BCSEC_RAILS_PATH" unless File.directory?(bcsec_rails_path)
+        ["--title", "aker #{Aker::VERSION} & aker-rails"]
+      aker_rails_path =
+        ENV['AKER_RAILS_PATH'] || "../aker-rails"
+      raise "Please specify AKER_RAILS_PATH" unless File.directory?(aker_rails_path)
       t.files =
-        ["lib/**/*.rb", "#{bcsec_rails_path}/lib/**/*.rb"] +
+        ["lib/**/*.rb", "#{aker_rails_path}/lib/**/*.rb"] +
         %w(-) +
-        Dir.glob("#{File.expand_path(bcsec_rails_path)}/{README,CHANGELOG,MIGRATION}-rails")
+        Dir.glob("#{File.expand_path(aker_rails_path)}/{README,CHANGELOG,MIGRATION}-rails")
     end
     task('with-rails-actual').invoke
   end
@@ -150,8 +150,8 @@ task 'deploy:gem' => ['deploy:check', 'repackage']
 
 namespace :deploy do
   task :check do
-    if Bcsec::VERSION.split('.').any? { |v| v =~ /\D/ }
-      puts "#{Bcsec::VERSION} is a prerelease version.  Are you sure you want to deploy?\n" <<
+    if Aker::VERSION.split('.').any? { |v| v =~ /\D/ }
+      puts "#{Aker::VERSION} is a prerelease version.  Are you sure you want to deploy?\n" <<
         "Press ^C to abort or enter to continue deploying."
       STDIN.readline
     end
@@ -159,8 +159,8 @@ namespace :deploy do
 
   desc "Tag the final version of a release"
   task :tag => [:check] do
-    tagname = Bcsec::VERSION
-    system("git tag -a #{tagname} -m 'Bcsec #{Bcsec::VERSION}'")
+    tagname = Aker::VERSION
+    system("git tag -a #{tagname} -m 'Aker #{Aker::VERSION}'")
     fail "Tagging failed" unless $? == 0
     system("git push origin : #{tagname}")
   end
@@ -168,7 +168,7 @@ namespace :deploy do
   task :docs => [:"yard:with-rails"] do
     server = "ligand"
     user = ENV["BC_USER"] or raise "Please set BC_USER=your_netid in the environment"
-    server_dir = "/var/www/sites/download/docs/bcsec"
+    server_dir = "/var/www/sites/download/docs/aker"
     Net::SSH.start(server, user) do |ssh|
       puts "-> Removing old docs"
       one_ssh_cmd(ssh, "rm -r #{server_dir}")

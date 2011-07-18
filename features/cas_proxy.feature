@@ -5,10 +5,10 @@ Feature: CAS proxy authentication
     Given I have a CAS server that accepts these usernames and passwords:
       | username | password |
       | mr296    | br0wn    |
-    And I have a bcsec-protected RESTful API using
+    And I have a aker-protected RESTful API using
       | ui_mode | api_modes | authority |
       | cas     | cas_proxy | cas       |
-    And I have a bcsec-protected consumer of a CAS-protected API
+    And I have a aker-protected consumer of a CAS-protected API
     And I have logged into CAS using "mr296" / "br0wn"
 
   Scenario:

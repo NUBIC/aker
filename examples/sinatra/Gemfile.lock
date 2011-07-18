@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    bcsec (2.1.1.pre)
+    aker (2.1.1.pre)
       activerecord (>= 2.3.0)
       activerecord-oracle_enhanced-adapter (~> 1.3.0)
       bcaudit (~> 0.1)
@@ -72,7 +72,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bcsec!
+  aker!
   haml
   json
   markaby (= 0.5)

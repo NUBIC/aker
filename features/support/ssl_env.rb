@@ -8,7 +8,7 @@ require 'webrick/https'
 # configuration capacity admits to no other options.
 OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:verify_mode] = OpenSSL::SSL::VERIFY_NONE
 
-module Bcsec
+module Aker
   module Cucumber
     # TODO: this probably doesn't need to be a separate class any more
     class SslEnv

@@ -1,7 +1,7 @@
 When "I am using the API" do
   header "Accept", "application/json"
   agent.redirect_ok = false # capture redirects
-  agent.user_agent = "MyApiConsumer/#{Bcsec::VERSION}"
+  agent.user_agent = "MyApiConsumer/#{Aker::VERSION}"
 end
 
 When /^I access an? (\S+) resource$/ do |resource_kind|

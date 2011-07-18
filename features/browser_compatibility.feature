@@ -1,14 +1,14 @@
 @no_jruby
 Feature: Browser compatibility
-  In order to get NUBIC applications to use bcsec
-  The bcsec library
+  In order to get NUBIC applications to use aker
+  The aker library
   must work with all browsers we support.
 
   Background:
     Given I have an authority that accepts these usernames and passwords:
       | username | password  |
       | mr296    | br0wn     |
-    And I have a bcsec-protected application using
+    And I have a aker-protected application using
       | ui_mode | api_modes  |
       | form    | http_basic |
 

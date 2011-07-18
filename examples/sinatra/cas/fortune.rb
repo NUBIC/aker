@@ -7,7 +7,7 @@ class Fortune < RestClient::Resource
   # A proxy ticket factory object.  Must respond to `#cas_proxy_ticket` with a
   # valid CAS proxy ticket in the form of a String.
   #
-  # `Bcsec::User`, in a CAS situation, satisfies the above interface.
+  # `Aker::User`, in a CAS situation, satisfies the above interface.
   #
   # @return [#cas_proxy_ticket]
   attr_accessor :proxy_ticket_factory
@@ -41,7 +41,7 @@ class Fortune < RestClient::Resource
   ##
   # Retrieves all fortunes.
   #
-  # @param user [Bcsec::User] the user to proxy
+  # @param user [Aker::User] the user to proxy
   # @return [Array<Fortune>] a list of fortunes
   def self.all(user)
     fortune = new
@@ -54,7 +54,7 @@ class Fortune < RestClient::Resource
   # Retrives a fortune by ID.  Doesn't do error-handling at all.
   #
   # @param id [Integer] a fortune ID
-  # @param user [Bcsec::User] the user to proxy
+  # @param user [Aker::User] the user to proxy
   # @return [String] a fortune
   def self.find(id, user)
     fortune = new[id]
@@ -67,7 +67,7 @@ class Fortune < RestClient::Resource
   # Destroys a fortune.
   #
   # @param id [Integer] a fortune ID
-  # @param user [Bcsec::User] the user to proxy
+  # @param user [Aker::User] the user to proxy
   # @return [void]
   def self.destroy(id, user)
     fortune = new[id]
@@ -80,7 +80,7 @@ class Fortune < RestClient::Resource
   # Creates a fortune.
   #
   # @param value [String]
-  # @param user [Bcsec::User] the user to proxy
+  # @param user [Aker::User] the user to proxy
   # @return [Fortune]
   def self.create(value, user)
     fortune = new
@@ -125,7 +125,7 @@ class Fortune < RestClient::Resource
   # Updates a fortune.
   #
   # @param fortune [String] the new value of the fortune
-  # @param user [Bcsec::User] the user to proxy
+  # @param user [Aker::User] the user to proxy
   # @return [self]
   def update(fortune, user)
     self.proxy_ticket_factory = user
@@ -137,7 +137,7 @@ class Fortune < RestClient::Resource
 
   ##
   # An override of `RestClient::Resource#get` that appends an Authorization
-  # header with a CAS proxy ticket challenge, as expected by bcsec's CAS proxy
+  # header with a CAS proxy ticket challenge, as expected by aker's CAS proxy
   # implementation.
   #
   # @param additional_headers [Hash] additional headers for the request
@@ -148,7 +148,7 @@ class Fortune < RestClient::Resource
 
   ##
   # An override of `RestClient::Resource#delete` that appends an Authorization
-  # header with a CAS proxy ticket challenge, as expected by bcsec's CAS proxy
+  # header with a CAS proxy ticket challenge, as expected by aker's CAS proxy
   # implementation.
   #
   # @param additional_headers [Hash] additional headers for the request
@@ -159,7 +159,7 @@ class Fortune < RestClient::Resource
 
   ##
   # An override of `RestClient::Resource#post` that appends an Authorization
-  # header with a CAS proxy ticket challenge, as expected by bcsec's CAS proxy
+  # header with a CAS proxy ticket challenge, as expected by aker's CAS proxy
   # implementation.
   #
   # @param payload [String] the content to POST
@@ -171,7 +171,7 @@ class Fortune < RestClient::Resource
 
   ##
   # An override of `RestClient::Resource#put` that appends an Authorization
-  # header with a CAS proxy ticket challenge, as expected by bcsec's CAS proxy
+  # header with a CAS proxy ticket challenge, as expected by aker's CAS proxy
   # implementation.
   #
   # @param payload [String] the content to PUT

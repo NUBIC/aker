@@ -5,7 +5,7 @@ require 'rspec'
 
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 
-require 'bcsec'
+require 'aker'
 
 require File.expand_path('../database_helper', __FILE__)
 require File.expand_path('../deprecation_helper', __FILE__)
@@ -24,9 +24,9 @@ if RUBY_PLATFORM == 'java'
 end
 
 RSpec.configure do |config|
-  Bcsec::Spec::DatabaseData.use_in(config)
-  Bcsec::Spec::DeprecationMode.use_in(config)
-  config.include Bcsec::Spec::LoggerHelper
+  Aker::Spec::DatabaseData.use_in(config)
+  Aker::Spec::DeprecationMode.use_in(config)
+  config.include Aker::Spec::LoggerHelper
 
   config.treat_symbols_as_metadata_keys_with_true_values = true
 
@@ -35,13 +35,13 @@ RSpec.configure do |config|
   end
 
   def tmpdir
-    @tmpdir ||= File.expand_path('../../tmp/bcsec-unit-tests', __FILE__).
+    @tmpdir ||= File.expand_path('../../tmp/aker-unit-tests', __FILE__).
       tap { |p| FileUtils.mkdir_p p }
   end
 end
 
 def port_offset
-  case ENV["BCSEC_ENV"]
+  case ENV["AKER_ENV"]
   when /jruby/
     108
   when /1.9/

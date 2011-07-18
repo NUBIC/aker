@@ -1,19 +1,19 @@
-module Bcsec
+module Aker
   module Spec
     class DeprecationMode
       def self.use_in(spec_config)
         spec_config.include DeprecationHelper
 
         spec_config.before(:each) do
-          @original_deprecation_mode, Bcsec::Deprecation.mode =
-            Bcsec::Deprecation.mode, Bcsec::Spec::DeprecationMode.new
+          @original_deprecation_mode, Aker::Deprecation.mode =
+            Aker::Deprecation.mode, Aker::Spec::DeprecationMode.new
         end
 
         spec_config.after(:each) do
           begin
-            Bcsec::Deprecation.mode.fail_if_any_very_obsolete
+            Aker::Deprecation.mode.fail_if_any_very_obsolete
           ensure
-            Bcsec::Deprecation.mode = @original_deprecation_mode
+            Aker::Deprecation.mode = @original_deprecation_mode
           end
         end
       end
@@ -41,7 +41,7 @@ module Bcsec
       def very_obsolete?(version)
         # "very obsolete" if it was deprecated at least two minor
         # versions ago
-        major_minor(Bcsec::VERSION) - Rational(2, 10) >= major_minor(version)
+        major_minor(Aker::VERSION) - Rational(2, 10) >= major_minor(version)
       end
 
       def major_minor(version)
@@ -51,7 +51,7 @@ module Bcsec
 
     module DeprecationHelper
       def deprecation_message(n=0)
-        (Bcsec::Deprecation.mode.messages[n] || {})[:message]
+        (Aker::Deprecation.mode.messages[n] || {})[:message]
       end
     end
   end

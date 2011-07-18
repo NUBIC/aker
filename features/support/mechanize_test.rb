@@ -1,7 +1,7 @@
 require 'mechanize'
 require 'logger'
 
-module Bcsec::Cucumber
+module Aker::Cucumber
   ##
   # Provides helpers & a DSL for testing a deployed set of
   # applications with Mechanize.

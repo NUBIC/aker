@@ -1,4 +1,4 @@
-module Bcsec
+module Aker
   module Spec
     ##
     # A record-only version of Rack::Builder.

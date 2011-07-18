@@ -1,6 +1,6 @@
 require 'restclient'
 
-module Bcsec
+module Aker
   module Cucumber
     module RackEndpoints
       class << self
@@ -17,7 +17,7 @@ module Bcsec
 
         def authentication_required
           Proc.new { |env|
-            env['bcsec'].authentication_required!
+            env['aker'].authentication_required!
             [200, { "Content-Type" => "text/plain" },
              ["I'm protected, #{env['warden'].user.username}."]]
           }
@@ -26,7 +26,7 @@ module Bcsec
 
         def search
           Proc.new { |env|
-            env['bcsec'].authentication_required!
+            env['aker'].authentication_required!
             request = ::Rack::Request.new(env)
 
             [200, { "Content-Type" => "text/plain" },
@@ -40,7 +40,7 @@ module Bcsec
 
         def group_only(group)
           Proc.new { |env|
-            env['bcsec'].permit! group.to_sym
+            env['aker'].permit! group.to_sym
             [200, { "Content-Type" => "text/plain" },
              ["Only #{group.downcase} can see this page at all."]]
           }
@@ -49,7 +49,7 @@ module Bcsec
         def partial_group(group)
           Proc.new { |env|
             body = "This page is visible to everyone"
-            env['bcsec'].permit?(group) do
+            env['aker'].permit?(group) do
               body << "\nBut there is special content for #{group}"
             end
 
@@ -60,7 +60,7 @@ module Bcsec
 
         def cas_api_consumer(api_base_url, resource_relative_url)
           Proc.new { |env|
-            env['bcsec'].authentication_required!
+            env['aker'].authentication_required!
 
             content = with_proxy_ticket(api_base_url, env) do |pt|
               RestClient.get(URI.join(api_base_url, resource_relative_url).to_s,
@@ -86,7 +86,7 @@ module Bcsec
           memoized_response = nil
 
           Proc.new { |env|
-            content = if env['bcsec'].authenticated?
+            content = if env['aker'].authenticated?
                         resp = with_proxy_ticket(api_base_url, env) do |pt|
                           RestClient.get(api_endpoint, :Authorization => "CasProxy #{pt}")
                         end

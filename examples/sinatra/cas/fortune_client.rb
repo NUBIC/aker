@@ -4,33 +4,33 @@ Bundler.setup
 require 'sinatra'
 require 'json'
 require 'haml'
-require 'bcsec'
+require 'aker'
 
 ##
 # This client is half of a very rough, ad-hoc client-server implementation of
 # the fortune program.  It is a demonstration of
 #
-# 1. CAS proxying as implemented by bcsec, and
+# 1. CAS proxying as implemented by aker, and
 # 2. How ridiculously complex we can make simple UNIX programs[0].
 #
 # [0] http://radar.oreilly.com/2007/03/sfearthquakes-on-twitter.html
 
 ##
-# First, we set up bcsec.
+# First, we set up aker.
 #
 # Instead of the customary
 #
-#     Bcsec::Rack.use_in(self)
+#     Aker::Rack.use_in(self)
 #
 # we instead use
 #
-#     Bcsec::Rack.use_in(Sinatra::Application)
+#     Aker::Rack.use_in(Sinatra::Application)
 #
 # because self is `main` extended with private delegators to
 # `Sinatra::Application`, one of which is `use`.  `use` on Sinatra::Application
 # is not private, however, so we kludge things up a bit in the name of keeping
 # the client in a single file.
-Bcsec.configure do
+Aker.configure do
   cas_parameters :base_url => ENV['CAS_BASE'],
                  :proxy_retrieval_url => "#{ENV['CAS_CALLBACK']}/retrieve_pgt",
                  :proxy_callback_url => "#{ENV['CAS_CALLBACK']}/receive_pgt"
@@ -47,7 +47,7 @@ require File.expand_path("../permit_insecure_cas.rb", __FILE__)
 
 use Rack::Session::Cookie
 
-Bcsec::Rack.use_in(Sinatra::Application)
+Aker::Rack.use_in(Sinatra::Application)
 
 ##
 # Next, an administrative detail.
@@ -64,9 +64,9 @@ OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:verify_mode] = OpenSSL::SSL::VERIFY_NO
 ##
 # Require authentication for all actions.
 before do
-  @user = env['bcsec'].user
+  @user = env['aker'].user
 
-  env['bcsec'].authentication_required!
+  env['aker'].authentication_required!
 end
 
 ##

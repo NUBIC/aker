@@ -6,7 +6,7 @@ require 'active_record' # see below
 require File.expand_path("../controllable_rack_server.rb", __FILE__)
 
 # Because rubycas-server's config.ru refers to the Rack module, it
-# needs to be interpreted outside of the Bcsec module.
+# needs to be interpreted outside of the Aker module.
 module CASServer
   def self.app(config_filename)
     $CONF = Picnic::Conf.new
@@ -18,7 +18,7 @@ module CASServer
   end
 end
 
-module Bcsec
+module Aker
   module Cucumber
     class ControllableCasServer < ControllableRackServer
       include FileUtils

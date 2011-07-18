@@ -1,7 +1,7 @@
 @no_jruby
 Feature: Access control
   In order to specify what users may see
-  Bcsec-protected applications
+  Aker-protected applications
   must be able to specify access levels for different resources
 
   Background:
@@ -11,7 +11,7 @@ Feature: Access control
       | zaw102   | squidward |
     And mr296 is in the Owners and Command groups for Serenity
     And zaw102 is in the Command group for Serenity
-    And I have a bcsec-protected application using
+    And I have a aker-protected application using
       | api_modes  | portal   |
       | http_basic | Serenity |
     And I am using the API

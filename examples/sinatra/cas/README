@@ -12,6 +12,6 @@ and then play around.
 
 If you receive an error message resembling
 
-  undefined_method "cas_proxy_ticket" on Bcsec::User
+  undefined_method "cas_proxy_ticket" on Aker::User
 
 then you may have some stale session data.  Clear your session and try again.

@@ -6,7 +6,7 @@ require "fileutils"
 
 $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
 
-require 'bcsec'
+require 'aker'
 require 'rack'
 
 require File.expand_path("../../../spec/matchers", __FILE__)
@@ -22,9 +22,9 @@ end
 
 Before do
   # suppress logging
-  bcsec_log = "#{tmpdir}/bcsec.log"
-  Bcsec.configure {
-    logger Logger.new(bcsec_log)
+  aker_log = "#{tmpdir}/aker.log"
+  Aker.configure {
+    logger Logger.new(aker_log)
   }
 end
 
@@ -36,12 +36,12 @@ After do
   stop_spawned_servers
 end
 
-module Bcsec::Cucumber
+module Aker::Cucumber
   class World
-    include ::Bcsec::Spec::Matchers
+    include ::Aker::Spec::Matchers
     include ::RSpec::Matchers
-    include ::Bcsec::Cucumber::MechanizeTest
-    include ::Bcsec::Cucumber::Pers if defined?(::Bcsec::Cucumber::Pers)
+    include ::Aker::Cucumber::MechanizeTest
+    include ::Aker::Cucumber::Pers if defined?(::Aker::Cucumber::Pers)
     include FileUtils
 
     CAS_PORT = 5409
@@ -51,10 +51,10 @@ module Bcsec::Cucumber
       @app or fail "No main rack app created yet"
     end
 
-    def enhance_configuration_from_table(cucumber_table, bcsec_configuration=nil)
-      bcsec_configuration ||= (Bcsec.configuration ||= Bcsec::Configuration.new)
+    def enhance_configuration_from_table(cucumber_table, aker_configuration=nil)
+      aker_configuration ||= (Aker.configuration ||= Aker::Configuration.new)
       string_conf = cucumber_table.hashes.first
-      bcsec_configuration.enhance {
+      aker_configuration.enhance {
         string_conf.each_pair do |attr, value|
           value =
             case attr
@@ -71,7 +71,7 @@ module Bcsec::Cucumber
     end
 
     def tmpdir
-      @tmpdir ||= File.expand_path("../../..//tmp/bcsec-integrated-tests", __FILE__)
+      @tmpdir ||= File.expand_path("../../..//tmp/aker-integrated-tests", __FILE__)
       unless File.exist?(@tmpdir)
         mkdir_p @tmpdir
         puts "Using tmpdir #{@tmpdir}"
@@ -84,7 +84,7 @@ module Bcsec::Cucumber
     end
 
     def port_offset
-      case ENV['BCSEC_ENV']
+      case ENV['AKER_ENV']
       when /1.8.7/; 1008;
       when /1.9/;   2007;
       else 0;
@@ -98,10 +98,10 @@ module Bcsec::Cucumber
       @cas_server
     end
 
-    # @return [Bcsec::Cucumber::ControllableRackServer]
+    # @return [Aker::Cucumber::ControllableRackServer]
     def start_rack_server(app, port, options={})
       opts = { :app => app, :port => port + port_offset, :tmpdir => tmpdir }.merge(options)
-      new_server = Bcsec::Cucumber::ControllableRackServer.new(opts)
+      new_server = Aker::Cucumber::ControllableRackServer.new(opts)
       self.spawned_servers << new_server
       new_server.start
       new_server
@@ -139,5 +139,5 @@ module Bcsec::Cucumber
 end
 
 World do
-  Bcsec::Cucumber::World.new
+  Aker::Cucumber::World.new
 end

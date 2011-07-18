@@ -14,10 +14,10 @@ Bundler.setup
 #
 # (Unicorn makes it really easy, but Unicorn doesn't do HTTPS.)
 #
-# Anyway.  We'll be using bcsec's CAS proxy callback, so we need to load up
-# bcsec.
+# Anyway.  We'll be using aker's CAS proxy callback, so we need to load up
+# aker.
 #
-require 'bcsec'
+require 'aker'
 
 #
 # We're also going to need Rack.
@@ -43,7 +43,7 @@ pstore_path = File.join(File.dirname(__FILE__), %w(var cas_proxy_callback.pstore
 # Now we start the callback.
 #
 conf = {
-  :app => Bcsec::Cas::RackProxyCallback.application(:store => pstore_path),
+  :app => Aker::Cas::RackProxyCallback.application(:store => pstore_path),
   :server => 'webrick',
   :Port => 9698,
   :SSLEnable => true,

@@ -7,7 +7,7 @@ doc
 doc-with-rails
 .yardoc-with-rails
 reports
-bcsec-*.gem
+aker-*.gem
 tmp
 
 # ci

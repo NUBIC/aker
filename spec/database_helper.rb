@@ -2,19 +2,19 @@ require 'active_record'
 require 'bcdatabase'
 require 'database_cleaner'
 
-module Bcsec
+module Aker
   module Spec
     module DatabaseConfiguration
       PARAMS = {
         'test' => [:local_oracle, :cc_pers_test],
-        'ci_1.8.7' => [:bcdev, :cc_pers_hudson_bcsec],
-        'ci_1.9'   => [:bcdev, :cc_pers_hudson_bcsec_yarv],
-        'ci_jruby' => [:bcdev, :cc_pers_hudson_bcsec_java]
+        'ci_1.8.7' => [:bcdev, :cc_pers_hudson_aker],
+        'ci_1.9'   => [:bcdev, :cc_pers_hudson_aker_yarv],
+        'ci_jruby' => [:bcdev, :cc_pers_hudson_aker_java]
       }
 
       class << self
         def env
-          ENV['BCSEC_ENV'] || 'test'
+          ENV['AKER_ENV'] || 'test'
         end
 
         def active_record_configuration

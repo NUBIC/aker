@@ -1,7 +1,7 @@
 @no_jruby
 Feature: Form authentication
   In order to protect confidential data
-  Users of bcsec-protected applications
+  Users of aker-protected applications
   must log in to use said applications.
 
   This feature tests form-based authentication.
@@ -10,7 +10,7 @@ Feature: Form authentication
     Given I have an authority that accepts these usernames and passwords:
       | username | password |
       | mr296    | br0wn    |
-    And I have a bcsec-protected application using
+    And I have a aker-protected application using
       | ui_mode | api_modes |
       | form    |           |
 

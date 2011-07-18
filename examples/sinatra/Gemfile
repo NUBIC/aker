@@ -1,7 +1,7 @@
 source :rubygems
 source 'http://download.bioinformatics.northwestern.edu/gems/'
 
-gem 'bcsec', :path => '../..'
+gem 'aker', :path => '../..'
 
 # Libraries for demo apps
 gem 'rest-client', '~> 1'
