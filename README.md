@@ -11,6 +11,13 @@ information, **modes** which integrate authentication with HTTP (via
 Rack), and a **configuration** which specifies which of these to use
 and how to set them up.
 
+Reader's note: this README uses [YARD][] markup to provide links to
+Aker's API documentation. If you aren't already, consider reading it
+on [rubydoc.info][] so that the links will be followable.
+
+[YARD]: http://yardoc.org/
+[rubydoc.info]: http://rubydoc.info/github/NUBIC/aker/master/file/README.md
+
 Aker concepts
 -------------
 
