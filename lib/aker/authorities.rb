@@ -2,11 +2,11 @@ require 'aker'
 
 module Aker
   ##
-  # The namespace for authorities in Aker.  The duck-typed meaning of
-  # what an authority is is outlined in the documentation for
+  # The namespace for authorities in Aker.  The duck-typed definition
+  # of an authority is is outlined in the documentation for
   # {Aker::Authorities::Composite Composite}.
   #
-  # Aker 2 ships with five authorities:
+  # Aker ships with four authorities:
   #
   # - {Aker::Cas::Authority :cas} provides CAS ticket verification
   #   using a CAS 2 server.
@@ -14,7 +14,7 @@ module Aker
   #   passwords using an LDAP server.
   # - {Aker::Authorities::Static :static} provides credential
   #   verification and user authorization based on an in-memory set of
-  #   users.  It can be configured in code or by loading a YAML file.
+  #   users. It can be configured in code or by loading a YAML file.
   #   It is intended for integrated tests and application
   #   bootstrapping.
   # - {Aker::Authorities::AutomaticAccess :automatic_access} allows

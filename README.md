@@ -237,21 +237,26 @@ Extending Aker
 Aker was built for extensibility. Here are the highlights; see the
 relevant sections above for more.
 
-* Authentication and authorization can be provided by implementing an
-  {Aker::Authorities authority}. An application can configure in
-  multiple authorities and their results will be intelligently
-  combined. Authorities can also implement success and failure
-  callbacks to provide for auditing or lockout features.
+* {Aker::Authorities::Composite#valid_credentials? Authentication} and
+  {Aker::Authorities::Composite#amplify! authorization} can be
+  provided by implementing an {Aker::Authorities authority}. An
+  application can configure in multiple authorities and their results
+  will be intelligently combined. Authorities can also implement
+  {Aker::Authorities::Composite#on_authentication_success success} and
+  {Aker::Authorities::Composite#on_authentication_failure failure}
+  callbacks to provide for auditing or
+  {Aker::Authorities::Composite#veto? lockout} features.
 * An HTTP-based credential presentation mechanism can be implemented
-  as a {Aker::Modes mode}.
+  as a {Aker::Modes mode}. E.g., you would write a mode to adapt to a
+  legacy single-sign-on system.
 * Authorities and modes can be customized through
   {Aker::Configuration#parameters_for parameters} included in the
-  {Aker::Configuration}.
+  {Aker::Configuration configuration}.
 * Reusable extensions can be packaged as gems and registered alongside
   Aker's built-in functionality. Extensions may use
   {Aker::Configuration::Slice slices} to register themselves, set
-  defaults, and register middleware that will be included relative to
-  Aker's own middleware.
+  defaults parameter values, and register middleware that will be
+  included relative to Aker's own middleware.
 
 Limitations
 -----------

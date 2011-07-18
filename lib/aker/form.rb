@@ -9,6 +9,8 @@ module Aker
     autoload :Middleware,             'aker/form/middleware'
     autoload :Mode,                   'aker/form/mode'
 
+    ##
+    # @private
     class Slice < Aker::Configuration::Slice
       def initialize
         super do

@@ -75,7 +75,7 @@ namespace :yard do
 
   desc "Build API documentation with yard"
   YARD::Rake::YardocTask.new("once") do |t|
-    t.options = ["--title", "aker #{Aker::VERSION}"]
+    t.options = ["--title", "Aker #{Aker::VERSION}"]
   end
 
   desc "Purge all YARD artifacts"

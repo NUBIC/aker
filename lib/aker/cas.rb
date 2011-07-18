@@ -13,6 +13,8 @@ module Aker
     autoload :ServiceUrl,          'aker/cas/service_url'
     autoload :UserExt,             'aker/cas/user_ext'
 
+    ##
+    # @private
     class Slice < Aker::Configuration::Slice
       def initialize
         super do

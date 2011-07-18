@@ -5,15 +5,15 @@ require 'active_support/core_ext'
 
 module Aker
   ##
-  # The representation of a configuration for the aker system,
-  # including authorities, application attributes, and authentication
-  # modes.
+  # The representation of a configuration for Aker in a particular
+  # application, including authorities, customization parameters, and
+  # authentication modes.
   class Configuration
     class << self
       ##
       # The default set of {Slice slices}. These will be applied to
       # all newly created instances. Changes to this array will not be
-      # reflected in existing configurations instances.
+      # reflected in existing configuration instances.
       #
       # @since 2.2.0
       # @return [Array<Slice>]
@@ -121,7 +121,19 @@ module Aker
     end
 
     ##
-    # Set the portal to which this application belongs
+    # Set the portal to which this application belongs.
+    #
+    # Portal is an optional authorization concept. If you have an
+    # authority which is based on an authorization store that provides
+    # group information for multiple groups of applications, Aker
+    # calls each group of applications a portal.
+    #
+    # When an application declares that it is a part of a portal,
+    # authentication will fail for any user which is not a member of
+    # that portal. If you don't have an authority that provides that
+    # information, don't set a portal.
+    #
+    # @see Aker::User#portals
     # @param [#to_sym] the new portal's name
     # @return [void]
     def portal=(portal)
@@ -206,6 +218,7 @@ module Aker
     # Loads parameters from the given aker central parameters
     # file.
     #
+    # @see Aker::CentralParameters
     # @param [String] filename the filename
     # @return [void]
     def central(filename)
@@ -415,6 +428,11 @@ module Aker
     # (or pass a block to that method to have it create one on their
     # behalf).
     #
+    # Most of Aker's own functionality (including all authorities and
+    # modes) are registered using slices internally. If you are
+    # considering writing one, take a look at Aker's source for
+    # examples.
+    #
     # @since 2.2.0
     class Slice
       ##
@@ -438,7 +456,7 @@ module Aker
   #     Aker.configure {
   #       portal :ENU
   #       authorities :ldap, :static
-  #       api_mode :basic
+  #       api_mode :http_basic
   #       central "/etc/nubic/aker-prod.yml"
   #       ldap_parameters :server => 'ldap.example.org'
   #       after_authentication_middleware do |builder|
@@ -451,10 +469,10 @@ module Aker
   #   * All setters in {Configuration} are accessible from the DSL,
   #     except that you don't use '='.
   #   * Other methods which accept arguments are also available.
-  #   * As shown above, there is sugar for setting other parameters.
+  #   * As shown in the example, there is sugar for setting other parameters.
   #     "*name*_parameters *hash*" adds to the
   #     {Configuration#parameters_for parameters} for group *name*.
-  #   * Also as shown above, there is sugar for calling
+  #   * Also as shown in the example, there is sugar for calling
   #     {Configuration#register_middleware_installer}.
   #   * `this` refers to the configuration being updated (for the rare
   #     case that you would need to pass it directly to some constructor).

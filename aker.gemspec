@@ -8,13 +8,13 @@ Gem::Specification.new do |s|
   s.name = 'aker'
   s.version = Aker::VERSION
   s.platform = Gem::Platform::RUBY
-  s.summary = "Bioinformatics core security infrastructure library"
+  s.summary = "A flexible authentication and authorization framework for Rack applications."
 
   s.require_path = 'lib'
-  s.files = Dir.glob("{CHANGELOG,README,VERSION,{assets,lib,spec}/**/*}")
+  s.files = Dir.glob("{CHANGELOG.md,README.md,{assets,lib,spec}/**/*}")
   s.authors = ["Rhett Sutphin", "David Yip"]
   s.email = "r-sutphin@northwestern.edu"
-  s.homepage = "https://code.bioinformatics.northwestern.edu/redmine/projects/show/aker-ruby"
+  s.homepage = "https://github.com/NUBIC/aker"
 
   # general
   s.add_dependency 'rubytree', '~> 0.7.0'

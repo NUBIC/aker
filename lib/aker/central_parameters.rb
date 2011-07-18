@@ -3,8 +3,49 @@ require 'yaml'
 
 module Aker
   ##
-  # Provides access to the akerurity central parameters file.
-  # @see http://bcwiki.bioinformatics.northwestern.edu/bcwiki/index.php/Central_aker_configuration
+  # Provides consistent access to server-based defaults for
+  # configuration parameters. These defaults are stored in a YAML file
+  # on the server and updated separately from application
+  # deployments. E.g., you might have the following in
+  # /etc/nubic/aker-prod.yml:
+  #
+  #     ldap:
+  #       server: ldap.example.org
+  #       user: cn=foo
+  #       password: 13635;nefvqerg35245gk
+  #     policy:
+  #       session_timeout_seconds: 1500
+  #
+  # The top level keys in this file correspond to parameter groups in
+  # a {Aker::Configuration}. If this file were loaded like so,
+  #
+  #     Aker.configure {
+  #       central '/etc/nubic/aker-prod.yml'
+  #     }
+  #
+  # it would be equivalent to the following:
+  #
+  #     Aker.configure {
+  #       ldap_parameters :server => 'ldap.example.org',
+  #                       :user => 'cn=foo',
+  #                       :password => '13635;nefvqerg35245gk'
+  #       policy_parameters :session_timeout_seconds => 1500
+  #     }
+  #
+  # The `central` approach has several benefits:
+  #
+  # * It is simultaneously updateable for all applications on a
+  #   server.
+  # * It separates system administration tasks from application
+  #   developer concerns.
+  # * It provides an easy alternative to checking sensitive
+  #   information (in this example, the LDAP password) into the VCS.
+  # * No flexibility is lost &mdash; individual applications may still
+  #   override parameter values if necessary.
+  #
+  # @see https://github.com/NUBIC/bcdatabase
+  #      Bcdatabase: a tool which provides similar capabilities for
+  #      database and service configurations.
   class CentralParameters < Hash
     ##
     # Creates a new instance with the given overrides.
