@@ -13,7 +13,7 @@ Aker History
 Bcsec History
 =============
 
-This is the history for the parts of Bcsec which remains in
+This is the history for the parts of Bcsec which remain in
 Aker. Versions that only included changes to code which has been
 removed from the open source version have been removed.
 
