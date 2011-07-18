@@ -143,7 +143,6 @@ an exercise for the adventurous integrated tester.)
 
 Since the CAS server provides authentication only, you may also want
 to configure an authority to provide authorization information.
-`:pers` is a good bet.
 
 Authenticating a RESTful API
 ----------------------------
@@ -167,7 +166,7 @@ configuration:
 
 In this case, the CAS server will be used for interactive logins and
 for CAS proxy ticket validation, while HTTP Basic-authenticated
-requests will be validated using the `:netid` and `:pers` authorities.
+requests will be validated using the `:ldap` authority.
 
 Rack (and Rails) integration
 ----------------------------
