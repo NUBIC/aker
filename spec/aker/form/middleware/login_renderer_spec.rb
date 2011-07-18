@@ -45,17 +45,5 @@ module Aker::Form::Middleware
       last_response.should be_ok
       last_response.content_type.should == "text/css"
     end
-
-    context "when :use_custom_login_page is true" do
-      before do
-        configuration.add_parameters_for(:rack, :use_custom_login_page => true)
-      end
-
-      it "passes GET /login to the application" do
-        get "/login", {}, env
-
-        last_response.body.should == "Hello"
-      end
-    end
   end
 end

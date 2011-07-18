@@ -58,10 +58,6 @@ module Aker::Form::Middleware
     end
 
     def unauthenticated(env)
-      if using_custom_login_page?(env)
-        return @app.call(env.merge('aker.login_failed' => true))
-      end
-
       request = Rack::Request.new(env)
       body = login_html(env,
                         :login_failed => true,

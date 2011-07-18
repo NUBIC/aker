@@ -59,18 +59,6 @@ module Aker::Form::Middleware
           last_response.status.should == 401
           last_response.body.should include("Login failed")
         end
-
-        context "and :use_custom_login_page is true" do
-          before do
-            configuration.add_parameters_for(:rack, :use_custom_login_page => true)
-          end
-
-          it "passes the request to the rest of the application" do
-            post "/login", {}, env
-
-            last_response.body.should == "Login failed"
-          end
-        end
       end
 
       describe "when authentication succeeded" do

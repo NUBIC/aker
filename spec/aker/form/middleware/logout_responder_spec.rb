@@ -46,18 +46,6 @@ module Aker::Form::Middleware
 
         last_response.status.should == 404
       end
-
-      context "if :use_custom_logout_page is true" do
-        before do
-          configuration.add_parameters_for(:rack, :use_custom_logout_page => true)
-        end
-
-        it "passes GET /logout to the application" do
-          get "/logout", {}, env
-
-          last_response.body.should == "Logged out"
-        end
-      end
     end
   end
 end
