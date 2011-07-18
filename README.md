@@ -1,10 +1,10 @@
 Aker
-=====
+====
 
 Aker is a library for managing authentication and authorization in
-ruby applications (particularly Rack applications).  It is designed
-to support the needs and work with the infrastructure of the
-Northwestern University Biomedical Informatics Center.
+ruby applications (particularly Rack applications). It is designed to
+extensibly work with your existing (possibly legacy) authentication
+infrastructure.
 
 Aker is made up of **authorities** which provide user security
 information, **modes** which integrate authentication with HTTP (via
@@ -12,16 +12,16 @@ Rack), and a **configuration** which specifies which of these to use
 and how to set them up.
 
 Aker concepts
---------------
+-------------
 
 ### Authorities
 
 An **authority** in Aker is the encapsulation of a mechanism for
 providing authentication and/or authorization.  The methods which an
 authority may implement (all are optional) are described in detail in
-the documentation for the
-{Aker::Authorities::Composite composite authority}.  All the included
-authorities are in the {Aker::Authorities} module.  See their
+the documentation for the {Aker::Authorities::Composite composite
+authority}.  All the included authorities are described in the
+documentation for the {Aker::Authorities} module.  See their
 documentation for more information.
 
 More than one authority can be used in a particular configuration.
@@ -30,13 +30,9 @@ provided by the authority interface, all the authorities will be
 consulted.  The documentation for the composite authority describes
 how the results are aggregated for each action.
 
-A common configuration will be to combine `:pers` with some other
-authorities, since it's the only provided production-level
-implementation of Aker's authorization capabilities.
-
 ### Modes
 
-A Aker **mode** is a mechanism for receiving credentials in the context
+An Aker **mode** is a mechanism for receiving credentials in the context
 of a web application.  Aker modes come in variants that are intended
 for use in human-user-facing contexts (*UI* modes) and machine-facing
 contexts (*API* modes).  It is possible for the same mode to act in
@@ -47,9 +43,9 @@ API modes work within a standard [RFC2617][] HTTP Authorization
 interface, while UI modes have broad access to the Rack environment to
 prompt the user as necessary.
 
-All the included modes are in the {Aker::Modes} module.  See their
-documentation for more information.  If you would like to implement
-your own mode, see the [developer notes][mode-notes] on redmine.
+All the included modes are described in the documentation of the
+{Aker::Modes} module. See their documentation for more information.
+If you would like to implement your own mode, see {Aker::Modes::Base}.
 
 #### API vs. UI
 
@@ -66,7 +62,6 @@ mode(s):
 * Otherwise, the request is handled by the API mode(s).
 
 [RFC2617]: http://www.ietf.org/rfc/rfc2617.txt
-[mode-notes]: https://code.bioinformatics.northwestern.edu/redmine/wiki/aker-ruby/Aker_20_Modes
 
 ### Configuration
 
@@ -85,13 +80,12 @@ instance, you might have the common configuration:
     Aker.configure {
       ui_mode :form
       api_mode :http_basic
-      portal :ENU
     }
 
 And then for your development environment use:
 
     Aker.configure {
-      authority :pers
+      authority Aker::Authorities::Static.from_file("#{Rails.root}/environments/development-users.yml")
       central "/etc/nubic/aker-local.yml"
     }
 
@@ -104,10 +98,9 @@ And in your tests use:
 But then in production use:
 
     Aker.configure {
-      authorities :netid, :pers
+      authorities :ldap
       central "/etc/nubic/aker-prod.yml"
     }
-
 
 Using form authentication
 -------------------------
@@ -167,7 +160,7 @@ configuration:
       ui_mode :cas
       api_mode :http_basic, :cas_proxy
 
-      authorities :cas, :netid, :pers
+      authorities :cas, :ldap
 
       central "/etc/nubic/aker-local.yml"
     }
@@ -184,7 +177,7 @@ it can be used with nearly any ruby web framework, including Sinatra,
 Camping, etc., in addition to Rails.
 
 In your Aker-protected Rack application, you have access to a
-`"aker"` key in the Rack environment.  This key will yield an
+`"aker.check"` key in the Rack environment.  This key will yield an
 instance of {Aker::Rack::Facade} which provides methods for
 determining who is logged in, checking permissions, requiring
 authentication, etc.  See its API documentation for more information.
@@ -195,14 +188,15 @@ information.
 
 #### Rails
 
-While Rack support is built into the main Aker gem, Rails support is
-in a separate gem plugin.  See {file:README-rails} in the `aker-rails` gem
-for more information about it.
+While Rack support is built into the main Aker gem, Rails support (for
+both Rails 2.3 and 3.x) is in a separate gem plugin.  See the README
+in the [`aker-rails` gem][aker-rails] for more information about it.
 
 [Rack]: http://rack.rubyforge.org/
+[aker-rails]: https://github.com/NUBIC/aker-rails
 
 Aker outside of a Rack app
----------------------------
+--------------------------
 
 Aker's authorities are independent of its HTTP integration, so they
 may be used in any ruby script or application.  Here's an example:
@@ -213,9 +207,8 @@ may be used in any ruby script or application.  Here's an example:
     require 'aker'
 
     Aker.configure {
-      authorities :netid, :pers
+      authorities :ldap, :static
       central "/etc/nubic/aker-staging.yml"
-      portal :NOTIS
     }
 
     u = Aker.authority.valid_credentials?(:user, 'wakibbe', 'ekibder')
@@ -238,26 +231,41 @@ may be used in any ruby script or application.  Here's an example:
 
 See the rest of the API documentation for more information.
 
-Development environment
------------------------
+Extending Aker
+--------------
 
-### Oracle
+Aker was built for extensibility. Here are the highlights; see the
+relevant sections above for more.
 
-Part of the library provides ruby mappings for many of the tables in
-NUBIC's central security schema, cc_pers.  The specs for this part of
-the library require a test schema; aker includes rake tasks to help
-you set it up.  These rake tasks have to be run on a machine with the
-full Oracle client on it (the instant client is not sufficient; you
-need `imp`).  Here are the steps to testing nirvana:
+* Authentication and authorization can be provided by implementing an
+  {Aker::Authorities authority}. An application can configure in
+  multiple authorities and their results will be intelligently
+  combined. Authorities can also implement success and failure
+  callbacks to provide for auditing or lockout features.
+* An HTTP-based credential presentation mechanism can be implemented
+  as a {Aker::Modes mode}.
+* Authorities and modes can be customized through
+  {Aker::Configuration#parameters_for parameters} included in the
+  {Aker::Configuration}.
+* Reusable extensions can be packaged as gems and registered alongside
+  Aker's built-in functionality. Extensions may use
+  {Aker::Configuration::Slice slices} to register themselves, set
+  defaults, and register middleware that will be included relative to
+  Aker's own middleware.
 
-0. Install Oracle XE or Oracle Database (XE's easier).
-1. Use `rake bcdb:create:users` to create the cc_pers_test database
-   user.  The password will be "cc_pers_test".
-2. Set up a bcdatabase configuration called cc_pers_test for the
-   local_oracle group.
-3. Use `rake db:test:import` to fill in the cc_pers_test schema.
+Limitations
+-----------
 
-You can run the tests on any machine that has access to your testing
-oracle instance and on which you can install ruby-oci8 or jruby.
-When you run the tests, you need to ensure that the `NLS_LANG`
-environment variable is set to `"AMERICAN_AMERICA.WE8MSWIN1252"`.
+Aker's original iteration was a rails plugin built to assist the
+Northwestern University Biomedical Informatics Center in transitioning
+legacy systems to Ruby on Rails. Since then it's been used in dozens
+of applications, both ports of existing systems and ones newly
+built.
+
+While it can be adapted to many kinds of applications, it is probably
+not a good choice if you are not integrating with an existing
+authentication or authorization backend. It does not include any
+mechanism for provisioning users or letting users sign up for accounts
+on their own. Such things could be built for it, but if that's what
+you need then one of the other existing ruby security frameworks might
+get you up and running faster.
