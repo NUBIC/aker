@@ -57,6 +57,14 @@ Given /^I have a aker\-protected application using$/ do |aker_params|
       run Aker::Cucumber::RackEndpoints.partial_group("Owners")
     end
 
+    map '/custom/login' do
+      run Aker::Cucumber::RackEndpoints.custom_form_login
+    end
+
+    map '/custom/logout' do
+      run Aker::Cucumber::RackEndpoints.custom_form_logout
+    end
+
     map '/' do
       run Aker::Cucumber::RackEndpoints.public
     end

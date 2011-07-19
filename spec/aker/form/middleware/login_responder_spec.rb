@@ -1,46 +1,14 @@
 require File.expand_path("../../../../spec_helper", __FILE__)
+require File.expand_path('../a_form_login_responder', __FILE__)
 require "rack/test"
 
 module Aker::Form::Middleware
   describe LoginResponder do
-    include Rack::Test::Methods
+    let(:responder_middleware_class) { Aker::Form::Middleware::LoginResponder }
 
-    let(:app) do
-      Rack::Builder.new do
-        use Aker::Form::Middleware::LoginResponder
+    it_behaves_like 'a form login responder'
 
-        app = lambda do |env|
-          [200, {"Content-Type" => "text/html"}, ["Hello"]]
-        end
-
-        run app
-      end
-    end
-
-    let(:login_path) { '/auth/login' }
-
-    let(:configuration) do
-      path = login_path;
-      Aker::Configuration.new { rack_parameters :login_path => path }
-    end
-
-    let(:env) do
-      { 'aker.configuration' => configuration }
-    end
-
-    it "does not intercept GETs to the login path" do
-      get login_path, {}, env
-
-      last_response.should be_ok
-      last_response.body.should == "Hello"
-    end
-
-    it "does not intercept POSTs to paths that are not the login path" do
-      post "/foo", {}, env
-
-      last_response.should be_ok
-      last_response.body.should == "Hello"
-    end
+    include_context 'login responder context'
 
     describe "#call" do
       let(:warden) { mock }
@@ -59,36 +27,6 @@ module Aker::Form::Middleware
 
           last_response.status.should == 401
           last_response.body.should include("Login failed")
-        end
-      end
-
-      describe "when authentication succeeded" do
-        it "redirects to a given URL" do
-          warden.should_receive(:authenticated?).and_return(true)
-
-          post login_path, { :url => "/protected" }, env
-
-          last_response.should be_redirect
-          last_response.location.should == "/protected"
-        end
-
-        it "redirects to the application's root if no URL was given" do
-          warden.should_receive(:authenticated?).and_return(true)
-          env['SCRIPT_NAME'] = "/foo"
-
-          post login_path, {}, env
-
-          last_response.should be_redirect
-          last_response.location.should == "/foo/"
-        end
-
-        it "redirects to the application's root if the URL given is a blank string" do
-          warden.should_receive(:authenticated?).and_return(true)
-
-          post login_path, { :url => "" }, env
-
-          last_response.should be_redirect
-          last_response.location.should == "/"
         end
       end
     end

@@ -38,7 +38,7 @@ module Aker::Form::Middleware
       end
     end
 
-    private
+    protected
 
     def respond(env)
       warden = env['warden']

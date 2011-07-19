@@ -8,7 +8,7 @@ module Aker
   # mode_, an _API mode_, or both.  UI modes are intended for interactive use;
   # API modes are intended for non-interactive use.
   #
-  # Aker ships with four modes:
+  # Aker ships with five modes:
   #
   # - {Aker::Cas::ServiceMode :cas} is a UI mode that provides interactive login via
   #   a CAS server.
@@ -16,6 +16,8 @@ module Aker
   #   CAS proxying protocol.
   # - {Aker::Form::Mode :form} is a UI mode that provides an HTML form that
   #   prompts for username and password.
+  # - {Aker::Form::CustomViewsMode :custom_form} is a specialization
+  #   of `:form` for apps that wish to provide their own form views.
   # - {Aker::Modes::HttpBasic :http_basic} is an API/UI mode that implements
   #   the HTTP Basic authentication protocol.  (It's both an API and UI mode
   #   because it can be used by automated Web clients and humans alike.)

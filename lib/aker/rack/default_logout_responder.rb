@@ -22,10 +22,14 @@ module Aker::Rack
     #
     # @param env [Hash] a Rack environment
     def call(env)
-      if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path(env)
+      result = @app.call(env)
+
+      if result.first == 404 &&
+          env['REQUEST_METHOD'] == 'GET' &&
+          env['PATH_INFO'] == logout_path(env)
         ::Rack::Response.new('You have been logged out.', 200).finish
       else
-        @app.call(env)
+        result
       end
     end
   end

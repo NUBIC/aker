@@ -9,7 +9,15 @@ module Aker::Rack
     let(:app) do
       Rack::Builder.new do
         use DefaultLogoutResponder
-        run lambda { |env| [404, {'Content-Type' => 'text/html'}, []] }
+        run lambda { |env|
+          if env['PATH_INFO'] == '/missing/logout'
+            [404, {'Content-Type' => 'text/html'}, ['missing']]
+          elsif env['PATH_INFO'] == '/present/logout'
+            [200, {'Content-Type' => 'text/html'}, ['app logout']]
+          else
+            [200, {'Content-Type' => 'text/html'}, ['app']]
+          end
+        }
       end
     end
 
@@ -24,26 +32,35 @@ module Aker::Rack
       { 'aker.configuration' => configuration }
     end
 
-    let(:path) { '/baz/logout' }
+    let(:path) { '/missing/logout' }
 
     describe '#call' do
-      it 'responds to GET {the configured logout path}' do
+      it 'responds to GET {the configured logout path} if the application 404s' do
         get path, {}, env
 
         last_response.status.should == 200
         last_response.body.should == "You have been logged out."
       end
 
+      it "leaves the application's logout response alone if there is one" do
+        configuration.parameters_for(:rack)[:logout_path] = '/present/logout'
+
+        get '/present/logout', {}, env
+
+        last_response.status.should == 200
+        last_response.body.should == "app logout"
+      end
+
       it 'does not respond to other methods' do
         post path, {}, env
 
-        last_response.status.should == 404
+        last_response.body.should == 'missing'
       end
 
       it 'does not respond to other paths' do
         get '/', {}, env
 
-        last_response.status.should == 404
+        last_response.body.should == 'app'
       end
     end
   end

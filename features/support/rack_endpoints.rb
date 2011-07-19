@@ -1,4 +1,5 @@
 require 'restclient'
+require 'rack/request'
 
 module Aker
   module Cucumber
@@ -98,6 +99,34 @@ module Aker
 
             [200, { "Content-Type" => "text/plain" },
              ["The API said: #{content}"]]
+          }
+        end
+
+        def custom_form_login
+          lambda { |env|
+            req = ::Rack::Request.new(env)
+
+            content = %Q(
+              <html><body>
+                <form action="/custom/login" method="POST">
+                  <label>This is what you go by <input name="username"></label>
+                  #{"last time you said #{env['aker.form.username']}" if env['aker.form.username'] }
+                  <br>
+                  <label>This is your secret word <input name="password"></label>
+                  <input type="submit" value="Log in">
+                </form>
+                <p>#{'Last login failed' if env['aker.form.login_failed']}
+                <p>#{"You were trying to get to #{req['url']}" if req['url']}
+              </body></html>
+            )
+
+            [200, { 'Content-Type' => 'text/html' }, [content]]
+          }
+        end
+
+        def custom_form_logout
+          lambda { |env|
+            [200, { 'Content-Type' => 'text/html' }, ['Thanks for visiting']]
           }
         end
 

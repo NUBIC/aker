@@ -52,10 +52,15 @@ module Aker::Cucumber
             case attr
             when /mode/
               value.split(' ')
+            when /_parameters/
+              eval(value).tap { |h|
+                fail "#{value.inspect} did not eval to a Hash" unless h.is_a?(Hash)
+              }
             else
               value
             end
           if value && !value.empty?
+            value = [value] if value.is_a?(Hash)
             self.send(attr.to_sym, *value)
           end
         end
