@@ -121,14 +121,6 @@ module Aker
           builder.uses[2].first.should == :api_ware_before
         end
 
-        it "passes a configuration object to prepended UI middleware" do
-          builder.should be_using(:ui_ware_before)
-        end
-
-        it "passes a configuration object to prepended API middleware" do
-          builder.should be_using(:api_ware_before)
-        end
-
         it 'attaches the global before middleware immediately before warden' do
           @indexes[:global_before].should == @indexes[Warden::Manager] - 1
         end
@@ -161,14 +153,6 @@ module Aker
 
         it "appends middleware for API modes after appended UI middleware" do
           @indexes[:api_ware_after].should == @indexes[:ui_ware_after] + 1
-        end
-
-        it "passes a configuration object to appended UI middleware" do
-          builder.should be_using(:ui_ware_after)
-        end
-
-        it "passes a configuration object to appended API middleware" do
-          builder.should be_using(:api_ware_after)
         end
 
         it "uses middleware for the global configuration if no specific configuration is provided" do
