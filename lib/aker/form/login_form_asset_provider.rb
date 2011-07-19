@@ -14,13 +14,13 @@ module Aker::Form
     ##
     # Where to look for HTML and CSS assets.
     #
-    # This is currently hardcoded as `(aker gem root)/aker/modes/middleware/form`.
+    # This is currently hardcoded as `(aker gem root)/assets/aker/form`.
     #
     # @return [String] a directory path
     def asset_root
       File.expand_path(File.join(File.dirname(__FILE__),
                                  %w(.. .. ..),
-                                 %w(assets aker modes middleware form)))
+                                 %w(assets aker form)))
     end
 
     ##

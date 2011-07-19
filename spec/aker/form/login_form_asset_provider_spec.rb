@@ -71,7 +71,7 @@ module Aker::Form
     describe "#login_css" do
       it "provides CSS for the login form" do
         expected_css = File.read(File.join(File.dirname(__FILE__),
-                                           %w(.. .. .. assets aker modes middleware form login.css)))
+                                           %w(.. .. .. assets aker form login.css)))
 
         vessel.login_css.should == expected_css
       end
