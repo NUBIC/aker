@@ -29,7 +29,7 @@ AKER_RVM_RUBY='jruby-1.6.2';
 ;;
 esac
 
-GEMSET="aker-${ACTIVERECORD_VERSION}"
+GEMSET="aker-${ACTIVESUPPORT_VERSION}"
 
 if [ -z "$AKER_RVM_RUBY" ]; then
     echo "Could not map env (AKER_ENV=\"${AKER_ENV}\") to an RVM version.";
