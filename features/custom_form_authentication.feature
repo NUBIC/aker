@@ -55,3 +55,16 @@ Feature: Form authentication with custom views
     When I go to the custom logout page
 
     Then I should see "Thanks for visiting" on the page
+
+  @wip
+  Scenario: Session timeouts are enforced
+    Given the application has a session timeout of 2 seconds
+    And I go to the custom login form
+    And I enter username "mr296" and password "br0wn"
+
+    When I access a protected resource
+    And I wait 4 seconds
+    And I access a protected resource
+
+    Then I should be sent to the custom login page
+     And I should see "You waited too long" on the page

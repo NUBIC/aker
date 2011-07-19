@@ -62,24 +62,13 @@ Feature: CAS UI authentication
 
     Then I should be on the CAS logout page
 
-  Scenario: Session timeouts are enforced
+  @wip
+  Scenario: Session timeouts do not interfere with single sign on
     Given I have logged into CAS using "mr296" / "br0wn"
     And the application has a session timeout of 2 seconds
 
     When I access a protected resource
     And I wait 4 seconds
-    And I access a protected resource
-
-    Then I should be on the CAS logout page
-
-  Scenario: Requests made within a session extend the session length
-    Given I have logged into CAS using "mr296" / "br0wn"
-    And the application has a session timeout of 5 seconds
-
-    When I access a protected resource
-    And I wait 3 seconds
-    And I access a protected resource
-    And I wait 3 seconds
     And I access a protected resource
 
     Then I should be able to access that protected resource

@@ -117,6 +117,7 @@ module Aker
                 </form>
                 <p>#{'Last login failed' if env['aker.form.login_failed']}
                 <p>#{"You were trying to get to #{req['url']}" if req['url']}
+                <p>#{'You waited too long' if req['session_expired']}
               </body></html>
             )
 
