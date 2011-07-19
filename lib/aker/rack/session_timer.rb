@@ -3,14 +3,14 @@ require 'aker'
 module Aker::Rack
   ##
   # Middleware that permits a Web application to enforce a session inactivity
-  # limit.
+  # limit. When a request is made after the session expires, the
+  # middleware resets the session, forcing the user to be reauthenticated.
   #
   # The session inactivity limit is determined by the `session-timeout-seconds`
   # parameter in Aker's `policy` parameter group.  It defaults to 1800 seconds
   # (30 minutes), and can be overridden by a {Aker::ConfiguratorLanguage Aker
   # configuration block} or {Aker::CentralParameters central parameters file}.
   # To disable session timeout, set `session-timeout-seconds` to `nil` or `0`.
-  #
   #
   # Algorithm
   # =========
@@ -37,7 +37,8 @@ module Aker::Rack
   #     if cr is in [lr, ta]
   #       pass control to rest of application
   #     else
-  #       log out the user
+  #       reset session
+  #       pass control to rest of application
   #     end
   #
   #
@@ -48,11 +49,9 @@ module Aker::Rack
   # session manager to be present in the `rack.session` Rack environment
   # variable.
   #
-  # SessionTimer also expects a `GET` to the configured logout path to
-  # do all necessary work to log out a user.
-  #
-  # {Aker::Rack.use_in} sets up a middleware stack that satisfies these
-  # requirements.
+  # SessionTimer should be configured earlier in the middleware stack
+  # than any middleware which checks for cached
+  # credentials. {Aker::Rack.use_in} arranges things this way.
   class SessionTimer
     include EnvironmentHelper
     include ConfigurationHelper
@@ -80,11 +79,11 @@ module Aker::Rack
 
       return @app.call(env) unless previous_timeout
 
-      if now < previous_timeout + window_size
-        @app.call(env)
-      else
-        Rack::Response.new { |r| r.redirect(logout_path(env)) }.finish
+      if now >= previous_timeout + window_size
+        env['aker.session_expired'] = true
+        env['warden'].logout
       end
+      @app.call(env)
     end
 
     private

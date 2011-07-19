@@ -56,7 +56,6 @@ Feature: Form authentication with custom views
 
     Then I should see "Thanks for visiting" on the page
 
-  @wip
   Scenario: Session timeouts are enforced
     Given the application has a session timeout of 2 seconds
     And I go to the custom login form

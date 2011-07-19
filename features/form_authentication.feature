@@ -74,7 +74,6 @@ Feature: Form authentication
     Then I should be sent to the login page
     And I should see "Logged out" on the page
 
-  @wip
   Scenario: Session timeouts are enforced
     Given the application has a session timeout of 2 seconds
     And I go to the login form
@@ -85,7 +84,7 @@ Feature: Form authentication
     And I access a protected resource
 
     Then I should be sent to the login page
-     And I should see "Session timed out" on the page
+     And I should see "Session expired" on the page
 
   Scenario: Requests made within a session extend the session length
     Given the application has a session timeout of 5 seconds

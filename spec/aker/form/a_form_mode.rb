@@ -112,6 +112,14 @@ module Aker::Form
 
         URI.parse(response.location).query.should == "url=" + escape("http://www.example.edu")
       end
+
+      it 'puts the session expiration parameter in the URL if the has to log in due to session expiration' do
+        @env['aker.session_expired'] = true
+
+        response = @mode.on_ui_failure
+
+        URI.parse(response.location).query.should == "url=&session_expired=true"
+      end
     end
 
     def set_params(params)

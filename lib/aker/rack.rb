@@ -51,10 +51,10 @@ module Aker::Rack
         builder.use Warden::Manager do |manager|
           manager.failure_app = Aker::Rack::Failure.new
         end
+        builder.use SessionTimer
         builder.use Authenticate
         effective_configuration.install_middleware(:after_authentication, builder)
         builder.use Logout
-        builder.use SessionTimer
       end
 
       builder.use DefaultLogoutResponder

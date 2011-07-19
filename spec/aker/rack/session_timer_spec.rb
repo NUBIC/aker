@@ -5,10 +5,17 @@ module Aker::Rack
   describe SessionTimer do
     let(:app) { stub.as_null_object }
     let(:configuration) { Aker::Configuration.new { rack_parameters :logout_path => '/a/logout' } }
-    let(:env) { { 'aker.configuration' => configuration, 'rack.session' => session } }
+    let(:env) {
+      {
+        'aker.configuration' => configuration,
+        'rack.session' => session,
+        'warden' => warden
+      }
+    }
     let(:expected_timeout) { 600 }
     let(:session) { {} }
     let(:timer) { SessionTimer.new(app) }
+    let(:warden) { mock }
 
     before do
       configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => expected_timeout)
@@ -99,19 +106,26 @@ module Aker::Rack
             #      |    e.t.    |
             #
             session['aker.last_request_at'] = current_request_time - expected_timeout
+
+            warden.stub!(:logout)
           end
 
-          it 'does not pass control down the Rack stack' do
-            app.should_not_receive(:call)
+          it 'passes control down the Rack stack' do
+            app.should_receive(:call)
 
             timer.call(env)
           end
 
-          it 'logs the user out' do
-            resp = timer.call(env)
+          it 'resets the session' do
+            warden.should_receive(:logout)
 
-            resp[0].should == 302
-            resp[1].should include('Location' => '/a/logout')
+            timer.call(env)
+          end
+
+          it 'sets the session expired flag in the environment' do
+            timer.call(env)
+
+            env['aker.session_expired'].should == true
           end
         end
       end

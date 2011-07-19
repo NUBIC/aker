@@ -62,7 +62,6 @@ Feature: CAS UI authentication
 
     Then I should be on the CAS logout page
 
-  @wip
   Scenario: Session timeouts do not interfere with single sign on
     Given I have logged into CAS using "mr296" / "br0wn"
     And the application has a session timeout of 2 seconds

@@ -14,6 +14,8 @@
       <% end %>
       <% if options[:login_failed] %>
         <p class="error">Login failed</p>
+      <% elsif options[:session_expired] %>
+        <p class="error">Session expired</p>
       <% end %>
       <div class="contents">
         <div class="row">

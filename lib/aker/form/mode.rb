@@ -89,7 +89,11 @@ module Aker
       # @return [Rack::Response]
       def on_ui_failure
         ::Rack::Response.new do |resp|
-          resp.redirect(login_url + '?url=' + escape(attempted_path))
+          target = login_url + '?url=' + escape(attempted_path)
+          if env['aker.session_expired']
+            target += '&session_expired=true'
+          end
+          resp.redirect(target)
         end
       end
 

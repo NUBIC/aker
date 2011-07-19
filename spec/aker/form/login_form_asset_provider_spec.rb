@@ -40,6 +40,12 @@ module Aker::Form
         (@doc/'h1').first.inner_html.should == 'Logged out'
       end
 
+      it "can render a 'session expired' message" do
+        @doc = Nokogiri.HTML(vessel.login_html(env, { :session_expired => true }))
+
+        (@doc/'.error').first.inner_html.should == 'Session expired'
+      end
+
       it "can render text in the username text field" do
         @doc = Nokogiri.HTML(vessel.login_html(env, { :username => "user" }))
 

@@ -54,7 +54,9 @@ module Aker::Form::Middleware
     def provide_login_html(env)
       request = ::Rack::Request.new(env)
 
-      ::Rack::Response.new(login_html(env, :url => request['url'])).finish
+      ::Rack::Response.new(
+        login_html(env, :url => request['url'], :session_expired => request['session_expired'])
+      ).finish
     end
 
     ##

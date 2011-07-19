@@ -12,12 +12,21 @@ module Aker::Form
   # uses other paths, you can change these to match via configuration
   # parameters; see the example below.
   #
+  # The login view may receive with one or more query parameters,
+  # depending on how the user is directed to it:
+  #
+  # * `url`: If the user is redirected to the login page after
+  #   attempting to access a protected resource, the URL to the
+  #   resource she was attempting to access will be passed as `url` in
+  #   the query string.
+  # * `session_expired`: If the user is redirected to the login page
+  #   because she made a request after her {Aker::Rack::SessionTimer
+  #   session expired}, `session_expired=true` will be in the query
+  #   string.
+  #
   # The login view should arrange for the user's username and password
   # to be `POST`ed to the login path using parameters with those
-  # names. If the user is redirected to the login page after
-  # attempting to access a protected resource, the URL to the resource
-  # she was attempting to access will be passed as `url` in the query
-  # string.
+  # names.
   #
   # If the form is being re-rendered because the user's credentials
   # were rejected, the following variables will be available in the

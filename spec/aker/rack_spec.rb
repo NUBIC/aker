@@ -119,16 +119,24 @@ module Aker
           builder.uses[0].first.should == Aker::Rack::Setup
         end
 
-        it "prepends middleware for UI modes after the Setup middleware" do
-          builder.uses[1].first.should == :ui_ware_before
+        it "prepends middleware for UI modes after the setup middleware" do
+          @indexes[:ui_ware_before].should == @indexes[Aker::Rack::Setup] + 1
         end
 
         it "prepends middleware for API modes after UI modes" do
-          builder.uses[2].first.should == :api_ware_before
+          @indexes[:api_ware_before].should == @indexes[:ui_ware_before] + 1
         end
 
         it 'attaches the global before middleware immediately before warden' do
           @indexes[:global_before].should == @indexes[Warden::Manager] - 1
+        end
+
+        it "attaches the session timer middleware after the warden middleware" do
+          @indexes[Aker::Rack::SessionTimer].should > @indexes[Warden::Manager]
+        end
+
+        it "attaches the session timer middleware before the authentication middleware" do
+          @indexes[Aker::Rack::SessionTimer].should < @indexes[Aker::Rack::Authenticate]
         end
 
         it 'attaches the global after middleware immediately after Aker::Rack::Authenticate' do
@@ -139,16 +147,12 @@ module Aker
           @indexes[Aker::Rack::Logout].should == @indexes[:global_after] + 1
         end
 
-        it "attaches the session timer middleware after the logout middleware" do
-          @session_timer_index.should == @logout_index + 1
-        end
-
         it "attaches the default logout responder at the end of the chain" do
           builder.uses.map { |u| u.first }.last.should == Aker::Rack::DefaultLogoutResponder
         end
 
-        it "appends middleware for UI modes directly after the session timer middleware" do
-          @indexes[:ui_ware_after].should == @indexes[Aker::Rack::SessionTimer] + 1
+        it "appends middleware for UI modes directly after the logout middleware" do
+          @indexes[:ui_ware_after].should == @indexes[Aker::Rack::Logout] + 1
         end
 
         it "appends middleware for API modes after appended UI middleware" do
