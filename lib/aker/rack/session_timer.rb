@@ -48,13 +48,14 @@ module Aker::Rack
   # session manager to be present in the `rack.session` Rack environment
   # variable.
   #
-  # SessionTimer also expects `GET /logout` to do all necessary work to log out
-  # a user.
+  # SessionTimer also expects a `GET` to the configured logout path to
+  # do all necessary work to log out a user.
   #
   # {Aker::Rack.use_in} sets up a middleware stack that satisfies these
   # requirements.
   class SessionTimer
     include EnvironmentHelper
+    include ConfigurationHelper
 
     def initialize(app)
       @app = app
@@ -63,7 +64,8 @@ module Aker::Rack
     ##
     # Determines whether the incoming request arrived within the timeout
     # window.  If it did, then the request is passed onto the rest of the Rack
-    # stack; otherwise, the user is redirected to `GET /logout`.
+    # stack; otherwise, the user is redirected to the configured
+    # logout path.
     #
     def call(env)
       now              = Time.now.to_i
@@ -81,7 +83,7 @@ module Aker::Rack
       if now < previous_timeout + window_size
         @app.call(env)
       else
-        Rack::Response.new { |r| r.redirect('/logout') }.finish
+        Rack::Response.new { |r| r.redirect(logout_path(env)) }.finish
       end
     end
 

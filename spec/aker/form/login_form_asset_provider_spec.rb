@@ -7,46 +7,53 @@ module Aker::Form
       Object.new.tap { |o| o.extend(LoginFormAssetProvider) }
     end
 
+    let(:configuration) do
+      Aker::Configuration.new do
+        rack_parameters :login_path => '/auth/login'
+      end
+    end
+
     describe "#login_html" do
+      let(:env) { { 'SCRIPT_NAME' => '/foo', 'aker.configuration' => configuration } }
+
       before do
-        env = { 'SCRIPT_NAME' => '/foo' }
         @doc = Nokogiri.HTML(vessel.login_html(env))
       end
 
       it "includes SCRIPT_NAME in the postback URL" do
-        (@doc/'form').first.attributes["action"].value.should == "/foo/login"
+        (@doc/'form').first.attributes["action"].value.should == "/foo/auth/login"
       end
 
       it "includes SCRIPT_NAME in the CSS URL" do
-        (@doc/'link[rel="stylesheet"]').first.attributes["href"].value.should == "/foo/login/login.css"
+        (@doc/'link[rel="stylesheet"]').first.attributes["href"].value.should == "/foo/auth/login/login.css"
       end
 
       it "can render a 'login failed' message" do
-        @doc = Nokogiri.HTML(vessel.login_html({}, { :login_failed => true }))
+        @doc = Nokogiri.HTML(vessel.login_html(env, { :login_failed => true }))
 
         (@doc/'.error').first.inner_html.should == 'Login failed'
       end
 
       it "can render a 'logged out' message" do
-        @doc = Nokogiri.HTML(vessel.login_html({}, { :logged_out => true }))
+        @doc = Nokogiri.HTML(vessel.login_html(env, { :logged_out => true }))
 
         (@doc/'h1').first.inner_html.should == 'Logged out'
       end
 
       it "can render text in the username text field" do
-        @doc = Nokogiri.HTML(vessel.login_html({}, { :username => "user" }))
+        @doc = Nokogiri.HTML(vessel.login_html(env, { :username => "user" }))
 
         (@doc/'input[name="username"]').first['value'].should == 'user'
       end
 
       it "can store a URL to go to after login succeeds" do
-        @doc = Nokogiri.HTML(vessel.login_html({}, { :url => 'http://www.example.edu' }))
+        @doc = Nokogiri.HTML(vessel.login_html(env, { :url => 'http://www.example.edu' }))
 
         (@doc/'input[name="url"]').first['value'].should == 'http://www.example.edu'
       end
 
       it "escapes HTML in usernames" do
-        html = vessel.login_html({}, { :username => "user<a/>" })
+        html = vessel.login_html(env, { :username => "user<a/>" })
 
         # Annoyingly, Nokogiri.HTML automatically unescapes escaped entities in
         # attribute values.

@@ -13,8 +13,9 @@ module Aker::Cas::Middleware
     end
 
     let(:configuration) do
-      Aker::Configuration.new.enhance do
+      Aker::Configuration.new do
         cas_parameters :logout_url => 'https://cas.example.edu/logout'
+        rack_parameters :logout_path => '/some/logout'
       end
     end
 
@@ -23,8 +24,8 @@ module Aker::Cas::Middleware
     end
 
     describe '#call' do
-      it 'redirects to the CAS logout URL on GET /logout' do
-        get "/logout", {}, env
+      it 'redirects to the CAS logout URL on GET {configured logout path}' do
+        get "/some/logout", {}, env
 
         last_response.should be_redirect
         last_response.location.should == 'https://cas.example.edu/logout'
@@ -37,7 +38,7 @@ module Aker::Cas::Middleware
       end
 
       it "does not respond to other methods" do
-        post "/logout", {}, env
+        post "/some/logout", {}, env
 
         last_response.status.should == 404
       end

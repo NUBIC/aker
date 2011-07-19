@@ -10,7 +10,7 @@ module Aker::Form::Middleware
         use Aker::Form::Middleware::LogoutResponder
 
         app = lambda do |env|
-          if env["REQUEST_METHOD"] == "GET" && env["PATH_INFO"] == "/logout"
+          if env["REQUEST_METHOD"] == "GET" && env["PATH_INFO"] == "/this/logout"
             [200, {"Content-Type" => "text/plain"}, ["Logged out"]]
           else
             [404, {"Content-Type" => "text/plain"}, []]
@@ -21,15 +21,19 @@ module Aker::Form::Middleware
       end
     end
 
-    let(:configuration) { Aker::Configuration.new }
+    let(:configuration) {
+      Aker::Configuration.new do
+        rack_parameters :logout_path => '/this/logout'
+      end
+    }
 
     let(:env) do
       { 'aker.configuration' => configuration }
     end
 
     describe '#call' do
-      it "responds to GET /logout" do
-        get "/logout", {}, env
+      it "responds to GET {configured logout path}" do
+        get "/this/logout", {}, env
 
         last_response.should be_ok
         last_response.content_type.should == "text/html"
@@ -42,7 +46,7 @@ module Aker::Form::Middleware
       end
 
       it 'does not respond on other methods' do
-        post "/logout", {}, env
+        post "/this/logout", {}, env
 
         last_response.status.should == 404
       end

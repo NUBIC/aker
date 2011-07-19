@@ -4,7 +4,7 @@ require 'rack/test'
 module Aker::Rack
   describe SessionTimer do
     let(:app) { stub.as_null_object }
-    let(:configuration) { Aker::Configuration.new }
+    let(:configuration) { Aker::Configuration.new { rack_parameters :logout_path => '/a/logout' } }
     let(:env) { { 'aker.configuration' => configuration, 'rack.session' => session } }
     let(:expected_timeout) { 600 }
     let(:session) { {} }
@@ -111,7 +111,7 @@ module Aker::Rack
             resp = timer.call(env)
 
             resp[0].should == 302
-            resp[1].should include('Location' => '/logout')
+            resp[1].should include('Location' => '/a/logout')
           end
         end
       end

@@ -3,9 +3,13 @@ require 'aker'
 module Aker
   module Rack
     ##
-    # Middleware for ending authenticated sessions.  This middleware listens for
-    # `GET /logout` requests, and when such requests are received, clears user
-    # data.
+    # Middleware for ending authenticated sessions.  This middleware
+    # listens for `GET` requests to the logout path and when such
+    # requests are received, clears user data.
+    #
+    # The logout path is `/logout` by default. It may be overridden in
+    # the Aker configuration by setting a value for `:logout_path` in
+    # the `:rack` parameter group.
     #
     # ## Implications of GET
     #
@@ -24,36 +28,31 @@ module Aker
     #
     # @author David Yip
     class Logout
-      ##
-      # The path at which the middleware will watch for logout requests.
-      #
-      # @return [String] the logout path
-      attr_accessor :logout_path
+      include ConfigurationHelper
 
       ##
       # Instantiates the middleware.
       #
       # @param app [Rack app] the Rack application on which this middleware
       #                       should be layered
-      # @param logout_path [String] the logout path
-      def initialize(app, logout_path)
+      def initialize(app)
         @app = app
-        self.logout_path = logout_path
       end
 
       ##
-      # When given `GET /logout`, invokes Warden's logout procedure (which
-      # resets the session), and passes control down to the rest of the
-      # application.
+      # When given a `GET` for the configured logout path, invokes
+      # Warden's logout procedure (which resets the session), and
+      # passes control down to the rest of the application.
       #
-      # If the application does not provide a handler for `/logout`, then
-      # the handler defined by {DefaultLogoutResponder} will be invoked.
+      # If the application or a mode does not provide a handler for
+      # the configured logout path, then the handler defined by
+      # {DefaultLogoutResponder} will be invoked.
       #
       # @see Aker::Rack.use_in
       # @param env [Hash] a Rack environment
       # @return [Array] a finished Rack response
       def call(env)
-        if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path
+        if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path(env)
           env['warden'].logout
         end
 

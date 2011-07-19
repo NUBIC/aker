@@ -7,24 +7,27 @@ module Aker::Rack
     include Rack::Test::Methods
 
     let(:app) do
-      p = path
-
       Rack::Builder.new do
-        use DefaultLogoutResponder, p
+        use DefaultLogoutResponder
         run lambda { |env| [404, {'Content-Type' => 'text/html'}, []] }
       end
     end
 
-    let(:configuration) { Aker::Configuration.new }
+    let(:configuration) do
+      p = path
+      Aker::Configuration.new {
+        rack_parameters :logout_path => p
+      }
+    end
 
     let(:env) do
       { 'aker.configuration' => configuration }
     end
 
-    let(:path) { '/logout' }
+    let(:path) { '/baz/logout' }
 
     describe '#call' do
-      it 'responds to GET /logout' do
+      it 'responds to GET {the configured logout path}' do
         get path, {}, env
 
         last_response.status.should == 200

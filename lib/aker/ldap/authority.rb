@@ -68,7 +68,7 @@ module Aker::Ldap
       :telephonenumber => :business_phone,
       :facsimiletelephonenumber => :fax,
     }.freeze
-    
+
     ##
     # Create a new instance.
     #

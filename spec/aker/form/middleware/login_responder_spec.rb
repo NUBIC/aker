@@ -7,28 +7,29 @@ module Aker::Form::Middleware
 
     let(:app) do
       Rack::Builder.new do
-        use Aker::Form::Middleware::LoginResponder, '/login'
+        use Aker::Form::Middleware::LoginResponder
 
         app = lambda do |env|
-          if env["REQUEST_METHOD"] == "POST" && env["PATH_INFO"] == "/login" && env['aker.login_failed']
-            [401, {"Content-Type" => "text/plain"}, ['Login failed']]
-          else
-            [200, {"Content-Type" => "text/html"}, ["Hello"]]
-          end
+          [200, {"Content-Type" => "text/html"}, ["Hello"]]
         end
 
         run app
       end
     end
 
-    let(:configuration) { Aker::Configuration.new }
+    let(:login_path) { '/auth/login' }
+
+    let(:configuration) do
+      path = login_path;
+      Aker::Configuration.new { rack_parameters :login_path => path }
+    end
 
     let(:env) do
       { 'aker.configuration' => configuration }
     end
 
     it "does not intercept GETs to the login path" do
-      get '/login', {}, env
+      get login_path, {}, env
 
       last_response.should be_ok
       last_response.body.should == "Hello"
@@ -54,7 +55,7 @@ module Aker::Form::Middleware
         end
 
         it "renders a 'login failed' message" do
-          post '/login', {}, env
+          post login_path, {}, env
 
           last_response.status.should == 401
           last_response.body.should include("Login failed")
@@ -65,7 +66,7 @@ module Aker::Form::Middleware
         it "redirects to a given URL" do
           warden.should_receive(:authenticated?).and_return(true)
 
-          post '/login', { :url => "/protected" }, env
+          post login_path, { :url => "/protected" }, env
 
           last_response.should be_redirect
           last_response.location.should == "/protected"
@@ -75,7 +76,7 @@ module Aker::Form::Middleware
           warden.should_receive(:authenticated?).and_return(true)
           env['SCRIPT_NAME'] = "/foo"
 
-          post '/login', {}, env
+          post login_path, {}, env
 
           last_response.should be_redirect
           last_response.location.should == "/foo/"
@@ -84,7 +85,7 @@ module Aker::Form::Middleware
         it "redirects to the application's root if the URL given is a blank string" do
           warden.should_receive(:authenticated?).and_return(true)
 
-          post '/login', { :url => "" }, env
+          post login_path, { :url => "" }, env
 
           last_response.should be_redirect
           last_response.location.should == "/"

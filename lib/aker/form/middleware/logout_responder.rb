@@ -10,13 +10,13 @@ module Aker::Form::Middleware
     end
 
     ##
-    # When given `GET /logout` builds a Rack response containing the
-    # login form with a "you have been logged out" notification.
-    # Otherwise, passes the response on.
+    # When given `GET` to the configured logout path, builds a Rack
+    # response containing the login form with a "you have been logged
+    # out" notification.  Otherwise, passes the response on.
     #
     # @return a finished Rack response
     def call(env)
-      if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == '/logout'
+      if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path(env)
         ::Rack::Response.new(login_html(env, :logged_out => true)).finish
       else
         @app.call(env)

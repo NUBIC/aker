@@ -82,13 +82,11 @@ module Aker
         end
 
         before do
-          builder.reset!
+          rebuild!
+        end
 
-          Warden::Strategies.add(:ui_mode, ui_mode)
-          Warden::Strategies.add(:api_mode_a, api_mode_a)
-          Warden::Strategies.add(:api_mode_b, api_mode_b)
-
-          config = Aker::Configuration.new(:slices => []) do
+        let(:config) do
+          Aker::Configuration.new(:slices => [Rack::Slice.new]) do
             ui_mode :ui_mode
             api_modes :api_mode_a, :api_mode_b
 
@@ -100,6 +98,14 @@ module Aker
               builder.use :global_after
             end
           end
+        end
+
+        def rebuild!
+          builder.reset!
+
+          Warden::Strategies.add(:ui_mode, ui_mode)
+          Warden::Strategies.add(:api_mode_a, api_mode_a)
+          Warden::Strategies.add(:api_mode_b, api_mode_b)
 
           Aker::Rack.use_in(builder, config)
 
@@ -139,12 +145,6 @@ module Aker
 
         it "attaches the default logout responder at the end of the chain" do
           builder.uses.map { |u| u.first }.last.should == Aker::Rack::DefaultLogoutResponder
-        end
-
-        it "mounts the logout middleware to /logout" do
-          _, args, _ = builder.uses[@logout_index]
-
-          args.should == ["/logout"]
         end
 
         it "appends middleware for UI modes directly after the session timer middleware" do
@@ -193,6 +193,18 @@ module Aker
 
         it 'has [:session-timeout-seconds]' do
           subject[:'session-timeout-seconds'].should == 1800
+        end
+      end
+
+      describe 'for :rack' do
+        subject { configuration.parameters_for(:rack) }
+
+        it 'has [:login_path]' do
+          subject[:login_path].should == '/login'
+        end
+
+        it 'has [:logout_path]' do
+          subject[:logout_path].should == '/logout'
         end
       end
     end

@@ -14,23 +14,17 @@ module Aker::Form::Middleware
     include Aker::Rack::ConfigurationHelper
 
     ##
-    # The path at which the middleware will watch for login requests.
-    # @return [String] the login path
-    attr_accessor :login_path
-
-    ##
     # Instantiates the middleware.
     #
     # @param app [Rack app] the Rack application on which this middleware
     #                       should be layered
-    # @param login_path [String] the login path
-    def initialize(app, login_path)
+    def initialize(app)
       @app = app
-      self.login_path = login_path
     end
 
     ##
-    # Rack entry point.  Responds to `POST /login`.
+    # Rack entry point.  Responds to a `POST` to the configured login
+    # path.
     #
     # If the user is authenticated and a URL is given in the `url`
     # parameter, then this action will redirect to `url`.
@@ -39,7 +33,7 @@ module Aker::Form::Middleware
     # @return a finished Rack response
     def call(env)
       case [env['REQUEST_METHOD'], env['PATH_INFO']]
-        when ['POST', login_path]; respond(env)
+        when ['POST', login_path(env)]; respond(env)
         else @app.call(env)
       end
     end

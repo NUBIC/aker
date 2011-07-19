@@ -9,6 +9,7 @@ module Aker::Form
   # @author David Yip
   module LoginFormAssetProvider
     include Rack::Utils
+    include Aker::Rack::ConfigurationHelper
 
     ##
     # Where to look for HTML and CSS assets.
@@ -39,7 +40,7 @@ module Aker::Form
     # @option options [String] :url A URL to redirect to upon successful login
     # @return [String] HTML data
     def login_html(env, options = {})
-      script_name = env['SCRIPT_NAME']
+      login_base = env['SCRIPT_NAME'] + login_path(env)
       template = File.read(File.join(asset_root, 'login.html.erb'))
       ERB.new(template).result(binding)
     end

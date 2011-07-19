@@ -5,25 +5,33 @@ module Aker::Rack
   describe Logout do
     include Rack::Test::Methods
 
-    let(:path) { '/logout' }
+    let(:path) { '/auth/logout' }
 
     let(:app) do
-      p = path
-
       Rack::Builder.new do
-        use Aker::Rack::Logout, p
+        use Aker::Rack::Logout
         run lambda { |env| [200, {'Content-Type' => 'text/html'}, ['from the app']] }
       end
     end
 
     let(:warden) { stub.as_null_object }
 
+    let(:config) do
+      p = path
+      Aker::Configuration.new {
+        rack_parameters :logout_path => p
+      }
+    end
+
     let(:env) do
-      { 'warden' => warden }
+      {
+        'warden' => warden,
+        'aker.configuration' => config
+      }
     end
 
     describe '#call' do
-      context 'given GET /logout' do
+      context 'given GET {the configured path}' do
         it 'instructs Warden to log out' do
           warden.should_receive(:logout)
 

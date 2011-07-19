@@ -2,10 +2,10 @@
 <html>
   <head>
     <title>Please log in</title>
-    <link rel="stylesheet" type="text/css" href="<%= script_name %>/login/login.css" />
+    <link rel="stylesheet" type="text/css" href="<%= login_base %>/login.css" />
   </head>
   <body class="access">
-    <form method="POST" action="<%= script_name %>/login">
+    <form method="POST" action="<%= login_base %>">
       <input type="hidden" name="url" value="<%= options[:url] %>" />
       <% if options[:logged_out] %>
         <h1>Logged out</h1>

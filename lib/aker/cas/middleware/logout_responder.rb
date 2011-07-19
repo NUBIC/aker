@@ -14,13 +14,13 @@ module Aker::Cas::Middleware
     ##
     # Rack entry point.
     #
-    # Given `GET /logout`, redirects to {#cas_logout_url}.  All other requests
-    # are passed through.
+    # Given a `GET` to the configured logout path, redirects to
+    # {#cas_logout_url}.  All other requests are passed through.
     #
     # @see http://www.jasig.org/cas/protocol
     #      Section 2.3 of the CAS 2 protocol
     def call(env)
-      if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == '/logout'
+      if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path(env)
         ::Rack::Response.new { |r| r.redirect(cas_logout_url(env)) }.finish
       else
         @app.call(env)

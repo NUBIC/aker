@@ -7,7 +7,7 @@ module Aker::Form::Middleware
 
     let(:app) do
       Rack::Builder.new do
-        use Aker::Form::Middleware::LoginRenderer, '/login'
+        use Aker::Form::Middleware::LoginRenderer
         run lambda { |env| [200, {"Content-Type" => "text/html"}, ["Hello"]] }
       end
     end
@@ -16,10 +16,17 @@ module Aker::Form::Middleware
       { 'aker.configuration' => configuration }
     end
 
-    let(:configuration) { Aker::Configuration.new }
+    let(:configuration) do
+      path = login_path
+      Aker::Configuration.new {
+        rack_parameters :login_path => path
+      }
+    end
+
+    let(:login_path) { '/log-in-here' }
 
     it "does not intercept POSTs to the login path" do
-      post "/login", {}, env
+      post login_path, {}, env
 
       last_response.should be_ok
       last_response.body.should == "Hello"
@@ -33,14 +40,14 @@ module Aker::Form::Middleware
     end
 
     it "renders login forms for GETs on the login path" do
-      get "/login", {}, env
+      get login_path, {}, env
 
       last_response.should be_ok
       last_response.content_type.should == "text/html"
     end
 
     it "outputs CSS for GETs on (the login path) + .css" do
-      get "/login/login.css", {}, env
+      get "/log-in-here/login.css", {}, env
 
       last_response.should be_ok
       last_response.content_type.should == "text/css"

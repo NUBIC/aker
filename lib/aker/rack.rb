@@ -53,11 +53,11 @@ module Aker::Rack
         end
         builder.use Authenticate
         effective_configuration.install_middleware(:after_authentication, builder)
-        builder.use Logout, '/logout'
+        builder.use Logout
         builder.use SessionTimer
       end
 
-      builder.use DefaultLogoutResponder, '/logout'
+      builder.use DefaultLogoutResponder
     end
 
     private
@@ -85,6 +85,10 @@ module Aker::Rack
         Warden::Strategies[key]
       end
     end
+
+    def logout_path(configuration)
+      configuration.parameters_for(:rack)[:logout_path]
+    end
   end
 
   ##
@@ -92,6 +96,8 @@ module Aker::Rack
   class Slice < Aker::Configuration::Slice
     def initialize
       super do
+        rack_parameters :login_path => '/login', :logout_path => '/logout'
+
         policy_parameters :'session-timeout-seconds' => 1800
       end
     end

@@ -4,8 +4,11 @@ require "rack"
 
 module Aker::Form
   describe Mode do
+    let(:config) { Aker::Configuration.new(:slices => [Aker::Rack::Slice.new]) }
+
     before do
       @env = ::Rack::MockRequest.env_for("/")
+      @env['aker.configuration'] = config
       @scope = mock
       @mode = Mode.new(@env, @scope)
     end
@@ -82,6 +85,13 @@ module Aker::Form
 
         URI.parse(@mode.login_url).path.should == "/app/login"
       end
+
+      it 'uses another path if one is specified in the configuration' do
+        @env['SCRIPT_NAME'] = '/banjo'
+        config.parameters_for(:rack)[:login_path] = '/auth/login'
+
+        URI.parse(@mode.login_url).path.should == "/banjo/auth/login"
+      end
     end
 
     describe "#on_ui_failure" do
@@ -92,6 +102,13 @@ module Aker::Form
 
         response.should be_redirect
         URI.parse(response.location).path.should == "/login"
+      end
+
+      it 'redirects to a different login form path if specified in the configuration' do
+        config.parameters_for(:rack)[:login_path] = '/auth/login'
+        response = @mode.on_ui_failure
+
+        URI.parse(response.location).path.should == '/auth/login'
       end
 
       it "puts the URL the user was trying to reach in the query string" do

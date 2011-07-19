@@ -7,6 +7,12 @@ module Aker::Rack
   module ConfigurationHelper
     include EnvironmentHelper
 
-    # This is only empty temporarily
+    def login_path(env)
+      configuration(env).parameters_for(:rack)[:login_path]
+    end
+
+    def logout_path(env)
+      configuration(env).parameters_for(:rack)[:logout_path]
+    end
   end
 end

@@ -11,8 +11,16 @@ module Aker
     # It expects the username in a `username` parameter and the unobfuscated
     # password in a `password` parameter.
     #
-    # This mode also renders said HTML form if authentication fails.  This is
-    # provided by {Middleware::LoginRenderer}.
+    # By default, the form is rendered at and the credentials are
+    # received on '/login'; this can be overridden in the
+    # configuration like so:
+    #
+    #     Aker.configure {
+    #       rack_parameters :login_path => '/log-in-here'
+    #     }
+    #
+    # This mode also renders said HTML form if authentication
+    # fails. Rendering is handled by by {Middleware::LoginRenderer}.
     #
     # @author David Yip
     class Mode < Aker::Modes::Base
@@ -28,23 +36,10 @@ module Aker
       end
 
       ##
-      # The path at which the login form will be accessible.  Currently
-      # hard-wired as `/login`.
-      #
-      # This path is specified relative to the application's mount point.  If
-      # you're looking for the absolute URL of the login form, you need to use
-      # login_url.
-      #
-      # @return [String] `/login`
-      def self.login_path
-        '/login'
-      end
-
-      ##
       # Appends the {Middleware::LoginResponder login responder} to its
       # position in the Rack middleware stack.
       def self.append_middleware(builder)
-        builder.use(Middleware::LoginResponder, login_path)
+        builder.use(Middleware::LoginResponder)
         builder.use(Middleware::LogoutResponder)
       end
 
@@ -52,7 +47,7 @@ module Aker
       # Prepends the {Middleware::LoginRenderer login form renderer} to
       # its position in the Rack middleware stack.
       def self.prepend_middleware(builder)
-        builder.use(Middleware::LoginRenderer, login_path)
+        builder.use(Middleware::LoginRenderer)
       end
 
       ##
@@ -84,7 +79,7 @@ module Aker
       # @return [String]
       def login_url
         uri = URI.parse(request.url)
-        uri.path = env['SCRIPT_NAME'] + self.class.login_path
+        uri.path = env['SCRIPT_NAME'] + login_path(configuration)
         uri.to_s
       end
 
@@ -97,6 +92,23 @@ module Aker
           resp.redirect(login_url + '?url=' + escape(attempted_path))
         end
       end
+
+      ##
+      # The path at which the login form will be accessible, as
+      # configured in the specified context.
+      #
+      # This path is specified relative to the application's mount point.  If
+      # you're looking for the absolute URL of the login form, you need to use
+      # {#login_url}.
+      #
+      # @param [Aker::Configuration] configuration the configuration
+      #   from which to derive the login path.
+      #
+      # @return [String]
+      def login_path(configuration)
+        configuration.parameters_for(:rack)[:login_path]
+      end
+      private :login_path
     end
   end
 end
