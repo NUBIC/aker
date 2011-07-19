@@ -33,12 +33,20 @@ RSpec.configure do |config|
 end
 
 def port_offset
-  case ENV["AKER_ENV"]
-  when /jruby/
-    108
-  when /1.9/
-    207
+  base = case ENV["AKER_ENV"]
+         when /jruby/
+           108
+         when /1.9/
+           207
+         when /1.8/
+           306
+         end
+  case ENV["ACTIVESUPPORT_VERSION"]
+  when /3.0/
+    base * 6
+  when /2.3/
+    base
   else
-    0
+    base * 0
   end
 end
