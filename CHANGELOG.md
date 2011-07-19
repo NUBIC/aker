@@ -9,6 +9,7 @@ Aker History
 - Bcsec contained several authorities which were specific to NUBIC;
   those have been removed and purged from the git history for the
   project.
+- Added :custom_form mode (#1).
 
 Bcsec History
 =============
