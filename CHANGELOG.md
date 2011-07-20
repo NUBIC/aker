@@ -1,6 +1,9 @@
 Aker History
 ============
 
+3.0.1
+-----
+
 3.0.0
 -----
 - First open-source version.
