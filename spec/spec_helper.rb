@@ -40,6 +40,8 @@ def port_offset
            207
          when /1.8/
            306
+         else
+           0
          end
   case ENV["ACTIVESUPPORT_VERSION"]
   when /3.0/
