@@ -35,19 +35,19 @@ end
 def port_offset
   base = case ENV["AKER_ENV"]
          when /jruby/
-           108
+           17
          when /1.9/
-           207
+           26
          when /1.8/
-           306
+           31
          else
            0
          end
   case ENV["ACTIVESUPPORT_VERSION"]
   when /3.0/
-    base * 6
+    base * 5
   when /2.3/
-    base
+    base * 7
   else
     base * 0
   end
