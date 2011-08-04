@@ -3,6 +3,8 @@ Aker History
 
 3.0.1
 -----
+- Fixed: with AS3, using `active_support/core_ext` requires the i18n
+  gem, so add a dependency on it (#5).
 
 3.0.0
 -----
