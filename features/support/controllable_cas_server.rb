@@ -1,6 +1,5 @@
 require 'rack/builder'
 require 'yaml'
-require 'picnic/conf'
 require 'fileutils'
 require 'active_record' # see below
 require File.expand_path("../controllable_rack_server.rb", __FILE__)
@@ -9,12 +8,12 @@ require File.expand_path("../controllable_rack_server.rb", __FILE__)
 # needs to be interpreted outside of the Aker module.
 module CASServer
   def self.app(config_filename)
-    $CONF = Picnic::Conf.new
-    $CONF.load_from_file(nil, nil, config_filename)
+    ENV['CONFIG_FILE'] = config_filename
 
     rackup = File.expand_path("../config.ru",
                               $LOAD_PATH.detect { |path| path =~ /rubycas-server/ })
-    app = ::Rack::Builder.new.instance_eval(File.read(rackup))
+
+    ::Rack::Builder.parse_file(rackup).first
   end
 end
 
