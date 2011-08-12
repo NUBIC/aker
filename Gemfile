@@ -43,7 +43,7 @@ group :development do
   # cas testing
   gem 'markaby', '0.5'    # other versions break RubyCAS-Server
   gem 'picnic', :git => 'git://github.com/NUBIC/picnic.git', :branch => 'activesupport3'
-  gem 'rubycas-server'
+  gem 'rubycas-server', :require => 'casserver', :git => 'git://github.com/NUBIC/rubycas-server.git'
   gem 'activerecord', '>= 2.3.0'
   platforms :jruby do
     gem 'jdbc-sqlite3'
