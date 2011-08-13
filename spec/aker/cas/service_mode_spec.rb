@@ -11,7 +11,7 @@ module Aker::Cas
       @mode = ServiceMode.new(@env, @scope)
     end
 
-    it_should_behave_like "a aker mode"
+    it_should_behave_like "an aker mode"
 
     describe "#key" do
       it "is :cas" do

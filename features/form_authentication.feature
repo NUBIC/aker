@@ -10,7 +10,7 @@ Feature: Form authentication
     Given I have an authority that accepts these usernames and passwords:
       | username | password |
       | mr296    | br0wn    |
-    And I have a aker-protected application using
+    And I have an aker-protected application using
       | ui_mode | api_modes |
       | form    |           |
 

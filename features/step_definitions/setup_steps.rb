@@ -34,7 +34,7 @@ Given /^I have a CAS server that accepts these usernames and passwords:$/ do |ta
   }
 end
 
-Given /^I have a aker\-protected application using$/ do |aker_params|
+Given /^I have an aker\-protected application using$/ do |aker_params|
   enhance_configuration_from_table(aker_params)
 
   app = Rack::Builder.new do
@@ -73,7 +73,7 @@ Given /^I have a aker\-protected application using$/ do |aker_params|
   start_main_rack_server(app)
 end
 
-Given /^I have a aker\-protected RESTful API using$/ do |aker_params|
+Given /^I have an aker\-protected RESTful API using$/ do |aker_params|
   config = Aker::Configuration.new
   if (@cas_server)
     config.parameters_for(:cas)[:base_url] = @cas_server.base_url
@@ -96,7 +96,7 @@ Given /^I have a aker\-protected RESTful API using$/ do |aker_params|
   @api_server = start_rack_server(api_app, 5427)
 end
 
-Given /^I have a aker\-protected consumer of a CAS\-protected API$/ do
+Given /^I have an aker\-protected consumer of a CAS\-protected API$/ do
   pgt_app = Aker::Cas::RackProxyCallback.application(:store => "#{tmpdir}/pgt_store")
   pgt_server = start_rack_server(pgt_app, 5310, :ssl => true)
 

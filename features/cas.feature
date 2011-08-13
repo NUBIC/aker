@@ -5,7 +5,7 @@ Feature: CAS UI authentication
     Given I have a CAS server that accepts these usernames and passwords:
       | username | password |
       | mr296    | br0wn    |
-    And I have a aker-protected application using
+    And I have an aker-protected application using
       | ui_mode | authority |
       | cas     | cas       |
 
