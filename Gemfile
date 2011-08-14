@@ -22,7 +22,9 @@ group :development do
 
   gem 'rcov', '~> 0.9'
   gem 'rest-client', '~> 1.4.0'
-  gem 'ZenTest'
+  # Later versions of ZenTest require rubygems 1.8.x, which does not seem to work
+  # with JRuby
+  gem 'ZenTest', '~> 4.5.0'
 
   # docs
   gem 'yard', '~> 0.6.1'
