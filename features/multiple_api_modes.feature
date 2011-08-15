@@ -9,7 +9,7 @@ Feature: Multiple API modes
       | username | password |
       | mr296    | br0wn    |
     And mr296 is in Serenity
-    And I have a aker-protected application using
+    And I have an aker-protected application using
       | api_modes            | portal   |
       | cas_proxy http_basic | Serenity |
     And I am using the API

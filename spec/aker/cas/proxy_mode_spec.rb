@@ -11,7 +11,7 @@ module Aker::Cas
       @env['aker.configuration'] = Aker::Configuration.new
     end
 
-    it_should_behave_like "a aker mode"
+    it_should_behave_like "an aker mode"
 
     describe "#key" do
       it "is :cas_proxy" do

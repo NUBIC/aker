@@ -6,7 +6,7 @@ require 'warden'
 #
 # * @mode: an instance of the mode under test
 # * @env: a Rack environment used by the mode
-shared_examples_for "a aker mode" do
+shared_examples_for "an aker mode" do
   it "is a Warden strategy" do
     (@mode.class < Warden::Strategies::Base).should be_true
   end

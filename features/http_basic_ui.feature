@@ -6,7 +6,7 @@ Feature: HTTP Basic Authentication for UI
       | username | password |
       | mr296    | br0wn    |
     And mr296 is in Serenity
-    And I have a aker-protected application using
+    And I have an aker-protected application using
       | ui_mode    | api_modes | portal   |
       | http_basic |           | Serenity |
 
