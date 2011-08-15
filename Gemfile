@@ -44,7 +44,7 @@ group :development do
 
   # cas testing
   gem 'activerecord' # used by our CAS support code
-  gem 'rubycas-server', :require => 'casserver', :git => 'git://github.com/gunark/rubycas-server.git'
+  gem 'rubycas-server', :require => 'casserver', :git => 'git://github.com/NUBIC/rubycas-server.git'
   platforms :jruby do
     gem 'jdbc-sqlite3'
     gem 'activerecord-jdbcsqlite3-adapter', '~> 1.1'
