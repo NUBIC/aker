@@ -15,13 +15,13 @@ Feature: CAS proxy authentication
     When I access an API-using resource
     Then the page contains the results of the API call
 
-  @wip
+  @no_19
   Scenario: A user can do concurrent proxied requests
     When I do concurrent requests on an API-using resource
 
     Then each response should contain the results of the API call
 
-  @wip
+  @no_19
   Scenario: CAS proxy authentication does not persist user data to the session
     In this scenario, a "replaying resource" refers to a resource that
     surreptituously stores the response it receives from the Web service API it
