@@ -13,6 +13,10 @@ if ENV['ACTIVESUPPORT_VERSION']
   gem 'activesupport', version
 end
 
+group :resolver_hacks do
+  gem 'builder', '~> 2.1.2' if ENV['ACTIVESUPPORT_VERSION'] == 'as_3.0'
+end
+
 group :development do
   # general testing
   gem 'cucumber', '~> 0.10.0'
