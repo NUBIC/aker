@@ -5,6 +5,9 @@ Aker History
 -----
 - Added missing LICENSE file. Aker is made available under the MIT
   license. (#9)
+- Fixed: `Aker::Cas::Middleware::TicketRemover` now sets its response's
+  Content-Type.  `TicketRemover` also now returns a link to the cleaned URI,
+  following recommendations set forth in RFC 2616.  (#10)
 
 3.0.1
 -----
