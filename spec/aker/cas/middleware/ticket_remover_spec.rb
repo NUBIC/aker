@@ -43,6 +43,16 @@ module Aker::Cas::Middleware
         it 'redirects to the same URI without the ticket' do
           last_response.headers['Location'].should == 'http://example.org/foo?q=bar'
         end
+
+        describe 'entity body' do
+          it 'is presented as text/html' do
+            last_response.headers['Content-Type'].should == 'text/html'
+          end
+
+          it 'has a link to the cleaned URI' do
+            last_response.body.should == %q{<a href="http://example.org/foo?q=bar">Click here to continue</a>}
+          end
+        end
       end
     end
   end

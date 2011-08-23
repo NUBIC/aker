@@ -16,7 +16,11 @@ module Aker::Cas::Middleware
     def call(env)
       if authenticated?(env) && ticket_present?(env)
         url = Aker::Cas::ServiceUrl.service_url(Rack::Request.new(env))
-        [301, { 'Location' => url }, ["Removing authenticated CAS ticket"] ]
+
+        [ 301,
+          { 'Location' => url, 'Content-Type' => 'text/html' },
+          [%Q{<a href="#{url}">Click here to continue</a>}]
+        ]
       else
         @app.call(env)
       end
