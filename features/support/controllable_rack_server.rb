@@ -34,7 +34,14 @@ module Aker::Cucumber
         options.merge!(SslEnv.new.webrick_ssl)
       end
 
-      ::Rack::Handler::WEBrick.run app, options
+      a = app
+      linted_app = Rack::Builder.new do
+        use Rack::Lint
+
+        run a
+      end
+
+      ::Rack::Handler::WEBrick.run linted_app, options
     end
 
     protected
