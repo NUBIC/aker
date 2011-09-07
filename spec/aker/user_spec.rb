@@ -143,6 +143,24 @@ module Aker
         end
       end
 
+      describe "with affiliate_ids" do
+        before do
+          affiliated_membership = GroupMembership.new(Group.new('Affiliated'))
+          affiliated_membership.affiliate_ids = [1]
+          @user.group_memberships(:NOTIS) << affiliated_membership
+          @user.group_memberships(:ENU) << affiliated_membership
+        end
+        it "returns true if the user is in the group for that affiliate id" do
+          @user.permit?(:Affiliated, :affiliate_ids => [1]).should be_true
+        end
+        it "returns false if the user in the group for a different affiliate id" do
+          @user.permit?(:Affiliated, :affiliate_ids => [4]).should be_false
+        end
+        it "returns true if user in group if affiliate_ids is empty array" do
+          @user.permit?(:Affiliated, :affiliate_ids => []).should be_true
+        end
+      end
+
       describe "with a block" do
         it "yields to a passed block if the user matches the group" do
           executed = nil
@@ -170,6 +188,7 @@ module Aker
           @user.permit?(:Admin) { "block value" }.should == nil
         end
       end
+
     end
 
     describe "#merge!" do

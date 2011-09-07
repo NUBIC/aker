@@ -68,6 +68,7 @@ module Aker
     #   @param [Hash] options additional constraints on the query
     #   @option options [#to_sym] :portal (#default_portal) the portal
     #     within which to do the group check
+    #   @option options [Array] :affiliate_ids ([]) Affiliate ids constraining group membership
     #   @return [Boolean]
     #
     # @overload permit?(*groups, options={}, &block)
@@ -78,17 +79,19 @@ module Aker
     #   @param [Hash] options additional constraints on the condition
     #   @option options [#to_sym] :portal (#default_portal) the portal
     #     within which to do the group check
+    #   @option options [Array] :affiliate_ids ([]) Affiliate ids constraining group membership
     #   @return [Object,nil] the value of the block if it is
     #     executed; otherwise nil
     def permit?(*args)
       options = args.last.is_a?(Hash) ? args.pop : { }
       portal = options[:portal] || default_portal
+      affiliate_ids = options[:affiliate_ids] || []
 
       permitted =
         if args.empty?
           may_access?(portal)
         else
-          args.detect { |group| group_memberships(portal).include?(group.to_sym) }
+          args.detect { |group| group_memberships(portal).include?(group.to_sym, *affiliate_ids) }
         end
 
       if block_given?
