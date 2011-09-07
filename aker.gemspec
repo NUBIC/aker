@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
 
   s.require_path = 'lib'
   s.files = Dir.glob("{CHANGELOG.md,README.md,{assets,lib,spec}/**/*}")
-  s.authors = ["Rhett Sutphin", "David Yip"]
+  s.authors = ["Rhett Sutphin", "David Yip", "William Dix"]
   s.email = "r-sutphin@northwestern.edu"
   s.homepage = "https://github.com/NUBIC/aker"
 

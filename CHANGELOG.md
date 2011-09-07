@@ -8,6 +8,7 @@ Aker History
 - Fixed: `Aker::Cas::Middleware::TicketRemover` now sets its response's
   Content-Type.  `TicketRemover` also now returns a link to the cleaned URI,
   following recommendations set forth in RFC 2616.  (#10)
+- Added: `Aker::User#permit?` accepts an `:affiliate_ids` option. (#11)
 
 3.0.1
 -----
