@@ -136,9 +136,3 @@ Given /^I have an aker\-protected consumer of a CAS\-protected API$/ do
 
   start_main_rack_server(app)
 end
-
-Given /^the application has a session timeout of (\d+) seconds$/ do |timeout|
-  Aker.configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => timeout)
-
-  restart_spawned_servers
-end

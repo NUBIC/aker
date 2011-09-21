@@ -13,7 +13,3 @@ Given /^I am using Internet Explorer 7$/ do
   header 'Accept', '*/*'
   header 'User-Agent', 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
 end
-
-When /^I wait (\d+) seconds$/ do |duration|
-  sleep duration.to_i
-end
