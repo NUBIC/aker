@@ -13,7 +13,7 @@ module Aker::Ldap
         :ldif => File.expand_path("../ldap-users.ldif", __FILE__),
         :domain => "dc=northwestern,dc=edu",
         :port => 3897 + port_offset,
-        :timeout => ENV['AKER_ENV'] ? 45 : 15 # the CI server is slow sometimes
+        :timeout => ENV['CI_RUBY'] ? 90 : 15 # the CI server is slow sometimes
       )
     end
 

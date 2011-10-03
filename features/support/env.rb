@@ -81,7 +81,7 @@ module Aker::Cucumber
     end
 
     def port_offset
-      base = case ENV["AKER_ENV"]
+      base = case ENV['CI_RUBY']
              when /jruby/
                17
              when /1.9/

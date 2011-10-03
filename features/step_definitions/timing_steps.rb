@@ -1,6 +1,6 @@
 begin
   # Go slower in CI
-  time_multiplier = (ENV['AKER_ENV'] ? 8 : 1)
+  time_multiplier = (ENV['CI_RUBY'] ? 8 : 1)
 
   When /^I wait (\d+) seconds$/ do |duration|
     sleep duration.to_i * time_multiplier
