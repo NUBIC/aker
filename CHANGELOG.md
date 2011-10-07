@@ -1,6 +1,9 @@
 Aker History
 ============
 
+3.0.3
+-----
+
 3.0.2
 -----
 - Added missing LICENSE file. Aker is made available under the MIT
