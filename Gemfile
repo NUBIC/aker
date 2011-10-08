@@ -24,7 +24,10 @@ group :development do
   gem 'mechanize', '~> 1.0'
   gem 'rspec', '~> 2.6'
 
-  gem 'rcov', '~> 0.9'
+  platforms :mri_18, :mri_19 do
+    gem 'rcov', '~> 0.9'
+  end
+
   gem 'rest-client', '~> 1.4.0'
   # Later versions of ZenTest require rubygems 1.8.x, which does not seem to work
   # with JRuby
