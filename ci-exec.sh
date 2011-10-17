@@ -45,6 +45,6 @@ if [ $? -ne 0 ]; then
 fi
 set -e
 
-bundle update
+bundle _${BUNDLER_VERSION}_ update
 
-bundle exec rake autobuild --trace
+bundle _${BUNDLER_VERSION}_ exec rake autobuild --trace
