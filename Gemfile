@@ -62,7 +62,7 @@ group :development do
   gem 'nokogiri'
   gem 'rake', '>= 0.9.0'
   gem 'ci_reporter', '~> 1.6'
-  gem 'bundler', '~> 1.0.14'
+  gem 'bundler', '~> 1.0'
 
   platforms :jruby do
     gem 'jruby-openssl'
