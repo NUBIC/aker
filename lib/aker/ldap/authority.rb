@@ -162,6 +162,12 @@ module Aker::Ldap
     end
 
     ##
+    # The search domain to use when finding user records.
+    def search_domain
+      @config[:search_domain]
+    end
+
+    ##
     # The mapping between attributes from the LDAP server and
     # {Aker::User} attributes. This mapping is used in two ways:
     #
@@ -351,8 +357,7 @@ module Aker::Ldap
     def find_by_criteria(ldap, *criteria)
       filter = criteria.collect { |c| create_criteria_filter(c) }.inject { |a, f| a | f }
       return [] unless filter
-      base = "dc=northwestern,dc=edu"
-      ldap.search(:filter => filter, :base => base)
+      ldap.search(:filter => filter, :base => search_domain) || []
     end
 
     def one_value(ldap_entry, key)
@@ -362,6 +367,7 @@ module Aker::Ldap
 
     def validate_config!
       self.server or raise "The server parameter is required for ldap."
+      self.search_domain or raise 'The search_domain parameter is required for ldap.'
       if self.user.nil? ^ self.password.nil?
         raise "For ldap, both user and password are required if one is set."
       end

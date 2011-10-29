@@ -8,6 +8,7 @@ $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
 
 require 'aker'
 require 'rack'
+require 'ladle'
 
 require File.expand_path("../../../spec/matchers", __FILE__)
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
@@ -25,8 +26,13 @@ Before('@cas') do
   start_cas_server
 end
 
+Before('@ldap') do
+  start_ladle_server
+end
+
 After do
   stop_spawned_servers
+  stop_ladle_server
 end
 
 module Aker::Cucumber
@@ -38,6 +44,15 @@ module Aker::Cucumber
 
     CAS_PORT = 5409
     APP_PORT = 5004
+
+    def initialize
+      # Create LDAP server once; only start it when necessary
+      @ladle_server = Ladle::Server.new(
+        :quiet => true,
+        :port => 3897 + port_offset,
+        :timeout => ENV['CI_RUBY'] ? 90 : 15 # the CI server is slow sometimes
+      )
+    end
 
     def app
       @app or fail "No main rack app created yet"
@@ -136,6 +151,16 @@ module Aker::Cucumber
       stop_spawned_servers
 
       spawned_servers.each { |server| server.start }
+    end
+
+    def start_ladle_server
+      unless @ladle_server
+      end
+      @ladle_server.start
+    end
+
+    def stop_ladle_server
+      @ladle_server.stop if @ladle_server
     end
 
     def app_url(url)

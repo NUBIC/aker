@@ -3,6 +3,7 @@ Aker History
 
 3.0.3
 -----
+- Add search_domain configuration option to LDAP authority. (#15)
 
 3.0.2
 -----

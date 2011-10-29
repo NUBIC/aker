@@ -10,6 +10,15 @@ Given /^I have an authority that accepts these usernames and passwords:$/ do |ta
   Aker.configure { authority static }
 end
 
+Given /^I have a ldap authority$/ do
+  ls = @ladle_server
+  Aker.configure {
+    authority :ldap
+    ldap_parameters :port => ls.port, :server => 'localhost',
+      :use_tls => false, :search_domain => 'dc=example,dc=org'
+  }
+end
+
 Given /^(\w+) is in (?:the (.*?) groups? for )?(\w+)$/ do |username, group_clause, portal|
   static = Aker.configuration.authorities.find { |a| Aker::Authorities::Static === a }
   raise "No static authority configured" unless static

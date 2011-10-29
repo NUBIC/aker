@@ -23,7 +23,10 @@ module Aker::Ldap
 
     # Minimal valid set
     let(:params) {
-      { :server => '127.0.0.1' }
+      {
+        :server => '127.0.0.1',
+        :search_domain => 'dc=northwestern,dc=edu'
+      }
     }
 
     def actual
@@ -58,6 +61,11 @@ module Aker::Ldap
       it "requires the server name" do
         params[:server] = nil
         lambda { actual }.should raise_error("The server parameter is required for ldap.")
+      end
+
+      it 'requires the search domain' do
+        params[:search_domain] = nil
+        lambda { actual }.should raise_error('The search_domain parameter is required for ldap.')
       end
 
       it "does not require a user name" do
