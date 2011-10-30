@@ -3,7 +3,7 @@ Aker History
 
 3.0.3
 -----
-- Add search_domain configuration option to LDAP authority. (#15)
+- Added: search_domain configuration option to LDAP authority. (#15)
   This new option is mandatory; the lack of this option in prior
   versions of the authority meant that they would not work with LDAP
   servers other than Northwestern's.
