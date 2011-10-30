@@ -82,6 +82,10 @@ module Aker::Ldap
     # @option config [String] :server The hostname for the LDAP server
     #   (required)
     #
+    # @option config [String] :search_domain The search base to use
+    #   when looking up users. E.g., `"dc=example,dc=org"`.
+    #   (required)
+    #
     # @option config [Integer] :port (636) The port to use to connect to the
     #  LDAP server
     #
