@@ -1,6 +1,9 @@
 Aker History
 ============
 
+3.0.4
+-----
+
 3.0.3
 -----
 - Added: search_domain configuration option to LDAP authority. (#15)
