@@ -6,15 +6,14 @@ gemspec
 if ENV['ACTIVESUPPORT_VERSION']
   version = case ENV['ACTIVESUPPORT_VERSION']
             when 'as_2.3' then '~> 2.3.0'
-            when 'as_3.0' then '~> 3.0'
+            when 'as_3.0' then '~> 3.0.10'
             else raise "Unknown ActiveSupport version #{ENV['ACTIVESUPPORT_VERSION']}"
             end
 
   gem 'activesupport', version
-end
-
-group :resolver_hacks do
-  gem 'builder', '~> 2.1.2' if ENV['ACTIVESUPPORT_VERSION'] == 'as_3.0'
+  # This is a hint for bundler that prevents one form of infinite
+  # resolution time when version is 3.0.x. It is harmless otherwise.
+  gem 'activerecord', version
 end
 
 group :development do
@@ -47,7 +46,9 @@ group :development do
   gem 'ladle', '~> 0.2'
 
   # cas testing
-  gem 'activerecord' # used by our CAS support code
+  # although we use activerecord directly, declaring it here without a
+  # version causes one form of infinite resolving in bundler.
+  # gem 'activerecord'
   gem 'rubycas-server', :require => 'casserver', :git => 'git://github.com/NUBIC/rubycas-server.git'
   gem 'sinatra', '~> 1.2.0', :require => false
   platforms :jruby do
