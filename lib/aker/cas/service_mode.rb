@@ -47,7 +47,7 @@ module Aker
       ##
       # Extracts the service ticket from the request parameters.
       #
-      # The service ticket is assumed to be a parameter named ST in either GET
+      # The service ticket is assumed to be a parameter named ticket in either GET
       # or POST data.
       #
       # @return [Array<String>,nil] a two-item array containing the
