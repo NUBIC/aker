@@ -4,6 +4,9 @@ Aker History
 3.0.4
 -----
 
+- Fixed: Documentation for `Aker::Cas::ServiceMode` referenced 
+  incorrect parameter names.
+
 3.0.3
 -----
 - Added: search_domain configuration option to LDAP authority. (#15)
