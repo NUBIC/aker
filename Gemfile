@@ -58,7 +58,7 @@ group :development do
     gem 'activerecord-jdbcsqlite3-adapter', '~> 1.1'
   end
   platforms :ruby_18, :ruby_19 do
-    gem 'sqlite3-ruby', '~> 1.2.0'
+    gem 'sqlite3'
   end
 
   # ci & deployment
