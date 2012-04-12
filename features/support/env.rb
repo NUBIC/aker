@@ -20,6 +20,8 @@ Before do
   Aker.configure {
     logger Logger.new(aker_log)
   }
+  ar_log = "#{tmpdir}/active_record.log"
+  ActiveRecord::Base.logger = Logger.new(ar_log)
 end
 
 Before('@cas') do
