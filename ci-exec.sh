@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-BUNDLER_VERSION=1.1.rc.7
+BUNDLER_VERSION=1.1.3
 GEMSET=aker
 
 export TMPDIR="`pwd`/tmp"
