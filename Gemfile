@@ -51,7 +51,8 @@ group :development do
   # although we use activerecord directly, declaring it here without a
   # version causes one form of infinite resolving in bundler.
   # gem 'activerecord'
-  gem 'rubycas-server', :require => 'casserver', :git => 'git://github.com/NUBIC/rubycas-server.git'
+  gem 'rubycas-server', :require => 'casserver',
+    :git => 'git://github.com/NUBIC/rubycas-server.git', :ref => 'cedf6cd'
   gem 'sinatra', '~> 1.2.0', :require => false
   platforms :jruby do
     gem 'jdbc-sqlite3'
