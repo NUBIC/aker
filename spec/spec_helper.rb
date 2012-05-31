@@ -32,23 +32,33 @@ RSpec.configure do |config|
   end
 end
 
+# TODO: uses of this should probably be replaced with something that
+# finds a random open port instead
 def port_offset
   base = case ENV['CI_RUBY']
+         when nil
+           0
          when /jruby/
            17
          when /1.9/
-           26
+           13
          when /1.8/
            31
          else
-           0
+           fail "Unexpected CI_RUBY value: #{ENV['CI_RUBY'].inspect}"
          end
   case ENV["ACTIVESUPPORT_VERSION"]
+  when nil
+    base * 1
+  when /3.2/
+    base * 23
+  when /3.1/
+    base * 19
   when /3.0/
     base * 5
   when /2.3/
     base * 7
   else
-    base * 1
+    fail "Unsupported ActiveSupport version #{ENV['ACTIVESUPPORT_VERSION'].inspect}"
   end
 end
