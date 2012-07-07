@@ -7,7 +7,7 @@ module Aker::Rack
   # particular action.
   #
   # An instance of this class is available in the rack environment
-  # under the `"aker"` key.
+  # under the `"aker.check"` key.
   class Facade
     ##
     # The current authenticated user.
