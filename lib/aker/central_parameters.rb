@@ -14,7 +14,7 @@ module Aker
   #       user: cn=foo
   #       password: 13635;nefvqerg35245gk
   #     policy:
-  #       session_timeout_seconds: 1500
+  #       session-timeout-seconds: 1500
   #
   # The top level keys in this file correspond to parameter groups in
   # a {Aker::Configuration}. If this file were loaded like so,
@@ -29,7 +29,7 @@ module Aker
   #       ldap_parameters :server => 'ldap.example.org',
   #                       :user => 'cn=foo',
   #                       :password => '13635;nefvqerg35245gk'
-  #       policy_parameters :session_timeout_seconds => 1500
+  #       policy_parameters %s(session-timeout-seconds) => 1500
   #     }
   #
   # The `central` approach has several benefits:
