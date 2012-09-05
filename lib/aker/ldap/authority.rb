@@ -325,6 +325,20 @@ module Aker::Ldap
     end
     include ::Aker::Authorities::Support::FindSoleUser
 
+    ##
+    # Merges in the authorization information in this authority for the
+    # given user.
+    #
+    # @param [Aker::User] user the target user
+    #
+    # @return [Aker::User] the input user, modified
+    def amplify!(user)
+      base = self.find_user(user.username)
+      return user unless base
+
+      user.merge!(base)
+    end
+
     protected
 
     def create_user(ldap_entry)
