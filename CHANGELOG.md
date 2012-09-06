@@ -7,6 +7,9 @@ Aker History
 - Fixed: Documentation for `Aker::Cas::ServiceMode` referenced
   incorrect parameter names.
 
+- Verified compatibility with ActiveSupport 3.1. (ActiveSupport 3.2 seems to
+  work also, but is incompatible with part of the test infrastructure.) (#17)
+
 3.0.3
 -----
 
