@@ -449,6 +449,14 @@ module Aker::Ldap
         it "has a business phone" do
           amplified.business_phone.should == "+1 312 555 3229"
         end
+
+        it 'mixes in UserExt' do
+          amplified.should respond_to(:ldap_attributes)
+        end
+
+        it 'has the original ldap attributes' do
+          amplified.ldap_attributes[:givenname].should == ['Warren']
+        end
       end
     end
   end

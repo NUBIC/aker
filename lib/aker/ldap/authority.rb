@@ -336,6 +336,9 @@ module Aker::Ldap
       base = self.find_user(user.username)
       return user unless base
 
+      user.extend UserExt
+      user.ldap_attributes = base.ldap_attributes
+
       user.merge!(base)
     end
 
