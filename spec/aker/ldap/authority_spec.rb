@@ -418,5 +418,46 @@ module Aker::Ldap
         actual.valid_credentials?(:retina_scan, 1701).should == :unsupported
       end
     end
+
+    describe "#amplify!" do
+      before do
+        @server.start
+        @user = Aker::User.new('wakibbe')
+      end
+
+      def amplified
+        actual.amplify!(@user)
+      end
+
+      it "does nothing for an unknown user" do
+        lambda { actual.amplify!(Aker::User.new("joe")) }.should_not raise_error
+      end
+
+      describe "on a blank instance" do
+        it "copies simple attributes" do
+          amplified.first_name.should == "Warren"
+        end
+
+        it "has a last name" do
+          amplified.last_name.should == "Kibbe"
+        end
+
+        it "has a title" do
+          amplified.title.should == "Research Associate Professor"
+        end
+
+        it "has a business phone" do
+          amplified.business_phone.should == "+1 312 555 3229"
+        end
+
+        it 'mixes in UserExt' do
+          amplified.should respond_to(:ldap_attributes)
+        end
+
+        it 'has the original ldap attributes' do
+          amplified.ldap_attributes[:givenname].should == ['Warren']
+        end
+      end
+    end
   end
 end

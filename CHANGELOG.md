@@ -4,6 +4,8 @@ Aker History
 3.0.4
 -----
 
+- Added: The LDAP authority now implements `#amplify!`. (#21)
+
 - Fixed: Documentation for `Aker::Cas::ServiceMode` referenced
   incorrect parameter names.
 
