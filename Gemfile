@@ -7,8 +7,8 @@ if ENV['ACTIVESUPPORT_VERSION']
   version = case ENV['ACTIVESUPPORT_VERSION']
             when 'as_2.3' then '~> 2.3.0'
             when 'as_3.0' then '~> 3.0.17'
-            when 'as_3.1' then '~> 3.1.0'
-            when 'as_3.2' then '~> 3.2.0'
+            when 'as_3.1' then '~> 3.1.8'
+            when 'as_3.2' then '~> 3.2.8'
             else raise "Unknown ActiveSupport version #{ENV['ACTIVESUPPORT_VERSION']}"
             end
 
