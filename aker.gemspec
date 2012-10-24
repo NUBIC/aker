@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'net-ldap', '~> 0.1.1'
 
   # cas
-  s.add_dependency 'castanet', '~> 1.0.0'
+  s.add_dependency 'castanet', '~> 1.0'
 
   # rack integration & modes
   s.add_dependency 'warden', '~> 1.0'
