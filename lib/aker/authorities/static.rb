@@ -208,29 +208,24 @@ module Aker::Authorities
         @groups[portal.to_sym] = top_level_groups.collect { |group_data| build_group(group_data) }
       end
       (doc["users"] || {}).each do |username, config|
-        valid_credentials!(:user, username, config["password"]) if config["password"]
-        user(username) do |u|
-          attr_keys = config.keys
-          (attr_keys - ["password", "portals", "identifiers"]).each do |k|
-            setter = "#{k}="
-            if u.respond_to?(setter)
-              u.send(setter, config[k])
-            end
-          end
+        attr_keys = config.keys - ["password", "portals", "identifiers"]
 
-          (config["portals"] || []).each do |portal_data|
-            portal, group_data =
-              if String === portal_data
-                portal_data
-              else
-                portal_data.to_a.first
-              end
+        valid_credentials!(:user, username, config["password"]) do |u|
+          attr_keys.each { |k| u.send("#{k}=", config[k]) }
 
+          portal_data = config["portals"] || []
+
+          portals_and_groups_from_yaml(portal_data) do |portal, group, affiliate_ids|
             u.default_portal = portal unless u.default_portal
 
-            u.portals << portal.to_sym
-            if group_data
-              u.group_memberships(portal).concat(load_group_memberships(portal.to_sym, group_data))
+            u.in_portal!(portal)
+
+            if group
+              if affiliate_ids
+                u.in_group!(portal, group, :affiliate_ids => affiliate_ids)
+              else
+                u.in_group!(portal, group)
+              end
             end
           end
 
@@ -241,6 +236,48 @@ module Aker::Authorities
       end
 
       self
+    end
+
+    ##
+    #
+    # This method interprets three different portal/group specification types.
+    #
+    # Type 1:
+    #     - SQLSubmit
+    #
+    # Type 2:
+    #     - ENU:
+    #       - User
+    #
+    # Type 3:
+    #     - NOTIS:
+    #       - Manager: [23]
+    #
+    # @private
+    def portals_and_groups_from_yaml(portal_data, &block)
+      portal_data.each do |datum|
+        if datum.is_a?(String)
+          block.call(datum.to_sym, nil, nil)
+        elsif datum.is_a?(Hash)
+          portal = datum.keys.first.to_sym
+          group_data = datum.values.first
+          groups_from_yaml(portal, group_data, block)
+        end
+      end
+    end
+
+    ##
+    # @private
+    def groups_from_yaml(portal, group_data, block)
+      group_data.each do |datum|
+        if datum.is_a?(String)
+          block.call(portal, datum, nil)
+        elsif datum.is_a?(Hash)
+          group = datum.keys.first
+          affiliate_ids = datum.values.first
+          block.call(portal, group, affiliate_ids)
+        end
+      end
     end
 
     ##
@@ -286,28 +323,6 @@ module Aker::Authorities
         group << build_group(ch_group_data)
       end
       group
-    end
-
-    ##
-    # Transform the group membership info from the static yaml format
-    # into {Aker::GroupMembership} instances.
-    #
-    # @param [Array<String,Hash<String,Array<Fixnum>>>] group_data
-    def load_group_memberships(portal, group_data)
-      group_data.collect do |entry|
-        group, affiliates =
-          if String === entry
-            entry
-          else
-            entry.to_a.first
-          end
-
-        gm = Aker::GroupMembership.new(find_or_create_group(portal, group))
-        if affiliates
-          gm.affiliate_ids = affiliates
-        end
-        gm
-      end
     end
 
     # BlankSlate makes changes at a very deep level in the Ruby object
