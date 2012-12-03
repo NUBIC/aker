@@ -1,8 +1,14 @@
 Aker History
 ============
 
-3.0.5
+3.1.0
 -----
+
+- Added: Aker::Authorities::Static#valid_credentials! now can set any user
+  attribute, including portal and group memberships.  (#25)
+
+- Changed: Aker::Authorities::Static#load! now raises on invalid user
+  attributes.
 
 3.0.4
 -----
