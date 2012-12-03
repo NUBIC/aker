@@ -211,7 +211,13 @@ module Aker::Authorities
         attr_keys = config.keys - ["password", "portals", "identifiers"]
 
         valid_credentials!(:user, username, config["password"]) do |u|
-          attr_keys.each { |k| u.send("#{k}=", config[k]) }
+          attr_keys.each do |k|
+            begin
+              u.send("#{k}=", config[k])
+            rescue NoMethodError
+              raise NoMethodError, "#{k} is not a recognized user attribute"
+            end
+          end
 
           portal_data = config["portals"] || []
 

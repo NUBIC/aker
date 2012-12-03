@@ -351,6 +351,18 @@ module Aker::Authorities
           @s.valid_credentials?(:user, "jo", "qofhearts").should be_true
         end
 
+        it "raises when an unknown user attribute is encountered" do
+          test = lambda do
+            @s.load!(StringIO.new(<<-YAML))
+              users:
+                jo:
+                  foobar: 1
+            YAML
+          end
+
+          test.should raise_error("foobar is not a recognized user attribute")
+        end
+
         describe "user attributes" do
           before do
             @jo = @s.user("jo")
