@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   # general
   s.add_dependency 'rubytree', '~> 0.7.0'
   s.add_dependency 'activesupport', '>= 2.3.0'
+  s.add_dependency 'blankslate'
   s.add_dependency 'i18n', '~> 0.4'
 
   # ldap

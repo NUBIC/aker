@@ -124,6 +124,31 @@ module Aker::Authorities
     #     auth.valid_credentials!(:user, "wakibbe", "ekibder")
     #     auth.valid_credentials!(:api_key, "notis-app", "12345-67890")
     #
+    # For further user customization, you can pass a block.  This block
+    # receives an object that responds to all {Aker::User} methods as well as
+    # helper methods for setting up portal and group memberships.
+    # Examples:
+    #
+    #     auth.valid_credentials!(:user, "wakibbe", "ekibder") do |u|
+    #       # grants access to portal :ENU
+    #       u.in_portal!(:ENU)
+    #
+    #       # sets up name data
+    #       u.first_name = 'Warren'
+    #       u.last_name = 'Kibbe'
+    #     end
+    #
+    #     auth.valid_credentials!(:user, "wakibbe", "ekibder") do |u|
+    #       # grants access to portal :ENU and membership in group "User"
+    #       u.in_group!(:ENU, "User")
+    #     end
+    #
+    #     auth.valid_credentials!(:api_key, "notis-ns", "12345-67890") do |u|
+    #       # grants access to portal :NOTIS and membership in group "Auditor"
+    #       for affiliates 20 and 30
+    #       u.in_group!(:NOTIS, "Auditor", :affiliate_ids => [20, 30])
+    #     end
+    #
     # @param [Symbol] kind the kind of credentials these are.
     #   Anything is allowed.
     # @param [String] username the username for the user which is
@@ -131,6 +156,7 @@ module Aker::Authorities
     # @param [Array<String>,nil] *credentials the credentials
     #   themselves.  (Note that you need not repeat the username for
     #   the :user kind.)
+    # @yield [user] a user object as described above
     #
     # @return [void]
     def valid_credentials!(kind, username, *credentials)
@@ -139,6 +165,8 @@ module Aker::Authorities
       end
       all_credentials(kind) << { :username => username, :credentials =>  credentials }
       @users[username] ||= Aker::User.new(username)
+
+      yield UserBuilder.new(@users[username], self) if block_given?
     end
 
     ##
@@ -227,6 +255,18 @@ module Aker::Authorities
       self
     end
 
+    ##
+    # @private
+    # @return [Aker::Group]
+    def find_or_create_group(portal, group_name)
+      existing = (@groups[portal] ||= []).collect { |top|
+        top.find { |g| g.name == group_name }
+      }.compact.first
+      return existing if existing
+      @groups[portal] << Aker::Group.new(group_name)
+      @groups[portal].last
+    end
+
     private
 
     def all_credentials(kind)
@@ -270,14 +310,46 @@ module Aker::Authorities
       end
     end
 
-    # @return [Aker::Group]
-    def find_or_create_group(portal, group_name)
-      existing = (@groups[portal] ||= []).collect { |top|
-        top.find { |g| g.name == group_name }
-      }.compact.first
-      return existing if existing
-      @groups[portal] << Aker::Group.new(group_name)
-      @groups[portal].last
+    # BlankSlate makes changes at a very deep level in the Ruby object
+    # hierarchy.  Although it (probably) has been well-tested, there's no need
+    # to load it up if we don't need it.
+    if !defined?(BasicObject)
+      require 'blankslate'
+    end
+
+    ##
+    # Used by {#valid_credentials!} to wrap {Aker::User} objects with
+    # group-setup helpers.
+    #
+    # This class uses BasicObject if it is present, BlankSlate otherwise.
+    #
+    # @private
+    class UserBuilder < defined?(BasicObject) ? BasicObject : BlankSlate
+      def initialize(user, authority)
+        @user = user
+        @authority = authority
+      end
+
+      def in_portal!(portal)
+        @user.portals |= [portal.to_sym]
+      end
+
+      def in_group!(portal, group, options = {})
+        in_portal!(portal)
+
+        affiliate_ids = options.delete(:affiliate_ids)
+
+        group = @authority.find_or_create_group(portal, group)
+        gm = ::Aker::GroupMembership.new(group)
+        gm.affiliate_ids = affiliate_ids if affiliate_ids
+        gms = @user.group_memberships(portal)
+
+        gms << gm
+      end
+
+      def method_missing(method, *args, &block)
+        @user.send(method, *args, &block)
+      end
     end
   end
 end

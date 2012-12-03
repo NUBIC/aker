@@ -70,6 +70,60 @@ module Aker::Authorities
       end
     end
 
+    describe "setting up user data" do
+      let(:user) do
+        @s.valid_credentials?(:user, "jo", "abracadabra").tap { |u| @s.amplify!(u) }
+      end
+
+      before do
+        @s.valid_credentials!(:user, "jo", "abracadabra") do |u|
+          u.in_group!(:ENU, "User")
+        end
+      end
+
+      it "grants the user access to the given portals" do
+        user.may_access?(:ENU).should be_true
+      end
+
+      it "does not grant access to non-specified portals" do
+        user.may_access?(:SQLSubmit).should be_false
+      end
+
+      it "assigns groups to users" do
+        user.permit?("User", :portal => :ENU).should be_true
+      end
+
+      it "permits user attributes to be set" do
+        @s.valid_credentials!(:user, "jo", "abracadabra") do |u|
+          u.first_name = "Josephine"
+        end
+
+        user.first_name.should == "Josephine"
+      end
+
+      describe "with affiliates" do
+        before do
+          @s.valid_credentials!(:user, "jo", "abracadabra") do |u|
+            u.in_group!(:NOTIS, "Manager", :affiliate_ids => [20])
+          end
+        end
+
+        it "adds affiliate matches to groups" do
+          user.group_memberships(:NOTIS).include?("Manager", 20).should be_true
+          user.group_memberships(:NOTIS).include?("Manager", 21).should be_false
+        end
+      end
+
+      it "coalesces group memberships" do
+        @s.valid_credentials!(:user, "jo", "abracadabra") do |u|
+          u.in_group!(:NOTIS, "Manager")
+          u.in_group!(:NOTIS, "Manager", :affiliate_ids => [20])
+        end
+
+        user.group_memberships(:NOTIS).include?("Manager", 20).should be_true
+      end
+    end
+
     describe "accessing users" do
       it "reuses a user added with valid_credentials!" do
         @s.valid_credentials!(:user, "jo", "123")
