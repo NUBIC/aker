@@ -124,6 +124,31 @@ module Aker::Authorities
     #     auth.valid_credentials!(:user, "wakibbe", "ekibder")
     #     auth.valid_credentials!(:api_key, "notis-app", "12345-67890")
     #
+    # For further user customization, you can pass a block.  This block
+    # receives an object that responds to all {Aker::User} methods as well as
+    # helper methods for setting up portal and group memberships.
+    # Examples:
+    #
+    #     auth.valid_credentials!(:user, "wakibbe", "ekibder") do |u|
+    #       # grants access to portal :ENU
+    #       u.in_portal!(:ENU)
+    #
+    #       # sets up name data
+    #       u.first_name = 'Warren'
+    #       u.last_name = 'Kibbe'
+    #     end
+    #
+    #     auth.valid_credentials!(:user, "wakibbe", "ekibder") do |u|
+    #       # grants access to portal :ENU and membership in group "User"
+    #       u.in_group!(:ENU, "User")
+    #     end
+    #
+    #     auth.valid_credentials!(:api_key, "notis-ns", "12345-67890") do |u|
+    #       # grants access to portal :NOTIS and membership in group "Auditor"
+    #       for affiliates 20 and 30
+    #       u.in_group!(:NOTIS, "Auditor", :affiliate_ids => [20, 30])
+    #     end
+    #
     # @param [Symbol] kind the kind of credentials these are.
     #   Anything is allowed.
     # @param [String] username the username for the user which is
@@ -131,6 +156,7 @@ module Aker::Authorities
     # @param [Array<String>,nil] *credentials the credentials
     #   themselves.  (Note that you need not repeat the username for
     #   the :user kind.)
+    # @yield [user] a user object as described above
     #
     # @return [void]
     def valid_credentials!(kind, username, *credentials)
@@ -139,6 +165,8 @@ module Aker::Authorities
       end
       all_credentials(kind) << { :username => username, :credentials =>  credentials }
       @users[username] ||= Aker::User.new(username)
+
+      yield UserBuilder.new(@users[username], self) if block_given?
     end
 
     ##
@@ -180,29 +208,30 @@ module Aker::Authorities
         @groups[portal.to_sym] = top_level_groups.collect { |group_data| build_group(group_data) }
       end
       (doc["users"] || {}).each do |username, config|
-        valid_credentials!(:user, username, config["password"]) if config["password"]
-        user(username) do |u|
-          attr_keys = config.keys
-          (attr_keys - ["password", "portals", "identifiers"]).each do |k|
-            setter = "#{k}="
-            if u.respond_to?(setter)
-              u.send(setter, config[k])
+        attr_keys = config.keys - ["password", "portals", "identifiers"]
+
+        valid_credentials!(:user, username, config["password"]) do |u|
+          attr_keys.each do |k|
+            begin
+              u.send("#{k}=", config[k])
+            rescue NoMethodError
+              raise NoMethodError, "#{k} is not a recognized user attribute"
             end
           end
 
-          (config["portals"] || []).each do |portal_data|
-            portal, group_data =
-              if String === portal_data
-                portal_data
-              else
-                portal_data.to_a.first
-              end
+          portal_data = config["portals"] || []
 
+          portals_and_groups_from_yaml(portal_data) do |portal, group, affiliate_ids|
             u.default_portal = portal unless u.default_portal
 
-            u.portals << portal.to_sym
-            if group_data
-              u.group_memberships(portal).concat(load_group_memberships(portal.to_sym, group_data))
+            u.in_portal!(portal)
+
+            if group
+              if affiliate_ids
+                u.in_group!(portal, group, :affiliate_ids => affiliate_ids)
+              else
+                u.in_group!(portal, group)
+              end
             end
           end
 
@@ -216,6 +245,48 @@ module Aker::Authorities
     end
 
     ##
+    #
+    # This method interprets three different portal/group specification types.
+    #
+    # Type 1:
+    #     - SQLSubmit
+    #
+    # Type 2:
+    #     - ENU:
+    #       - User
+    #
+    # Type 3:
+    #     - NOTIS:
+    #       - Manager: [23]
+    #
+    # @private
+    def portals_and_groups_from_yaml(portal_data, &block)
+      portal_data.each do |datum|
+        if datum.is_a?(String)
+          block.call(datum.to_sym, nil, nil)
+        elsif datum.is_a?(Hash)
+          portal = datum.keys.first.to_sym
+          group_data = datum.values.first
+          groups_from_yaml(portal, group_data, block)
+        end
+      end
+    end
+
+    ##
+    # @private
+    def groups_from_yaml(portal, group_data, block)
+      group_data.each do |datum|
+        if datum.is_a?(String)
+          block.call(portal, datum, nil)
+        elsif datum.is_a?(Hash)
+          group = datum.keys.first
+          affiliate_ids = datum.values.first
+          block.call(portal, group, affiliate_ids)
+        end
+      end
+    end
+
+    ##
     # Resets the user and authorization data to the same state it was
     # in at initialization.
     #
@@ -225,6 +296,18 @@ module Aker::Authorities
       @users = {}
       @credentials = {}
       self
+    end
+
+    ##
+    # @private
+    # @return [Aker::Group]
+    def find_or_create_group(portal, group_name)
+      existing = (@groups[portal] ||= []).collect { |top|
+        top.find { |g| g.name == group_name }
+      }.compact.first
+      return existing if existing
+      @groups[portal] << Aker::Group.new(group_name)
+      @groups[portal].last
     end
 
     private
@@ -248,36 +331,46 @@ module Aker::Authorities
       group
     end
 
-    ##
-    # Transform the group membership info from the static yaml format
-    # into {Aker::GroupMembership} instances.
-    #
-    # @param [Array<String,Hash<String,Array<Fixnum>>>] group_data
-    def load_group_memberships(portal, group_data)
-      group_data.collect do |entry|
-        group, affiliates =
-          if String === entry
-            entry
-          else
-            entry.to_a.first
-          end
-
-        gm = Aker::GroupMembership.new(find_or_create_group(portal, group))
-        if affiliates
-          gm.affiliate_ids = affiliates
-        end
-        gm
-      end
+    # BlankSlate makes changes at a very deep level in the Ruby object
+    # hierarchy.  Although it (probably) has been well-tested, there's no need
+    # to load it up if we don't need it.
+    if !defined?(BasicObject)
+      require 'blankslate'
     end
 
-    # @return [Aker::Group]
-    def find_or_create_group(portal, group_name)
-      existing = (@groups[portal] ||= []).collect { |top|
-        top.find { |g| g.name == group_name }
-      }.compact.first
-      return existing if existing
-      @groups[portal] << Aker::Group.new(group_name)
-      @groups[portal].last
+    ##
+    # Used by {#valid_credentials!} to wrap {Aker::User} objects with
+    # group-setup helpers.
+    #
+    # This class uses BasicObject if it is present, BlankSlate otherwise.
+    #
+    # @private
+    class UserBuilder < defined?(BasicObject) ? BasicObject : BlankSlate
+      def initialize(user, authority)
+        @user = user
+        @authority = authority
+      end
+
+      def in_portal!(portal)
+        @user.portals |= [portal.to_sym]
+      end
+
+      def in_group!(portal, group, options = {})
+        in_portal!(portal)
+
+        affiliate_ids = options.delete(:affiliate_ids)
+
+        group = @authority.find_or_create_group(portal, group)
+        gm = ::Aker::GroupMembership.new(group)
+        gm.affiliate_ids = affiliate_ids if affiliate_ids
+        gms = @user.group_memberships(portal)
+
+        gms << gm
+      end
+
+      def method_missing(method, *args, &block)
+        @user.send(method, *args, &block)
+      end
     end
   end
 end
