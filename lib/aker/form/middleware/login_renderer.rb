@@ -53,10 +53,11 @@ module Aker::Form::Middleware
     # @return a finished Rack response
     def provide_login_html(env)
       request = ::Rack::Request.new(env)
+      html = login_html(env, :url => request['url'], :session_expired => request['session_expired'])
 
-      ::Rack::Response.new(
-        login_html(env, :url => request['url'], :session_expired => request['session_expired'])
-      ).finish
+      ::Rack::Response.new(html) do |resp|
+        resp['Content-Type'] = 'text/html'
+      end.finish
     end
 
     ##

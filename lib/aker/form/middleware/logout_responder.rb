@@ -17,7 +17,9 @@ module Aker::Form::Middleware
     # @return a finished Rack response
     def call(env)
       if env['REQUEST_METHOD'] == 'GET' && env['PATH_INFO'] == logout_path(env)
-        ::Rack::Response.new(login_html(env, :logged_out => true)).finish
+        ::Rack::Response.new(login_html(env, :logged_out => true)) do |resp|
+          resp['Content-Type'] = 'text/html'
+        end.finish
       else
         @app.call(env)
       end
