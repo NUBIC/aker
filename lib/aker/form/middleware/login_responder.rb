@@ -10,6 +10,7 @@ module Aker::Form::Middleware
   #
   # @author David Yip
   class LoginResponder
+    include Aker::Form::HtmlResponse
     include Aker::Form::LoginFormAssetProvider
     include Aker::Rack::ConfigurationHelper
 
@@ -58,14 +59,14 @@ module Aker::Form::Middleware
                         :username => request['username'],
                         :url => request['url'])
 
-      ::Rack::Response.new(body, 401).finish
+      html_response(body, 401).finish
     end
 
     def redirect_to_target(env)
       request = Rack::Request.new(env)
       target = !(request['url'].blank?) ? request['url'] : request.env['SCRIPT_NAME'] + '/'
 
-      ::Rack::Response.new { |resp| resp.redirect(target) }.finish
+      html_response { |resp| resp.redirect(target) }.finish
     end
   end
 end

@@ -10,6 +10,7 @@ module Aker::Form::Middleware
   #
   # @author David Yip
   class LoginRenderer
+    include Aker::Form::HtmlResponse
     include Aker::Form::LoginFormAssetProvider
     include Aker::Rack::ConfigurationHelper
 
@@ -55,9 +56,7 @@ module Aker::Form::Middleware
       request = ::Rack::Request.new(env)
       html = login_html(env, :url => request['url'], :session_expired => request['session_expired'])
 
-      ::Rack::Response.new(html) do |resp|
-        resp['Content-Type'] = 'text/html'
-      end.finish
+      html_response(html).finish
     end
 
     ##

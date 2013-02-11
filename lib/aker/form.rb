@@ -6,6 +6,7 @@ module Aker
   # support infrastructure.
   module Form
     autoload :CustomViewsMode,        'aker/form/custom_views_mode'
+    autoload :HtmlResponse,           'aker/form/html_response'
     autoload :LoginFormAssetProvider, 'aker/form/login_form_asset_provider'
     autoload :Middleware,             'aker/form/middleware'
     autoload :Mode,                   'aker/form/mode'
