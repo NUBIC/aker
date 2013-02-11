@@ -7,6 +7,9 @@ Aker History
 - Added: Aker::Authorities::Static#valid_credentials! now can set any user
   attribute, including portal and group memberships.  (#25)
 
+- Fixed: The form mode now sets proper Content-Type headers for HTML pages and
+  their stylesheets.
+
 - Changed: Aker::Authorities::Static#load! now raises on invalid user
   attributes.
 
