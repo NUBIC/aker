@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 
-BUNDLER_VERSION=1.1.3
+BUNDLER_VERSION=1.3.5
 GEMSET=aker
 
 export TMPDIR="`pwd`/tmp"
@@ -36,6 +36,8 @@ set -xe
 
 which ruby
 ruby -v
+which gem
+gem --version
 
 set +e
 gem list -i bundler -v $BUNDLER_VERSION
