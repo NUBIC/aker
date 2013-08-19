@@ -1,4 +1,4 @@
-source :rubygems
+source "https://rubygems.org"
 
 gemspec
 
@@ -9,6 +9,7 @@ if ENV['ACTIVESUPPORT_VERSION']
             when 'as_3.0' then '~> 3.0.17'
             when 'as_3.1' then '~> 3.1.8'
             when 'as_3.2' then '~> 3.2.8'
+            when 'as_4.0' then '~> 4.0.0'
             else raise "Unknown ActiveSupport version #{ENV['ACTIVESUPPORT_VERSION']}"
             end
 
