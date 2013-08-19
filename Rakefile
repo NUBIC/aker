@@ -95,10 +95,8 @@ namespace :deploy do
 end
 
 namespace :ci do
-  task :all => [:spec, :cucumber]
-
+  task :all => ['ci:setup:rspec', :spec, :cucumber]
   ENV["CI_REPORTS"] = "reports/spec-xml"
-  task :spec => ["ci:setup:rspec", 'spec']
 
   Cucumber::Rake::Task.new(:cucumber, 'Run features using the ci profile') do |t|
     t.fork = true
