@@ -20,15 +20,6 @@ RSpec::Core::RakeTask.new('spec') do |t|
   t.verbose = true
 end
 
-desc "Run all specs with rcov"
-RSpec::Core::RakeTask.new('spec:rcov') do |t|
-  t.pattern = 'spec/**/*_spec.rb'
-  t.rcov = true
-  # rcov can't tell that /Library/Ruby & .rvm are system paths
-  t.rcov_opts = ['--exclude', "spec/*,/Library/Ruby/*,#{ENV['HOME']}/.rvm"]
-  t.verbose = true
-end
-
 namespace :cucumber do
   desc "Run features that should pass"
   Cucumber::Rake::Task.new(:ok) do |t|
@@ -107,7 +98,7 @@ namespace :ci do
   task :all => [:spec, :cucumber]
 
   ENV["CI_REPORTS"] = "reports/spec-xml"
-  task :spec => ["ci:setup:rspec", 'spec:rcov']
+  task :spec => ["ci:setup:rspec", 'spec']
 
   Cucumber::Rake::Task.new(:cucumber, 'Run features using the ci profile') do |t|
     t.fork = true

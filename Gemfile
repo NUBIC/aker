@@ -26,7 +26,6 @@ group :development do
   gem 'mechanize', '~> 1.0'
   gem 'rspec', '~> 2.6.0' # 2.7.0 doesn't work in CI due to #476 and #477
 
-  gem 'rcov', '~> 0.9'
   gem 'rest-client', '~> 1.4.0'
   # Later versions of ZenTest require rubygems 1.8.x, which does not seem to work
   # with JRuby
