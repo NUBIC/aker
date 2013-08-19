@@ -109,6 +109,8 @@ module Aker::Cucumber
                13
              when /1.8/
                31
+             when /2.0/
+               37
              else
                fail "Unexpected CI_RUBY value: #{ENV['CI_RUBY'].inspect}"
              end
@@ -123,6 +125,8 @@ module Aker::Cucumber
         base * 5
       when /2.3/
         base * 7
+      when /4.0/
+        base * 29
       else
         fail "Unsupported ActiveSupport version #{ENV['ACTIVESUPPORT_VERSION'].inspect}"
       end
