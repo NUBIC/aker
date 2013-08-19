@@ -25,7 +25,6 @@ group :development do
   gem 'rack-test', '~> 0.5'
   gem 'mechanize', '~> 1.0'
   gem 'rspec', '~> 2.6.0' # 2.7.0 doesn't work in CI due to #476 and #477
-  gem 'iconv'
 
   gem 'rest-client', '~> 1.4.0'
   # Later versions of ZenTest require rubygems 1.8.x, which does not seem to work
@@ -40,6 +39,7 @@ group :development do
   end
   platforms :ruby_18, :ruby_19 do
     gem 'rdiscount'
+    gem 'iconv'
   end
 
   # metrics
