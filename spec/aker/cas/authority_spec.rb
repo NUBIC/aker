@@ -30,7 +30,7 @@ module Aker::Cas
     shared_examples_for "a CAS user modifier" do
       describe "user modification" do
         it "initializes the user with its proxy-granting ticket" do
-          ticket.stub!(:pgt_iou => "PGTIOU-1foo", :pgt => "PGT-1foo")
+          ticket.stub(:pgt_iou => "PGTIOU-1foo", :pgt => "PGT-1foo")
 
           user = authority.valid_credentials?(kind, ticket, service)
 
@@ -38,7 +38,7 @@ module Aker::Cas
         end
 
         it "does not initialize the user with a proxy-granting ticket when a PGT IOU is absent" do
-          ticket.stub!(:pgt_iou => nil)
+          ticket.stub(:pgt_iou => nil)
 
           user = authority.valid_credentials?(kind, ticket, service)
 
@@ -56,20 +56,20 @@ module Aker::Cas
         let(:kind) { :cas }
         let(:service) { "https://example.org/app" }
         let(:st) { "ST-bazola" }
-        let(:ticket) { stub.as_null_object }
+        let(:ticket) { double.as_null_object }
 
         before do
-          authority.stub!(:service_ticket => ticket)
+          authority.stub(:service_ticket => ticket)
         end
 
         it "returns a user based on the service ticket response" do
-          ticket.stub!(:ok? => true, :username => "jo")
+          ticket.stub(:ok? => true, :username => "jo")
 
           authority.valid_credentials?(:cas, st, service).username.should == "jo"
         end
 
         it "returns nil if the service ticket is invalid" do
-          ticket.stub!(:ok? => false)
+          ticket.stub(:ok? => false)
 
           authority.valid_credentials?(:cas, st, service).should be_nil
         end
@@ -81,20 +81,20 @@ module Aker::Cas
         let(:kind) { :cas_proxy }
         let(:pt) { "PT-12thththhtthhhthhttp" }
         let(:service) { "https://example.org/app" }
-        let(:ticket) { stub.as_null_object }
+        let(:ticket) { double.as_null_object }
 
         before do
-          authority.stub!(:proxy_ticket => ticket)
+          authority.stub(:proxy_ticket => ticket)
         end
 
         it "returns a user based on the proxy ticket response" do
-          ticket.stub!(:ok? => true, :username => "jo")
+          ticket.stub(:ok? => true, :username => "jo")
 
           authority.valid_credentials?(:cas_proxy, pt, service).username.should == "jo"
         end
 
         it "returns nil if the proxy ticket is invalid" do
-          ticket.stub!(:ok? => false)
+          ticket.stub(:ok? => false)
 
           authority.valid_credentials?(:cas_proxy, pt, service).should be_nil
         end

@@ -9,7 +9,7 @@ module Aker::Form
     before do
       @env = ::Rack::MockRequest.env_for("/")
       @env['aker.configuration'] = config
-      @scope = mock
+      @scope = double
       @mode = Mode.new(@env, @scope)
     end
 
@@ -49,12 +49,12 @@ module Aker::Form
       before do
         set_params("username" => "foo", "password" => "bar")
 
-        @authority = mock
-        @mode.stub!(:authority => @authority)
+        @authority = double
+        @mode.stub(:authority => @authority)
       end
 
       it "signals success if the username and password are good" do
-        user = stub
+        user = double
         @authority.should_receive(:valid_credentials?).with(:user, "foo", "bar").and_return(user)
         @mode.should_receive(:success!).with(user)
 
@@ -62,7 +62,7 @@ module Aker::Form
       end
 
       it "does not signal success if the username or password are bad" do
-        @authority.stub!(:valid_credentials? => nil)
+        @authority.stub(:valid_credentials? => nil)
         @mode.should_not_receive(:success!)
 
         @mode.authenticate!

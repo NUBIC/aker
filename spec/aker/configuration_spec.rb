@@ -123,7 +123,7 @@ describe Aker::Configuration do
     end
 
     describe '#install_middleware' do
-      let(:builder) { mock(Rack::Builder) }
+      let(:builder) { double(Rack::Builder) }
 
       before do
         config.enhance {

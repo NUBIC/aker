@@ -50,7 +50,7 @@ shared_examples 'a form login responder' do
   end
 
   describe "#call" do
-    let(:warden) { mock }
+    let(:warden) { double }
 
     before do
       env.update("warden" => warden, "REQUEST_METHOD" => "POST")

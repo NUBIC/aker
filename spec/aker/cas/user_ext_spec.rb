@@ -18,7 +18,7 @@ module Aker::Cas
 
       it "allows you to request proxy tickets" do
         user.should_receive(:issue_proxy_ticket).with(pgt, service).
-          once.and_return(stub(:ticket => "PT-ABC"))
+          once.and_return(double(:ticket => "PT-ABC"))
 
         user.cas_proxy_ticket("https://example.org/service-a").should == "PT-ABC"
       end

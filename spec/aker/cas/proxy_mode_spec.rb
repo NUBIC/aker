@@ -6,7 +6,7 @@ module Aker::Cas
   describe ProxyMode do
     before do
       @env = Rack::MockRequest.env_for('/')
-      @scope = mock
+      @scope = double
       @mode = ProxyMode.new(@env, @scope)
       @env['aker.configuration'] = Aker::Configuration.new
     end
@@ -160,13 +160,13 @@ module Aker::Cas
 
     describe "#authenticate!" do
       before do
-        @authority = mock
-        @mode.stub!(:authority => @authority)
+        @authority = double
+        @mode.stub(:authority => @authority)
         @env["HTTP_AUTHORIZATION"] = "CasProxy PT-1foo"
       end
 
       it "signals success if the proxy ticket is good" do
-        user = stub
+        user = double
         @authority.should_receive(:valid_credentials?).
           with(:cas_proxy, "PT-1foo", "http://example.org").and_return(user)
         @mode.should_receive(:success!).with(user)
@@ -175,7 +175,7 @@ module Aker::Cas
       end
 
       it "does not signal success if the proxy ticket is bad" do
-        @authority.stub!(:valid_credentials? => nil)
+        @authority.stub(:valid_credentials? => nil)
         @mode.should_not_receive(:success!)
 
         @mode.authenticate!

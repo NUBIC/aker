@@ -11,7 +11,7 @@ module Aker::Form::Middleware
     include_context 'login responder context'
 
     describe "#call" do
-      let(:warden) { mock }
+      let(:warden) { double }
 
       before do
         env.update("warden" => warden, "REQUEST_METHOD" => "POST")

@@ -6,7 +6,7 @@ module Aker::Modes::Support
       @object = Object.new
       @object.extend(AttemptedPath)
       @env = {}
-      @object.stub!(:env => @env)
+      @object.stub(:env => @env)
     end
 
     describe "#attempted_path" do

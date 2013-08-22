@@ -17,7 +17,7 @@ module Aker::Rack
       { "aker.configuration" => configuration, "warden" => warden }
     end
 
-    let(:warden) { mock }
+    let(:warden) { double }
 
     def call
       middleware.call(env)
@@ -25,7 +25,7 @@ module Aker::Rack
 
     describe "#call" do
       before do
-        warden.stub!(:user)
+        warden.stub(:user)
       end
 
       it "calls the ui mode if interactive" do
@@ -45,7 +45,7 @@ module Aker::Rack
       end
 
       it "invokes the app" do
-        warden.stub!(:authenticate)
+        warden.stub(:authenticate)
 
         app.should_receive(:call)
 
@@ -57,7 +57,7 @@ module Aker::Rack
       let(:user) { Aker::User.new("jo") }
 
       before do
-        warden.stub!(:user => user, :authenticate => nil)
+        warden.stub(:user => user, :authenticate => nil)
       end
 
       let(:facade) { call['aker.check'] }

@@ -3,7 +3,7 @@ require 'rack/test'
 
 module Aker::Rack
   describe SessionTimer do
-    let(:app) { stub.as_null_object }
+    let(:app) { double.as_null_object }
     let(:configuration) { Aker::Configuration.new { rack_parameters :logout_path => '/a/logout' } }
     let(:env) {
       {
@@ -15,7 +15,7 @@ module Aker::Rack
     let(:expected_timeout) { 600 }
     let(:session) { {} }
     let(:timer) { SessionTimer.new(app) }
-    let(:warden) { mock }
+    let(:warden) { double }
 
     before do
       configuration.add_parameters_for(:policy, %s(session-timeout-seconds) => expected_timeout)
@@ -25,7 +25,7 @@ module Aker::Rack
       let(:current_request_time) { 1234567890 }
 
       before do
-        Time.stub!(:now => Time.at(current_request_time))
+        Time.stub(:now => Time.at(current_request_time))
       end
 
       it "sets aker.timeout_at" do
@@ -107,7 +107,7 @@ module Aker::Rack
             #
             session['aker.last_request_at'] = current_request_time - expected_timeout
 
-            warden.stub!(:logout)
+            warden.stub(:logout)
           end
 
           it 'passes control down the Rack stack' do

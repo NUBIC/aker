@@ -7,7 +7,7 @@ module Aker::Cas
   describe ServiceMode do
     before do
       @env = ::Rack::MockRequest.env_for('/')
-      @scope = mock
+      @scope = double
       @mode = ServiceMode.new(@env, @scope)
     end
 
@@ -68,13 +68,13 @@ module Aker::Cas
 
     describe "#authenticate!" do
       before do
-        @authority = mock
+        @authority = double
         @env['aker.authority'] = @authority
         @env['QUERY_STRING'] = 'ticket=ST-1foo'
       end
 
       it "signals success if the service ticket is good" do
-        user = stub
+        user = double
         @authority.should_receive(:valid_credentials?).
           with(:cas, 'ST-1foo', "http://example.org/").and_return(user)
         @mode.should_receive(:success!).with(user)
@@ -83,7 +83,7 @@ module Aker::Cas
       end
 
       it "does not signal success if the service ticket is bad" do
-        @authority.stub!(:valid_credentials? => nil)
+        @authority.stub(:valid_credentials? => nil)
         @mode.should_not_receive(:success!)
 
         @mode.authenticate!

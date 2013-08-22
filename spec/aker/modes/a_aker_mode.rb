@@ -27,13 +27,13 @@ shared_examples_for "an aker mode" do
 
   describe '#store?' do
     it 'is true if #interactive? is true' do
-      @mode.stub!(:interactive? => true)
+      @mode.stub(:interactive? => true)
 
       @mode.store?.should == true
     end
 
     it 'is false if #interactive? is false' do
-      @mode.stub!(:interactive? => false)
+      @mode.stub(:interactive? => false)
 
       @mode.store?.should == false
     end

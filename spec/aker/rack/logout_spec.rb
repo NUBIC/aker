@@ -14,7 +14,7 @@ module Aker::Rack
       end
     end
 
-    let(:warden) { stub.as_null_object }
+    let(:warden) { double.as_null_object }
 
     let(:config) do
       p = path

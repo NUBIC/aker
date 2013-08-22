@@ -20,8 +20,8 @@ module Aker::Rack
 
     describe "env['aker.authority']" do
       it "is the authority from the configuration" do
-        authority = stub
-        configuration.stub!(:composite_authority => authority)
+        authority = double
+        configuration.stub(:composite_authority => authority)
 
         env = call
 

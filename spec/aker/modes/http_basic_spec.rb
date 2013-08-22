@@ -7,7 +7,7 @@ module Aker::Modes
   describe HttpBasic do
     before do
       @env = ::Rack::MockRequest.env_for("/")
-      @scope = mock
+      @scope = double
       @mode = HttpBasic.new(@env, @scope)
       @env['aker.configuration'] = Aker::Configuration.new
     end
@@ -71,13 +71,13 @@ module Aker::Modes
 
     describe "#authenticate!" do
       before do
-        @authority = mock
+        @authority = double
         @env['aker.authority'] = @authority
       end
 
       it "signals success if the username and password are good" do
         @env["HTTP_AUTHORIZATION"] = "Basic " + Base64.encode64("foo:bar")
-        user = stub
+        user = double
         @authority.should_receive(:valid_credentials?).with(:user, 'foo', 'bar').and_return(user)
         @mode.should_receive(:success!).with(user)
 
