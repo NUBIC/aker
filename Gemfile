@@ -37,7 +37,7 @@ group :development do
   platforms :jruby do
     gem 'maruku'
   end
-  platforms :ruby_18, :ruby_19 do
+  platforms :ruby do
     gem 'rdiscount'
     gem 'iconv'
   end
