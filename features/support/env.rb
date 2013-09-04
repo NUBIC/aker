@@ -21,7 +21,6 @@ Before do
     logger Logger.new(aker_log)
   }
   ar_log = "#{tmpdir}/active_record.log"
-  ActiveRecord::Base.logger = Logger.new(ar_log)
 end
 
 Before('@cas') do
@@ -33,6 +32,7 @@ Before('@ldap') do
 end
 
 After do
+  reset_cas_server
   stop_spawned_servers
   stop_ladle_server
 end
@@ -137,6 +137,10 @@ module Aker::Cucumber
       self.spawned_servers << @cas_server
       @cas_server.start
       @cas_server
+    end
+
+    def reset_cas_server
+      @cas_server.reset if @cas_server
     end
 
     # @return [Aker::Cucumber::ControllableRackServer]

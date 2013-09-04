@@ -30,6 +30,7 @@ module Aker
                    @timeout)
           Process.detach(@pid)
         else
+          Dir.chdir(@tmpdir)
           exec_server
         end
       end
