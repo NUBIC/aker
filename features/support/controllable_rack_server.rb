@@ -2,6 +2,7 @@ require File.expand_path('../spawned_http_server.rb', __FILE__)
 
 module Aker::Cucumber
   class ControllableRackServer < SpawnedHttpServer
+    attr_reader :ssl_env
     attr_accessor :app
 
     def initialize(options={})
@@ -31,7 +32,7 @@ module Aker::Cucumber
 
       options = { :Port => port }
       if ssl?
-        options.merge!(SslEnv.new.webrick_ssl)
+        options.merge!(ssl_env.webrick_ssl)
       end
 
       a = app
