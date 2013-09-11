@@ -9,6 +9,7 @@ $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
 require 'aker'
 require 'rack'
 require 'ladle'
+require 'uri'
 
 require File.expand_path("../../../spec/matchers", __FILE__)
 require File.expand_path("../controllable_cas_server.rb", __FILE__)
@@ -44,14 +45,11 @@ module Aker::Cucumber
     include ::Aker::Cucumber::MechanizeTest
     include FileUtils
 
-    CAS_PORT = 5409
-    APP_PORT = 5004
-
     def initialize
       # Create LDAP server once; only start it when necessary
       @ladle_server = Ladle::Server.new(
         :quiet => true,
-        :port => 3897 + port_offset,
+        :port => URI.parse(ladle_url).port,
         :timeout => ENV['CI_RUBY'] ? 90 : 15 # the CI server is slow sometimes
       )
     end
@@ -97,51 +95,20 @@ module Aker::Cucumber
       @spawned_servers ||= []
     end
 
-    # TODO: this should probably be replaced with something that finds
-    # a random open port instead
-    def port_offset
-      base = case ENV['CI_RUBY']
-             when nil
-               0
-             when /jruby/
-               17
-             when /1.9/
-               13
-             when /1.8/
-               31
-             when /2.0/
-               37
-             else
-               fail "Unexpected CI_RUBY value: #{ENV['CI_RUBY'].inspect}"
-             end
-      case ENV["ACTIVESUPPORT_VERSION"]
-      when nil
-        base * 1
-      when /3.2/
-        base * 23
-      when /3.1/
-        base * 19
-      when /3.0/
-        base * 5
-      when /2.3/
-        base * 7
-      when /4.0/
-        base * 29
-      else
-        fail "Unsupported ActiveSupport version #{ENV['ACTIVESUPPORT_VERSION'].inspect}"
-      end
-    end
-
-    def start_cas_server
-      @cas_server = ControllableCasServer.new(tmpdir, CAS_PORT + port_offset)
-      self.spawned_servers << @cas_server
-      @cas_server.start
-      @cas_server
+    %w(cas_base_url cas_proxy_retrieval_url cas_proxy_callback_url ladle_url).each do |m|
+      class_eval <<-END
+        def #{m}
+          ENV['#{m.upcase}'] or raise '#{m.upcase} is not set'
+        end
+      END
     end
 
     # @return [Aker::Cucumber::ControllableRackServer]
-    def start_rack_server(app, port, options={})
-      opts = { :app => app, :port => port + port_offset, :tmpdir => tmpdir }.merge(options)
+    def start_rack_server(app, name, options={})
+      scheme = options[:ssl] ? 'https' : 'http'
+      url = `./ci_local_url #{scheme} / #{name}`.chomp
+
+      opts = { :app => app, :url => url, :tmpdir => tmpdir }.merge(options)
       new_server = Aker::Cucumber::ControllableRackServer.new(opts)
       self.spawned_servers << new_server
       new_server.start
@@ -150,7 +117,7 @@ module Aker::Cucumber
 
     def start_main_rack_server(app, options={})
       @app = app
-      start_rack_server(app, APP_PORT, options)
+      @app_server = start_rack_server(app, 'main', options)
     end
 
     def stop_spawned_servers
@@ -170,8 +137,6 @@ module Aker::Cucumber
     end
 
     def start_ladle_server
-      unless @ladle_server
-      end
       @ladle_server.start
     end
 
@@ -183,7 +148,7 @@ module Aker::Cucumber
       if url =~ /^http/
         url
       else
-        "http://localhost:#{APP_PORT + port_offset}#{url}"
+        "http://#{@app_server.host}:#{@app_server.port}#{url}"
       end
     end
   end

@@ -34,6 +34,8 @@ Given /^(\w+) is in (?:the (.*?) groups? for )?(\w+)$/ do |username, group_claus
 end
 
 Given /^I have an aker\-protected application using$/ do |aker_params|
+  Aker.configuration.parameters_for(:cas)[:base_url] = cas_base_url
+
   enhance_configuration_from_table(aker_params)
 
   app = Rack::Builder.new do
@@ -74,9 +76,7 @@ end
 
 Given /^I have an aker\-protected RESTful API using$/ do |aker_params|
   config = Aker::Configuration.new
-  if (@cas_server)
-    config.parameters_for(:cas)[:base_url] = @cas_server.base_url
-  end
+  config.parameters_for(:cas)[:base_url] = cas_base_url
   enhance_configuration_from_table(aker_params, config)
 
   api_app = Rack::Builder.new do
@@ -96,13 +96,9 @@ Given /^I have an aker\-protected RESTful API using$/ do |aker_params|
 end
 
 Given /^I have an aker\-protected consumer of a CAS\-protected API$/ do
-  pgt_app = Aker::Cas::RackProxyCallback.application(:store => "#{tmpdir}/pgt_store")
-  pgt_server = start_rack_server(pgt_app, 5310, :ssl => true)
-
-  Aker.configuration.
-    parameters_for(:cas)[:proxy_retrieval_url] = URI.join(pgt_server.base_url, "retrieve_pgt").to_s
-  Aker.configuration.
-    parameters_for(:cas)[:proxy_callback_url] = URI.join(pgt_server.base_url, "receive_pgt").to_s
+  Aker.configuration.parameters_for(:cas)[:base_url] = cas_base_url
+  Aker.configuration.parameters_for(:cas)[:proxy_retrieval_url] = cas_proxy_retrieval_url
+  Aker.configuration.parameters_for(:cas)[:proxy_callback_url] = cas_proxy_callback_url
 
   Aker.configure {
     authority :cas

@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+# SYNOPSIS
+#
+#   ci_local_url ARGS ...
+#
+# DESCRIPTION
+#
+#   Appends the values of the CI_RUBY and ACTIVESUPPORT_VERSION
+#   environment variables to the ARGS sequence, and then invokes
+#   gen_local_url with the modified sequence.
+#
+#   gen_local_url is assumed to be in the same directory.
+
+exec "./gen_local_url #{ARGV.join(' ')} #{ENV['CI_RUBY']} #{ENV['ACTIVESUPPORT_VERSION']}"

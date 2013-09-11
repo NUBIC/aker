@@ -1,16 +1,19 @@
 require 'net/http'
 require 'fileutils'
+require 'uri'
 
 module Aker
   module Cucumber
     class SpawnedHttpServer
       include FileUtils
 
-      attr_reader :host, :port, :pid, :tmpdir
+      attr_reader :uri, :host, :port, :pid, :tmpdir
 
       def initialize(options={})
-        @port = options.delete(:port) or raise "Please specify a port"
-        @host = options.delete(:host) || '127.0.0.1'
+        @uri = URI.parse(options.delete(:url)) or raise "Please specify a url"
+
+        @port = @uri.port
+        @host = @uri.host
         @timeout = options.delete(:timeout) || 30
         @tmpdir = options.delete(:tmpdir) or raise "Please specify tmpdir"
         @ssl = options.delete(:ssl) || false
