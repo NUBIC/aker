@@ -33,16 +33,6 @@ Given /^(\w+) is in (?:the (.*?) groups? for )?(\w+)$/ do |username, group_claus
   end
 end
 
-Given /^I have a CAS server that accepts these usernames and passwords:$/ do |table|
-  table.hashes.each do |u|
-    @cas_server.register_user(u['username'], u['password'])
-  end
-  cas = @cas_server
-  Aker.configure {
-    cas_parameters :base_url => cas.base_url
-  }
-end
-
 Given /^I have an aker\-protected application using$/ do |aker_params|
   enhance_configuration_from_table(aker_params)
 
