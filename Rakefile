@@ -11,6 +11,8 @@ gem 'ci_reporter'
 require 'ci/reporter/rake/rspec'
 
 require 'aker'
+require 'castanet/testing'
+require 'uri'
 
 Dir["tasks/*.rake"].each { |f| import f }
 
@@ -102,5 +104,85 @@ namespace :ci do
     t.fork = true
     t.profile = 'ci'
   end
+
+  Castanet::Testing::JasigServerTasks.new(
+    :ssl_cert => File.expand_path('../features/support/integrated-test-ssl.crt', __FILE__),
+    :ssl_key => File.expand_path('../features/support/integrated-test-ssl.key', __FILE__),
+    :scratch_dir => File.expand_path('../tmp/aker-integrated-tests', __FILE__),
+    :jasig_url => 'http://downloads.jasig.org/cas/cas-server-3.4.3-release.tar.gz',
+    :jasig_checksum => 'b08a8972649f961ed3e0433d3cf936b11af4354fc00f45a0bc1327e8e5caf0cc'
+  )
+
+  Castanet::Testing::CallbackServerTasks.new(
+    :ssl_cert => File.expand_path('../features/support/integrated-test-ssl.crt', __FILE__),
+    :ssl_key => File.expand_path('../features/support/integrated-test-ssl.key', __FILE__),
+    :scratch_dir => File.expand_path('../tmp/aker-integrated-tests', __FILE__)
+  )
+
+  desc 'Download daemons used for CI testing'
+  task :download_daemons => :download_cas_daemons
+
+  task :download_cas_daemons => ['ci:castanet:testing:jasig:download']
+
+  desc 'Generate URLs for daemons used in CI testing'
+  task :set_server_urls => [:set_cas_urls, :set_ladle_url]
+
+  task :set_cas_urls do
+    cas_base_url = `./ci_local_url https /cas`.chomp
+    cas_callback_base_url = `./ci_local_url https / callback`.chomp
+
+    puts %Q{
+      export CAS_BASE_URL=#{cas_base_url}
+      export CAS_PROXY_CALLBACK_URL=#{cas_callback_base_url}receive_pgt
+      export CAS_PROXY_RETRIEVAL_URL=#{cas_callback_base_url}retrieve_pgt
+    }
+  end
+
+  task :set_ladle_url do
+    ladle_url = `./ci_local_url ldap /`.chomp
+
+    puts %Q{
+      export LADLE_URL=#{ladle_url}
+    }
+  end
+
+  desc 'Start daemons used in CI testing'
+  task :start_servers => :start_cas
+
+  task :start_cas do
+    cb_port = URI.parse(ENV['CAS_PROXY_CALLBACK_URL']).port.to_s
+    cb_pid = Process.spawn({ 'PORT' => cb_port }, 'rake', 'ci:castanet:testing:callback:start', { [:out, :err] => ['/dev/null', 'w'] })
+    puts "Starting CAS proxy callback at #{ENV['CAS_PROXY_CALLBACK_URL']}, PID #{cb_pid}"
+
+    cas_port = URI.parse(ENV['CAS_BASE_URL']).port.to_s
+    cas_pid = Process.spawn({ 'PORT' => cas_port }, 'rake', 'ci:castanet:testing:jasig:start', { [:out, :err] => ['/dev/null', 'w'] })
+    puts "Starting CAS at #{ENV['CAS_BASE_URL']}, PID #{cas_pid}"
+
+    cleanup = lambda do |*|
+      [cb_pid, cas_pid].each do |pid|
+        begin
+          Process.kill('TERM', pid)
+          puts "kill -TERM #{pid}"
+        rescue Errno::ESRCH
+          # see below
+        end
+      end
+    end
+
+    # Account for normal exits and abnormal, trappable exits.
+    #
+    # Trapping INT eliminates the "rake aborted!" error that Rake signals by
+    # default.  Installing an at_exit hook is insurance.
+    #
+    # FYI, this is why we need the begin ... rescue construct in the cleanup
+    # block -- we're going to end up trying to kill our children at least
+    # twice.  (UNIX is a brutal world.)  There is a high probability that one
+    # of the kills will fail with ESRCH.
+    trap(:INT, &cleanup)
+    at_exit(&cleanup)
+
+    Process.waitall
+  end
 end
+
 task :autobuild => :'ci:all'

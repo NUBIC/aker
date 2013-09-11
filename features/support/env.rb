@@ -3,6 +3,7 @@ Bundler.setup
 
 require "rspec"
 require "fileutils"
+require "timeout"
 
 $LOAD_PATH.unshift File.expand_path("../../../lib", __FILE__)
 
@@ -12,7 +13,6 @@ require 'ladle'
 require 'uri'
 
 require File.expand_path("../../../spec/matchers", __FILE__)
-require File.expand_path("../controllable_cas_server.rb", __FILE__)
 require File.expand_path("../mechanize_test.rb", __FILE__)
 
 Before do
@@ -22,11 +22,10 @@ Before do
     logger Logger.new(aker_log)
   }
   ar_log = "#{tmpdir}/active_record.log"
-  ActiveRecord::Base.logger = Logger.new(ar_log)
 end
 
 Before('@cas') do
-  start_cas_server
+  check_cas_server
 end
 
 Before('@ldap') do
@@ -101,6 +100,36 @@ module Aker::Cucumber
           ENV['#{m.upcase}'] or raise '#{m.upcase} is not set'
         end
       END
+    end
+
+    def check_cas_server
+      [
+        ['CAS server URL', cas_base_url],
+        ['CAS proxy retrieval URL', cas_proxy_retrieval_url],
+        ['CAS proxy callback URL', cas_proxy_callback_url]
+      ].each do |url_kind, url|
+        expect_2xx url, true
+      end
+    end
+
+    def expect_2xx(url, use_ssl, timeout = 90)
+      Timeout::timeout(timeout) do
+        uri = URI(url)
+        h = Net::HTTP.new(uri.host, uri.port)
+        h.use_ssl = use_ssl
+        req = Net::HTTP::Get.new(uri.path)
+
+        loop do
+          begin
+            resp = h.request(req)
+
+            break if resp.code.to_i < 500
+          rescue => e
+            puts "Connect to #{url} failed: #{e.class} (#{e.message}); retrying in 1 sec"
+            sleep 1
+          end
+        end
+      end
     end
 
     # @return [Aker::Cucumber::ControllableRackServer]
