@@ -151,11 +151,11 @@ namespace :ci do
 
   task :start_cas do
     cb_port = URI.parse(ENV['CAS_PROXY_CALLBACK_URL']).port.to_s
-    cb_pid = Process.spawn({ 'PORT' => cb_port }, 'rake', 'ci:castanet:testing:callback:start', { [:out, :err] => ['/dev/null', 'w'] })
+    cb_pid = Process.spawn({ 'PORT' => cb_port }, 'rake', 'ci:castanet:testing:callback:start', { :out => '/dev/null', :err => '/dev/null' })
     puts "Starting CAS proxy callback at #{ENV['CAS_PROXY_CALLBACK_URL']}, PID #{cb_pid}"
 
     cas_port = URI.parse(ENV['CAS_BASE_URL']).port.to_s
-    cas_pid = Process.spawn({ 'PORT' => cas_port }, 'rake', 'ci:castanet:testing:jasig:start', { [:out, :err] => ['/dev/null', 'w'] })
+    cas_pid = Process.spawn({ 'PORT' => cas_port }, 'rake', 'ci:castanet:testing:jasig:start', { :out => '/dev/null', :err => '/dev/null' })
     puts "Starting CAS at #{ENV['CAS_BASE_URL']}, PID #{cas_pid}"
 
     cleanup = lambda do |*|
