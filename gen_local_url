@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+# SYNOPSIS
+#
+#   gen_local_url SCHEME PATH INPUT ...
+#
+# DESCRIPTION
+#
+#   Given a URI SCHEME, a URI PATH, and a sequence of zero or more
+#   INPUTs, generates a URL of the form
+#
+#       #{SCHEME}://localhost:#{PORT}#{PATH}
+#
+#   where PORT is a random integer between 1024 and 65535 inclusive.
+#   The SCHEME, PATH, and INPUT sequence is used as the random seed.
+#   Two invocations of this command with the same argument sequence will
+#   yield the same URL.
+#
+#   While the TCP port corresponding to PORT may be used without
+#   special privileges (absent any additional security mechanisms, e.g.
+#   SELinux policy), this program does not (and cannot) reserve the
+#   generated port.  Therefore, there is no guarantee that said port can
+#   actually be bound to a socket.
+
+def usage
+  "Usage: #$0 SCHEME PATH INPUT ..."
+end
+
+scheme = ARGV[0]
+path = ARGV[1]
+inputs = ARGV[2..-1] || []
+
+if !(scheme && path)
+  puts usage
+  exit 1
+end
+
+seed = scheme + path + inputs.join('')
+r = Random.new(seed.unpack('c*').inject(&:+))
+
+puts "#{scheme}://localhost:#{r.rand(1024..65535)}#{path}"
