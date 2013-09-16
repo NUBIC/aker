@@ -2,14 +2,11 @@
 Feature: CAS proxy authentication
 
   Background:
-    Given I have a CAS server that accepts these usernames and passwords:
-      | username | password |
-      | mr296    | br0wn    |
-    And I have an aker-protected RESTful API using
+    Given I have an aker-protected RESTful API using
       | ui_mode | api_modes | authority |
       | cas     | cas_proxy | cas       |
     And I have an aker-protected consumer of a CAS-protected API
-    And I have logged into CAS using "mr296" / "br0wn"
+    And I have logged into CAS using "mr296" / "mr296"
 
   Scenario:
     When I access an API-using resource

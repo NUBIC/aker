@@ -2,15 +2,12 @@
 Feature: CAS UI authentication
 
   Background:
-    Given I have a CAS server that accepts these usernames and passwords:
-      | username | password |
-      | mr296    | br0wn    |
-    And I have an aker-protected application using
+    Given I have an aker-protected application using
       | ui_mode | authority |
       | cas     | cas       |
 
   Scenario: A user can access a protected resource when already logged into CAS
-    Given I have logged into CAS using "mr296" / "br0wn"
+    Given I have logged into CAS using "mr296" / "mr296"
      When I access a protected resource
      Then I should be able to access that protected resource
 
@@ -20,7 +17,7 @@ Feature: CAS UI authentication
      Then I should be on the CAS login page
      When I fill out the form with:
        | username | password |
-       | mr296    | br0wn    |
+       | mr296    | mr296    |
       And I click "LOGIN"
      Then I should be able to access that protected resource
 
@@ -30,7 +27,7 @@ Feature: CAS UI authentication
     Then I should be on the CAS login page
     When I fill out the form with:
        | username | password |
-       | mr296    | br0wn    |
+       | mr296    | mr296    |
     And I click "LOGIN"
 
     Then I should see the search results
@@ -41,14 +38,14 @@ Feature: CAS UI authentication
      Then I should be on the CAS login page
      When I fill out the form with:
        | username | password |
-       | mr296    | br0wn    |
+       | mr296    | mr296    |
       And I click "LOGIN"
 
      Then I should be able to access that protected resource
       And the current URL should not contain a service ticket
 
   Scenario: Logging out of an application means the user can no longer access protected resources
-    Given I have logged into CAS using "mr296" / "br0wn"
+    Given I have logged into CAS using "mr296" / "mr296"
 
     When I log out of the application
     And I access a protected resource
@@ -56,14 +53,14 @@ Feature: CAS UI authentication
     Then I should be on the CAS login page
 
   Scenario: Logging out of an application redirects the user to the CAS server's logout URL
-    Given I have logged into CAS using "mr296" / "br0wn"
+    Given I have logged into CAS using "mr296" / "mr296"
 
     When I log out of the application
 
     Then I should be on the CAS logout page
 
   Scenario: Session timeouts do not interfere with single sign on
-    Given I have logged into CAS using "mr296" / "br0wn"
+    Given I have logged into CAS using "mr296" / "mr296"
     And the application has a session timeout of 2 seconds
 
     When I access a protected resource

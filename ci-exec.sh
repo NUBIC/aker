@@ -49,4 +49,13 @@ set -e
 
 bundle _${BUNDLER_VERSION}_ update
 
+bundle _${BUNDLER_VERSION}_ exec rake ci:download_daemons
+eval `bundle _${BUNDLER_VERSION}_ exec rake ci:set_server_urls`
+bundle _${BUNDLER_VERSION}_ exec rake ci:start_servers &
+SERVER_CONTROLLER=$!
+
+set +e
 bundle _${BUNDLER_VERSION}_ exec rake autobuild --trace
+RETVAL=$?
+kill -INT $SERVER_CONTROLLER
+exit $RETVAL
