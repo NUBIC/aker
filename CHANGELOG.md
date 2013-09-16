@@ -13,6 +13,8 @@ Aker History
 - Changed: Aker::Authorities::Static#load! now raises on invalid user
   attributes.
 
+- Fixed: Test suite now passes on ActiveSupport 4.0.0 and Ruby 2.0. (#30)
+
 3.0.4
 -----
 
